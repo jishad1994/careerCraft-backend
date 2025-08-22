@@ -21,6 +21,15 @@ export interface IEducation {
     grade?: string;
 }
 
+//address
+
+export interface IAddress {
+    city: string;
+    state: string;
+    country: string;
+    postalCode: string;
+}
+
 //experience
 
 export interface IExperience {
@@ -39,15 +48,10 @@ export interface IUser extends Document {
     email: string;
     password: string;
     role: "user" | "admin";
-    profilePicture: string;
+    profilePicture?: string;
     isBlocked: boolean;
-    address: {
-        city: string;
-        state: string;
-        country: string;
-        postalCode: string;
-    };
-    resumeURL: string;
+    address: IAddress;
+    resumeURL: string[];
     about: string;
     skills: ObjectId[];
     education: IEducation[];

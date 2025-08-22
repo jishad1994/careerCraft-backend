@@ -1,4 +1,4 @@
-import { IEducation, IExperience, IUser } from "./user.interface";
+import { IAddress, IEducation, IExperience, IUser } from "./user.interface";
 import mongoose, { Schema } from "mongoose";
 import { isAddressRequired } from "../../utils/schema.utils";
 
@@ -49,6 +49,27 @@ export const experienceSchema = new Schema<IExperience>({
     description: String,
 });
 
+//adrress schema
+
+export const addressSchema = new Schema<IAddress>({
+    city: {
+        type: String,
+        required: true,
+    },
+    state: {
+        type: String,
+        required: true,
+    },
+    country: {
+        type: String,
+        required: true,
+    },
+    postalCode: {
+        type: String,
+        required: true,
+    },
+});
+
 export const userSchema = new Schema<IUser>(
     {
         firstName: {
@@ -79,39 +100,19 @@ export const userSchema = new Schema<IUser>(
             required: true,
             default: "user",
         },
-        profilePicture: {
-            type: String,
-        },
         isBlocked: {
             type: Boolean,
             default: false,
         },
-
-        resumeURL: String,
+        profilePicture: String,
+        resumeURL: [String],
         about: String,
         skills: [{ type: mongoose.Schema.Types.ObjectId, ref: "Skill" }],
         education: [EducationSchema],
         experience: [experienceSchema],
         location: String,
         jobsApplied: [{ type: mongoose.Schema.Types.ObjectId, ref: "Job" }],
-        address: {
-            city: {
-                type: String,
-                required: isAddressRequired,
-            },
-            state: {
-                type: String,
-                required: isAddressRequired,
-            },
-            country: {
-                type: String,
-                required: isAddressRequired,
-            },
-            postalCode: {
-                type: String,
-                required: isAddressRequired,
-            },
-        },
+        address: addressSchema,
     },
     { timestamps: true }
 );
