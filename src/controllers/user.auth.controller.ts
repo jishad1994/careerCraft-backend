@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import { HTTP_STATUS, HTTP_MESSAGES } from "../constants/http.constants";
 import bcrypt from "bcrypt";
 import { IUserAuthService } from "../services/user/user.auth.service.interface";
-import { IOtpService } from "../services/otp_service/IOTP.service";
-import { ICache } from "../services/cache/ICacheService";
+import { IOtpService } from "../services/otp_service/otp.service.interface";
+import { ICache } from "../services/cache/cache.service.interface";
 import { TempUserData } from "../interfaces/auth.interface";
 
 export class UserAuthController {

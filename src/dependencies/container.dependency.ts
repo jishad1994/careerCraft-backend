@@ -1,7 +1,7 @@
 import { CacheService } from "../services/cache/cache.service";
 import { NodeMailerService } from "../services/email_service/nodemailer.service";
 import { RedisCacheRepo } from "../repositories/redis.repository";
-import { OTPService } from "../services/otp_service/OTP.service";
+import { OTPService } from "../services/otp_service/otp.service";
 import { UserRepo } from "../repositories/user/user.repository";
 import { UserAuthService } from "../services/user/user.auth.service";
 import { UserAuthController } from "../controllers/user.auth.controller";

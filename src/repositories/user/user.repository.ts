@@ -12,10 +12,9 @@ export class UserRepo extends BaseRepo<IUser> implements IUserRepo {
 
     //find user by phone
     async createUser(user: Partial<IUser>) {
-        return await super.create(user);
+        const doc = await super.create(user);
+        return doc.toObject();
     }
-
-   
 
     //find by email or phone
     async findByEmailOrPhone(emailOrPhone: string): Promise<IUser | null> {

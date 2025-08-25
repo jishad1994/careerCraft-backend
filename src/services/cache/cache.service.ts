@@ -1,10 +1,10 @@
-import { ICache } from "./ICacheService";
+import { ICache } from "./cache.service.interface";
 
 export class CacheService implements ICache {
     //constructor
     constructor(private cacheRepo: ICache) {}
 
-    //connect the redis casche service
+    //connect the redis cache service
     async connect(): Promise<void> {
         try {
             await this.cacheRepo.connect();
@@ -25,7 +25,7 @@ export class CacheService implements ICache {
     }
 
     //delete
-    async delete<T>(key: string): Promise<void | boolean> {
+    async delete(key: string): Promise<void | boolean> {
         await this.cacheRepo.delete(key);
     }
 }

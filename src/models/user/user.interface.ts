@@ -1,4 +1,4 @@
-import mongoose, { Document, ObjectId, Schema } from "mongoose";
+import { Document, ObjectId } from "mongoose";
 
 //ecuation enum
 
@@ -41,13 +41,15 @@ export interface IExperience {
     description: string;
 }
 
+export type Role = "user" | "admin" | "company";
+
 export interface IUser extends Document {
     firstName: string;
     lastName: string;
     phone: string;
     email: string;
     password: string;
-    role: "user" | "admin";
+    role: Role;
     profilePicture?: string;
     isBlocked: boolean;
     address: IAddress;

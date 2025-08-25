@@ -1,4 +1,4 @@
-import { ICache } from "../services/cache/ICacheService";
+import { ICache } from "../services/cache/cache.service.interface";
 import { RedisClientType, createClient } from "redis";
 
 export class RedisCacheRepo implements ICache {
@@ -34,7 +34,7 @@ export class RedisCacheRepo implements ICache {
     }
 
     //delete method
-    async delete<T>(key: string): Promise<void | boolean> {
+    async delete(key: string): Promise<void | boolean> {
         await this.client.del(key);
         return true;
     }

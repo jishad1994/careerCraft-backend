@@ -1,6 +1,5 @@
 import { IAddress, IEducation, IExperience, IUser } from "./user.interface";
 import mongoose, { Schema } from "mongoose";
-import { isAddressRequired } from "../../utils/schema.utils";
 
 export const EducationSchema = new Schema<IEducation>({
     type: {

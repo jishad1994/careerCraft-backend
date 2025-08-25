@@ -1,16 +1,6 @@
-import { ICache } from "../cache/ICacheService";
-import { RedisCacheRepo } from "../../repositories/redis.repository";
+import { ICache } from "../cache/cache.service.interface";
 import { ITransporter } from "../email_service/ITransporter.Service";
-import { IOtpService } from "./IOTP.service";
-import { NodeMailerService } from "../email_service/nodemailer.service";
-import { CacheService } from "../cache/cache.service";
-
-//transporter Service
-const transporterService: ITransporter = new NodeMailerService(
-    "gmail",
-    process.env.HOST_EMAIL || "jishadkolapurath@gmail.com",
-    process.env.EMAIL_PASS || "rcpd qabt rtbs xqtv"
-);
+import { IOtpService } from "./otp.service.interface";
 
 //OTP Service
 
@@ -25,6 +15,7 @@ export class OTPService implements IOtpService {
     //send OTP
 
     async sendOTP(to: string, subject: "your one time password", otp: string): Promise<void> {
+        // eslint-disable-next-line no-useless-catch
         try {
             this.transporterService.send(to, subject, otp);
             console.log("OTP SEnd:", otp);
