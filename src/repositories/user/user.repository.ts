@@ -1,8 +1,6 @@
 import { IUser } from "../../models/user/user.interface";
-import { User } from "../../models/user/user.model";
-import { IUserRepo } from "./user.Repository.interface";
+import { IUserRepo } from "./user.repository.interface";
 import { BaseRepo } from "../base.repository";
-
 import { Model } from "mongoose";
 
 export class UserRepo extends BaseRepo<IUser> implements IUserRepo {
@@ -21,5 +19,11 @@ export class UserRepo extends BaseRepo<IUser> implements IUserRepo {
         return await this.model.findOne({
             $or: [{ email: emailOrPhone }, { phone: emailOrPhone }],
         });
+    }
+
+    //findByemail and update
+
+    async findByEmailAndUpdate(email: Partial<IUser>, update: Partial<IUser>) {
+        return super.updateOneByFilter(email, update);
     }
 }

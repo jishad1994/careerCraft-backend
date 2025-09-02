@@ -17,7 +17,7 @@ export class BaseRepo<T extends Document> {
     //find one
 
     async findOne(filter: Partial<T>): Promise<T | null> {
-        return await this.model.findOne({ filter });
+        return await this.model.findOne(filter);
     }
 
     //find by email
@@ -36,8 +36,13 @@ export class BaseRepo<T extends Document> {
     }
 
     //update
-    async update(id: string, update: Partial<T>): Promise<T | null> {
+    async findByIdAndUpdate(id: string, update: Partial<T>): Promise<T | null> {
         return await this.model.findByIdAndUpdate(id, update, { new: true });
+    }
+
+    //update by email
+    async updateOneByFilter(filter: Partial<T>, update: Partial<T>): Promise<T | null> {
+        return await this.model.findOneAndUpdate(filter, update, { new: true });
     }
 
     //delete

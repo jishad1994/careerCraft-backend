@@ -1,6 +1,7 @@
 import { IAddress, IEducation, IExperience, IUser } from "./user.interface";
 import mongoose, { Schema } from "mongoose";
 
+
 export const EducationSchema = new Schema<IEducation>({
     type: {
         type: String,

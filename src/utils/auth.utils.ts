@@ -6,13 +6,21 @@ export function omit<T extends object, K extends keyof T>(obj: T, key: K): Omit<
     return rest;
 }
 
-export type userSignupData = {
-    firstName: string;
-    lastName: string;
+export type signupData = {
+    firstName?: string;
+    lastName?: string;
+    name?: string;
     email: string;
     phone: string;
     password: string;
+    role: string;
 };
+
+export type loginData = {
+    email: string;
+    passwod: string;
+};
+
 
 export const OTPlimiter = rateLimiter({
     windowMs: 60 * 1000, //one minute

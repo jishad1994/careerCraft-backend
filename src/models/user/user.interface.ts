@@ -1,5 +1,6 @@
 import { Document, ObjectId } from "mongoose";
 
+export type Role = "user" | "admin" | "company";
 //ecuation enum
 
 export enum EducationType {
@@ -40,8 +41,6 @@ export interface IExperience {
     isCurrent?: boolean;
     description: string;
 }
-
-export type Role = "user" | "admin" | "company";
 
 export interface IUser extends Document {
     firstName: string;
