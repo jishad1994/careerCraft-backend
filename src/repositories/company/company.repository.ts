@@ -1,9 +1,9 @@
 import { ICompany } from "../../models/company/company.interface";
-import { BaseRepo } from "../base.repository";
+import { BaseRepository } from "../base.repository";
 import { Model } from "mongoose";
-import { ICompanyRepo } from "./company.repository.interface";
+import {  ICompanyRepository } from "./company.repository.interface";
 
-export class CompanyRepo extends BaseRepo<ICompany> implements ICompanyRepo {
+export class CompanyRepository extends BaseRepository<ICompany> implements ICompanyRepository {
     constructor(model: Model<ICompany>) {
         super(model);
     }

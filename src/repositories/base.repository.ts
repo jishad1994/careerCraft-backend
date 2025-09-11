@@ -1,6 +1,6 @@
-import { Model, Document } from "mongoose";
+import { Model, Document, Types } from "mongoose";
 
-export class BaseRepo<T extends Document> {
+export class BaseRepository<T extends Document> {
     constructor(protected readonly model: Model<T>) {}
 
     //create
@@ -17,7 +17,7 @@ export class BaseRepo<T extends Document> {
     //find one
 
     async findOne(filter: Partial<T>): Promise<T | null> {
-        return await this.model.findOne(filter);
+        return await this.model.findOne({ filter });
     }
 
     //find by email
@@ -42,7 +42,7 @@ export class BaseRepo<T extends Document> {
 
     //update by email
     async updateOneByFilter(filter: Partial<T>, update: Partial<T>): Promise<T | null> {
-        return await this.model.findOneAndUpdate(filter, update, { new: true });
+        return await this.model.findOneAndUpdate({ filter }, update, { new: true });
     }
 
     //delete
@@ -52,6 +52,17 @@ export class BaseRepo<T extends Document> {
         return !!result;
     }
 
+    //update password
+
+    async updatePassword(userId: string | Types.ObjectId, hashedPassword: string): Promise<void> {
+        await this.model.updateOne({ _id: userId }, { $set: { password: hashedPassword } });
+    }
+
+    //findby google id
+
+    async findByGoogleId(googleId: string): Promise<T | null> {
+        return await this.model.findOne({ googleId });
+    }
     // //count
     // async count(filter: Partial<T> = {}): Promise<number> {
     //     return await this.model.countDocuments(filter);

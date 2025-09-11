@@ -43,11 +43,14 @@ export interface IExperience {
 }
 
 export interface IUser extends Document {
+    _id: string;
     firstName: string;
     lastName: string;
     phone: string;
     email: string;
     password: string;
+    googleId: string;
+    provider: string;
     role: Role;
     profilePicture?: string;
     isBlocked: boolean;

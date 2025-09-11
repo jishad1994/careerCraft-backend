@@ -21,7 +21,6 @@ export type loginData = {
     passwod: string;
 };
 
-
 export const OTPlimiter = rateLimiter({
     windowMs: 60 * 1000, //one minute
     max: 5,
@@ -32,3 +31,7 @@ export const OTPlimiter = rateLimiter({
         message: "Too many requests, please try again later.",
     },
 });
+
+export function resetPasswordLink(role: string, resetPasswordToken: string): string {
+    return `http://localhost:4200/auth/resetPassword?token=${resetPasswordToken}&role=${role}`;
+}

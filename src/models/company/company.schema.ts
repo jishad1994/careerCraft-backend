@@ -14,13 +14,25 @@ export const companySchema = new Schema<ICompany>(
             lowercase: true,
             trim: true,
         },
+        googleId: { type: String, unique: true, sparse: true },
         phone: {
             type: String,
-            required: true,
+            unique: true,
+            sparse: true,
+            required: function () {
+                return !this.googleId;
+            },
         },
         password: {
             type: String,
-            required: true,
+            required: function () {
+                return !this.googleId;
+            },
+        },
+        provider: {
+            type: String,
+            enum: ["google", "local"],
+            default: "local",
         },
         role: {
             type: String,

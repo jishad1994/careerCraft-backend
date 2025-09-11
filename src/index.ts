@@ -30,7 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 const database = new MongooseDatabase();
 database.connect();
 
-//cacche service connection
+//cache service connection
 await cacheService
     .connect()
     .then(() => console.log("cache service connected"))

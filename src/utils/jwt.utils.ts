@@ -7,7 +7,7 @@ import { randomUUID } from "crypto";
 export type AccessPayload = { sub: string; role: Role };
 export type RefreshPayload = { jti: string; sub: string; role: Role };
 
-export const createAccessToken = (sub: string, role: string) => {
+export const createAccessToken = (sub: string, role: Role) => {
     console.log("accesssecret", process.env.ACCESS_SECRET);
     return jwt.sign({ sub, role } as AccessPayload, process.env.ACCESS_SECRET!, { expiresIn: "15m" });
 };

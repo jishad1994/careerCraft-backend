@@ -1,7 +1,6 @@
 import { IAddress, IEducation, IExperience, IUser } from "./user.interface";
 import mongoose, { Schema } from "mongoose";
 
-
 export const EducationSchema = new Schema<IEducation>({
     type: {
         type: String,
@@ -81,6 +80,11 @@ export const userSchema = new Schema<IUser>(
             required: false,
             default: "",
         },
+        googleId: {
+            type: String,
+            unique: true,
+            sparse: true,
+        },
         phone: {
             type: String,
             unique: true,
@@ -93,10 +97,18 @@ export const userSchema = new Schema<IUser>(
         },
         password: {
             type: String,
-            required: true,
+            required: function () {
+                return !this.googleId;
+            },
+        },
+        provider: {
+            type: String,
+            enum: ["local", "google"],
+            default: "local",
         },
         role: {
             type: String,
+            enum: ["user", "company"],
             required: true,
             default: "user",
         },

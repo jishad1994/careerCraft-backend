@@ -1,3 +1,3 @@
-export interface ITransporter {
+export interface IEmailService {
     send(to: string, subject: string, body: string): Promise<void>;
 }

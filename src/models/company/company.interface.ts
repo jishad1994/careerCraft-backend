@@ -2,6 +2,7 @@ import { Document, ObjectId } from "mongoose";
 import { Role } from "../user/user.interface";
 
 export interface ICompany extends Document {
+    _id: string;
     name: string;
 
     email: string;
@@ -12,6 +13,9 @@ export interface ICompany extends Document {
 
     password: string;
 
+    googleId: string;
+
+    provider: string;
     role: Role;
 
     isBlocked: boolean;

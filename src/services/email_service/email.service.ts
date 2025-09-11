@@ -1,10 +1,10 @@
 import nodemailer, { Transporter } from "nodemailer";
-import { ITransporter } from "./ITransporter.Service";
+import { IEmailService } from "./email.service.interface";
 
-export class NodeMailerService implements ITransporter {
-    private transporter: Transporter;
+export class EmailService implements IEmailService {
+    private _transporter: Transporter;
     constructor(service: string, hostEmail: string, pass: string) {
-        this.transporter = nodemailer.createTransport({
+        this._transporter = nodemailer.createTransport({
             service,
             auth: {
                 user: hostEmail,
@@ -15,7 +15,7 @@ export class NodeMailerService implements ITransporter {
 
     async send(to: string, subject: string, body: string): Promise<void> {
         try {
-            const info = await this.transporter.sendMail({
+            const info = await this._transporter.sendMail({
                 from: `"No Reply" <${process.env.EMAIL_USER}>`,
                 to,
                 subject,

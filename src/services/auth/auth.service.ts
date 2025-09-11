@@ -1,112 +1,171 @@
 import { IUser } from "../../models/user/user.interface";
-import { IUserRepo } from "../../repositories/user/user.repository.interface";
+import { IUserRepository } from "../../repositories/user/user.repository.interface";
 import bcrypt from "bcrypt";
 import { IAuthService } from "./auth.service.interface";
-import { createAccessToken, createRefreshToken, verifyRefreshToken } from "../../utils/jwt.utils";
+import { createAccessToken, createRefreshToken, verifyAccessToken, verifyRefreshToken } from "../../utils/jwt.utils";
 import { IRefreshTokenRepository } from "../../repositories/refreshToken/refreshToken.repository.interface";
-import { signupData } from "../../utils/auth.utils";
+import { resetPasswordLink, signupData } from "../../utils/auth.utils";
 import { Role } from "../../models/user/user.interface";
 import { ICache } from "../cache/cache.service.interface";
 import { IOtpService } from "../otp_service/otp.service.interface";
-import { ICompanyRepo } from "../../repositories/company/company.repository.interface";
+import { ICompanyRepository } from "../../repositories/company/company.repository.interface";
 import { ICompany } from "../../models/company/company.interface";
-
+import { IEmailService } from "../email_service/email.service.interface";
+import { AuthUserDTO, GoogleAuthRequestDTO } from "../../dtos/auth.dto";
+import { verifyGoogleAuthToken } from "../../utils/googleAuth.utils";
+import { toAuthUserResponseDTO } from "../../mappers/user.mapper";
+import { Types } from "mongoose";
 export class AuthService implements IAuthService {
     constructor(
-        private userRepo: IUserRepo,
-        private companyRepo: ICompanyRepo,
-        private refreshTokenRepo: IRefreshTokenRepository,
-        private cacheService: ICache,
-        private otpService: IOtpService
+        private _userRepository: IUserRepository,
+        private _companyRepository: ICompanyRepository,
+        private _refreshTokenRepository: IRefreshTokenRepository,
+        private _cacheService: ICache,
+        private _otpService: IOtpService,
+        private _emailService: IEmailService
     ) {}
 
     //signup user
-    async signupUser(
-        userData: signupData
-    ): Promise<{ user: Partial<IUser | ICompany>; accessToken: string; refreshToken: string }> {
+    async signupUser(userData: signupData): Promise<{ user: AuthUserDTO; accessToken: string; refreshToken: string }> {
         const role: string = userData.role;
         const existingUser =
             userData?.role == "user"
-                ? await this.userRepo.findByEmailOrPhone(userData.email as string)
-                : await this.companyRepo.findByEmailOrPhone(userData.email as string);
+                ? await this._userRepository.findByEmailOrPhone(userData.email as string)
+                : await this._companyRepository.findByEmailOrPhone(userData.email as string);
 
         if (existingUser) {
             throw new Error("user already existing with current Email");
         }
 
         //password already hashed while storing inside cache
-        const user: Partial<IUser | ICompany> =
+        const entity: Partial<IUser | ICompany> =
             role == "user"
-                ? await this.userRepo.createUser({
+                ? await this._userRepository.createUser({
                       firstName: userData.firstName,
                       lastName: userData.lastName,
                       email: userData.email,
                       phone: userData.phone,
                       password: userData.password,
                   })
-                : await this.companyRepo.createCompany({
+                : await this._companyRepository.createCompany({
                       name: userData.name,
                       email: userData.email,
                       phone: userData.phone,
                       password: userData.password,
                   });
+        const accessToken = createAccessToken(String(entity._id), role as Role);
 
-        //creaet accessToke
-        const accessToken = createAccessToken(String(user._id), role as Role);
-
-        //create refreshToken
-        const { token: refreshToken, jti } = createRefreshToken(String(user._id), role as Role);
+        const { token: refreshToken, jti } = createRefreshToken(String(entity._id), role as Role);
 
         //save the refresh Token in refreshToken repo
         const exp = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
-        await this.refreshTokenRepo.save(jti, String(user._id), role as Role, String(user.email), exp);
+        await this._refreshTokenRepository.save(jti, String(entity._id), role as Role, entity.email as string, exp);
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { password, ...newUserWithoutPassword } = user;
+        const user: AuthUserDTO = toAuthUserResponseDTO(entity);
 
-        return { accessToken, refreshToken, user: newUserWithoutPassword };
+        return { user, accessToken, refreshToken };
     }
 
     //Login
-    async login(email: string, password: string, role: string): Promise<{ accessToken: string; refreshToken: string }> {
+    async login(email: string, password: string, role: string) {
         const user =
             role == "user"
-                ? await this.userRepo.findByEmailOrPhone(email)
-                : await this.companyRepo.findByEmailOrPhone(email);
+                ? await this._userRepository.findByEmail(email as string)
+                : await this._companyRepository.findByEmail(email as string);
+
+        console.log(user, "user");
+
         if (!user) throw new Error("invaid credentials");
 
-        const ok = await bcrypt.compare(password, user.password);
+        const ok = await bcrypt.compare(password, user.password as string);
         if (!ok) throw new Error("invalid credentilas");
 
-        const accessToken = createAccessToken(String(user._id), user.role);
+        const accessToken = createAccessToken(String(user._id), user.role as Role);
 
-        const { token: refreshToken, jti } = createRefreshToken(String(user._id), user.role);
+        const { token: refreshToken, jti } = createRefreshToken(String(user._id), user.role as Role);
 
         const exp = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
-        await this.refreshTokenRepo.save(jti, String(user._id), user.role, user.email, exp);
-        return { accessToken, refreshToken };
+        await this._refreshTokenRepository.save(jti, String(user._id), user.role as Role, user.email as string, exp);
+
+        const authUserDto: AuthUserDTO = {
+            id: String(user._id),
+            role: user.role as Role,
+            email: user.email as string,
+            firstName: (user as IUser).firstName,
+            lastName: (user as IUser).lastName,
+            name: (user as ICompany).name,
+        };
+
+        return { accessToken, refreshToken, user: authUserDto };
+    }
+
+    async loginWithGoogle({
+        credential,
+        role,
+    }: GoogleAuthRequestDTO): Promise<{ accessToken: string; refreshToken: string; user: AuthUserDTO }> {
+        const googleData = await verifyGoogleAuthToken(credential);
+
+        if (!googleData.emailVerified) throw new Error("Google email is not verified");
+        const googleId = googleData.sub;
+
+        let entity =
+            role == "user"
+                ? await this._userRepository.findByGoogleId(googleId)
+                : await this._companyRepository.findByGoogleId(googleId);
+        if (entity) console.log("user already exists");
+
+        if (!entity) {
+            entity =
+                role === "user"
+                    ? await this._userRepository.createUser({
+                          email: googleData.email,
+                          role,
+                          firstName: googleData.givenName,
+                          lastName: googleData.familyName,
+                          provider: "google",
+                          googleId: googleData.sub,
+                          profilePicture: googleData.picture,
+                      } as Partial<IUser>)
+                    : await this._companyRepository.createCompany({
+                          email: googleData.email,
+                          name: googleData.givenName || googleData.email.split("@")[0],
+                          role,
+                          provider: "google",
+                          googleId: googleData.sub,
+                          bannerImage: googleData.picture,
+                      } as Partial<ICompany>);
+        }
+        const accessToken = createAccessToken(String(entity!._id), role);
+        const { token: refreshToken, jti } = createRefreshToken(String(entity._id), role);
+        const exp = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+        await this._refreshTokenRepository.save(jti, String(entity._id), role, entity.email as string, exp);
+
+        const user: AuthUserDTO = toAuthUserResponseDTO(entity);
+
+        return { accessToken, refreshToken, user };
     }
 
     //issue new refreshtoken
 
     async refresh(oldRefreshToken: string): Promise<{ accessToken: string; refreshToken: string }> {
         const payload = verifyRefreshToken(oldRefreshToken);
-        const record = await this.refreshTokenRepo.find(payload.jti);
+        const record = await this._refreshTokenRepository.find(payload.jti);
         if (!record || record.role !== payload.role || record.userId !== payload.sub) {
             throw new Error("invalid refresh token");
         }
 
-        //rotate refresh token
-        await this.refreshTokenRepo.delete(payload.jti);
+        await this._refreshTokenRepository.delete(payload.jti);
 
         const accessToken = createAccessToken(payload.sub, payload.role);
 
         const { jti, token: newRefreshToken } = createRefreshToken(payload.sub, payload.role);
         const exp = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
-        await this.refreshTokenRepo.save(jti, record.userId, record.role, record.email, exp);
+        await this._refreshTokenRepository.save(jti, record.userId, record.role, record.email, exp);
 
         return { accessToken, refreshToken: newRefreshToken };
     }
@@ -116,7 +175,7 @@ export class AuthService implements IAuthService {
     async logout(refreshToken: string): Promise<void> {
         try {
             const { jti } = verifyRefreshToken(refreshToken);
-            await this.refreshTokenRepo.delete(jti);
+            await this._refreshTokenRepository.delete(jti);
         } catch (error) {
             console.log(error);
         }
@@ -126,60 +185,46 @@ export class AuthService implements IAuthService {
 
     async sendOtpAndCacheTheUser(user: signupData) {
         //generate OTP
-        const otp: string = (await this.otpService.generateOTP()).toString();
+        const otp: string = (await this._otpService.generateOTP()).toString();
 
-        //hash OTP
         const otpHashed: string = await bcrypt.hash(otp, 10);
 
         const hashedPassword: string = await bcrypt.hash(user.password ?? "", 10); //hash password
 
-        //update user.password with hashed password
         user.password = hashedPassword;
 
-        //save user along with hashed OTP in the cache emai id as key with 400 seconds ttl
-        await this.cacheService.set((user.email as string) ?? "", JSON.stringify({ ...user, otpHashed }), 500);
+        await this._cacheService.set((user.email as string) ?? "", JSON.stringify({ ...user, otpHashed }), 500);
 
-        //send generated OTP
-
-        this.otpService.sendOTP(user.email ?? "", "your one time password", otp);
+        this._otpService.sendOTP(user.email ?? "", "your one time password", otp);
     }
 
     async resendOtp(email: string) {
-        // Get cached user data (without OTP)
-        const cachedData = await this.cacheService.get(email);
+        const cachedData = await this._cacheService.get(email);
 
         if (!cachedData) {
             throw new Error("User not found or OTP expired");
         }
 
-        // Parse cached user
         const user = JSON.parse(cachedData as string);
 
-        // Generate new OTP
-        const newOtp: string = (await this.otpService.generateOTP()).toString();
+        const newOtp: string = (await this._otpService.generateOTP()).toString();
 
         const newOtpHashed: string = await bcrypt.hash(newOtp, 10);
 
-        // Update cache with new OTP
-        await this.cacheService.set(email, JSON.stringify({ ...user, otpHashed: newOtpHashed }), 500);
+        await this._cacheService.set(email, JSON.stringify({ ...user, otpHashed: newOtpHashed }), 500);
 
-        // Send new OTP
-        this.otpService.sendOTP(email, "Your new OTP code", newOtp);
+        this._otpService.sendOTP(email, "Your new OTP code", newOtp);
     }
 
     async verifyOtp(otp: string, email: string): Promise<boolean> {
-        //find the stored user authentication data from the cache servie
-        const jsonTempUserData: string | null = await this.cacheService.get(email as string);
+        const jsonTempUserData: string | null = await this._cacheService.get(email as string);
 
         if (!jsonTempUserData) {
             throw new Error("otp has expired.please try again!!");
         }
-        //parse the data to string from JSON format
 
         const tempUserData = JSON.parse(jsonTempUserData);
-        //extract hashed otp
         const otpHashed = tempUserData.otpHashed || "";
-        //find verification status
 
         return await bcrypt.compare(otp as string, otpHashed);
     }
@@ -189,8 +234,8 @@ export class AuthService implements IAuthService {
 
         const user: Partial<IUser | ICompany> | null =
             role == "user"
-                ? await this.userRepo.findByEmailOrPhone(emailOrPhone)
-                : await this.companyRepo.findByEmailOrPhone(emailOrPhone);
+                ? await this._userRepository.findByEmailOrPhone(emailOrPhone)
+                : await this._companyRepository.findByEmailOrPhone(emailOrPhone);
 
         return !!user;
     }
@@ -198,33 +243,67 @@ export class AuthService implements IAuthService {
     async sendResetPasswordLink(email: string, role: string): Promise<void> {
         if (!email || !role) throw new Error("email or user role is not provided");
 
-        const user = role == "user" ? this.userRepo.findByEmail(email) : this.companyRepo.findByEmail(email);
+        console.log(email, role);
+
+        const user =
+            role == "user"
+                ? await this._userRepository.findByEmail(email)
+                : await this._companyRepository.findByEmail(email);
+        console.log(user);
         if (!user) throw new Error("user not existing");
-        //generate access token with 15 minutes expiry
-        const resetPasswordToken: string = createAccessToken(email, role);
+        const resetPasswordToken: string = createAccessToken(email, role as Role);
 
-        //store the token inside the cache for 15 minutes
-        await this.cacheService.set(email as string, JSON.stringify(resetPasswordToken), 500);
+        await this._cacheService.set(email as string, resetPasswordToken, 500);
 
-        //send the token along with the frontend url as query params
-
-        await this.otpService.sendOTP(
+        await this._emailService.send(
             email as string,
-            `cisit this link to reset your password http://localhost:4200/api/${role}/reset-password?token=${resetPasswordToken}`
+            "password reset link",
+            "click this link to reset your password " + resetPasswordLink(role, resetPasswordToken)
         );
-
-        //save user along with hashed OTP in the cache emai id as key with 500 seconds ttl
-        await this.cacheService.set((email as string) ?? "", JSON.stringify({ ...user, otpHashed }), 500);
     }
 
-    resetPassword(email: string, role: string, newPassword: string): Promise<void> {}
+    async resetPassword(resetPasswordToken: string, newPassword: string) {
+        if (!resetPasswordToken) {
+            throw new Error("missing reset password token");
+        }
 
-    //check phone number/Email taken or not
+        const { sub: email, role } = verifyAccessToken(resetPasswordToken);
+        const user =
+            role == "user"
+                ? await this._userRepository.findByEmail(email)
+                : await this._companyRepository.findByEmail(email);
+
+        if (!user) {
+            throw new Error("user does not exist");
+        }
+
+        const storedResetPasswordToken: string | null = await this._cacheService.get(email as string);
+
+        if (!storedResetPasswordToken) {
+            throw new Error("reset password token expired or time limit exceeded");
+        }
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        console.log(storedResetPasswordToken == resetPasswordToken, "checking both pass");
+        if (storedResetPasswordToken == resetPasswordToken) {
+            if (role == "user") {
+                console.log("inside user");
+                await this._userRepository.updatePassword(user._id as string | Types.ObjectId, hashedPassword);
+            } else {
+                console.log("inside company");
+                await this._companyRepository.updatePassword(user._id as string | Types.ObjectId, hashedPassword);
+            }
+            await this._cacheService.delete(email as string);
+        } else {
+            await this._cacheService.delete(email as string); //stop the reuse if not valid passowrd
+        }
+    }
+
     async checkPhoneOrEmailExists(phoneOrEmail: string, role: string): Promise<{ exists: boolean } | null> {
         const user =
             role == "user"
-                ? await this.userRepo.findByEmailOrPhone(phoneOrEmail)
-                : await this.companyRepo.findByEmailOrPhone(phoneOrEmail);
+                ? await this._userRepository.findByEmailOrPhone(phoneOrEmail)
+                : await this._companyRepository.findByEmailOrPhone(phoneOrEmail);
         return { exists: !!user };
     }
 }
