@@ -10,12 +10,16 @@ import userRoutes from "./routes/user.routes";
 import userAuthRoutes from "./routes/user.auth.routes";
 import companyAuthRoutes from "./routes/company.auth.routes";
 import { cacheService } from "./dependencies/container.dependency";
+import adminRoutes from "./routes/admin.routes";
+import cookieParser from "cookie-parser";
 
 const app: Application = express();
 
 const port = process.env.PORT || 3000;
 
 app.use(cors({ origin: process.env.FRONTEND_URL, methods: "*", credentials: true })); //cors
+
+app.use(cookieParser());
 
 if (process.env.NODE_ENV !== "production") {
     app.use(morgan("dev")); //morgan
@@ -44,7 +48,7 @@ await cacheService
 app.use("/api/auth/user", userAuthRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/auth/company", companyAuthRoutes);
-// app.use("/api/admin", adminRoutes);
+app.use("/api/admin", adminRoutes);
 
 //errro handler middleware
 app.use(errorHandler);

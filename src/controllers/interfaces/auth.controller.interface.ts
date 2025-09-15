@@ -5,6 +5,8 @@ export interface IAuthController {
 
     signup(req: Request, res: Response): Promise<Response | void>;
 
+    logout(req: Request, res: Response): Promise<Response | void>;
+
     checkUserPhoneOrEmailExists(req: Request, res: Response): Promise<Response | void>;
 
     requestOTP(req: Request, res: Response): Promise<Response | void>;

@@ -33,5 +33,6 @@ export const OTPlimiter = rateLimiter({
 });
 
 export function resetPasswordLink(role: string, resetPasswordToken: string): string {
+    
     return `http://localhost:4200/auth/resetPassword?token=${resetPasswordToken}&role=${role}`;
 }

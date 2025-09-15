@@ -40,17 +40,27 @@ export class AuthController implements IAuthController {
                 .cookie(refreshCookieName, refreshToken, refreshCookieOptions)
                 .status(HTTP_STATUS.CREATED)
                 .json({ success: true, messsage: "user registration successfull", user, accessToken });
-        } catch (error: any) {
+        } catch (error) {
             console.log(error);
             return res.status(400).json({ success: false, message: error instanceof Error ? error.message : error });
         }
     }
 
     async logout(req: Request, res: Response) {
+
+        console.log(req.cookies);
+        
         const { refreshToken } = req.cookies;
         try {
-            await this._authService.logout(String(refreshToken));
-        } catch (error) {}
+            await this._authService.logout(refreshToken as string);
+            return res
+                .clearCookie("refreshToken", refreshCookieOptions)
+                .status(200)
+                .json({ success: true, message: "logout successfull" });
+        } catch (error) {
+            console.log(error);
+            return res.status(400).json({ success: false, message: error instanceof Error ? error.message : error });
+        }
     }
 
     //signup controller

@@ -176,6 +176,7 @@ export class AuthService implements IAuthService {
         try {
             const { jti } = verifyRefreshToken(refreshToken);
             await this._refreshTokenRepository.delete(jti);
+            
         } catch (error) {
             console.log(error);
         }
@@ -260,6 +261,7 @@ export class AuthService implements IAuthService {
             "password reset link",
             "click this link to reset your password " + resetPasswordLink(role, resetPasswordToken)
         );
+        console.log("reset password link",resetPasswordLink(role, resetPasswordToken))
     }
 
     async resetPassword(resetPasswordToken: string, newPassword: string) {

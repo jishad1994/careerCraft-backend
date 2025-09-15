@@ -9,6 +9,7 @@ import { User } from "../models/user/user.model";
 import { RefreshTokenRepository } from "../repositories/refreshToken/refreshToken.repository";
 import { CompanyRepository } from "../repositories/company/company.repository";
 import { Company } from "../models/company/company.model";
+import { AdminController } from "../controllers/implementations/admin.controller";
 //redis cache service instance
 const redisRepo = new RedisCacheRepo(process.env.REDIS_URL || "redis://localhost:6379");
 //cahce service
@@ -43,4 +44,8 @@ const authController = new AuthController(authService, otpService, cacheService)
 
 //company authcontroller
 
-export { cacheService, emailService, otpService, authService, authController };
+export { cacheService, emailService, otpService, authService, authController, adminController };
+
+//admin controller
+
+const adminController = new AdminController(userRepo, companyRepo);
