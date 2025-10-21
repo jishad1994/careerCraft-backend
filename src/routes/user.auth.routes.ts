@@ -7,7 +7,7 @@ userAuthRoute.post("/signup", authController.signup.bind(authController));
 
 userAuthRoute.post("/login", authController.login.bind(authController)); 
 
-userAuthRoute.get("/logout", authController.logout.bind(authController)); 
+userAuthRoute.post("/logout", authController.logout.bind(authController)); 
 
 userAuthRoute.post("/googleLogin", authController.google.bind(authController));
 
@@ -22,6 +22,8 @@ userAuthRoute.post("/otp/verify", OTPlimiter, authController.verifyOTP.bind(auth
 userAuthRoute.post("/forgotPassword", OTPlimiter, authController.forgotPassword.bind(authController));
 
 userAuthRoute.post("/resetPassword", OTPlimiter, authController.resetPassword.bind(authController));
+
+
 
 
 export default userAuthRoute;

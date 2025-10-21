@@ -119,7 +119,7 @@ export const userSchema = new Schema<IUser>(
         profilePicture: String,
         resumeURL: [String],
         about: String,
-        skills: [{ type: mongoose.Schema.Types.ObjectId, ref: "Skill" }],
+        skills: [{ type: mongoose.Schema.Types.ObjectId, ref: "Skill" }]  ,
         education: [EducationSchema],
         experience: [experienceSchema],
         location: String,

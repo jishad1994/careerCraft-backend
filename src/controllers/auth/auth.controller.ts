@@ -1,30 +1,31 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { HTTP_STATUS } from "../../constants/http.constants";
 import { IAuthService } from "../../services/auth/auth.service.interface";
 import { IOtpService } from "../../services/otp_service/otp.service.interface";
-import { ICache } from "../../services/cache/cache.service.interface";
+import { ICacheService } from "../../services/cache/cache.service.interface";
 import { refreshCookieName, refreshCookieOptions } from "../../utils/cookies.utils";
-import { signupData } from "../../utils/auth.utils";
-import { IAuthController } from "../interfaces/auth.controller.interface";
+import { IAuthController } from "./auth.controller.interface";
+import { companySignupData, userSignupData } from "../../utils/auth.utils";
+import { IUser } from "../../models/user/user.interface";
+import { ICompany } from "../../models/company/company.interface";
 
 export class AuthController implements IAuthController {
-    constructor(private _authService: IAuthService, private _otpService: IOtpService, private _cacheService: ICache) {}
+    constructor(private _authService: IAuthService, private _otpService: IOtpService, private _cacheService: ICacheService) {}
     //login
 
-    async login(req: Request, res: Response): Promise<Response | void> {
+    async login(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
-            const { role, email, password } = req.body.payload;
+            const { role, email, password } = req.body;
             console.log("role:", role, "email:", email, password, "in controller");
             const { refreshToken, accessToken, user } = await this._authService.login(email, password, role);
+
+            console.log('refreshtoken type ',typeof refreshToken)
             return res
                 .cookie(refreshCookieName, refreshToken, refreshCookieOptions)
                 .status(HTTP_STATUS.CREATED)
-                .json({ success: true, messsage: "user registration successfull", user, accessToken });
+                .json({ success: true, message: "user login successfull", user, accessToken });
         } catch (error) {
-            console.log(error);
-            return res
-                .status(HTTP_STATUS.BAD_REQUEST)
-                .json({ success: false, message: error instanceof Error ? error?.message : error });
+            next(error);
         }
     }
 
@@ -36,6 +37,7 @@ export class AuthController implements IAuthController {
 
             console.log(credential, role);
             const { refreshToken, accessToken, user } = await this._authService.loginWithGoogle({ credential, role });
+
             return res
                 .cookie(refreshCookieName, refreshToken, refreshCookieOptions)
                 .status(HTTP_STATUS.CREATED)
@@ -47,14 +49,14 @@ export class AuthController implements IAuthController {
     }
 
     async logout(req: Request, res: Response) {
-
         console.log(req.cookies);
-        
+
         const { refreshToken } = req.cookies;
+        console.log('refresh token',refreshToken)
         try {
             await this._authService.logout(refreshToken as string);
             return res
-                .clearCookie("refreshToken", refreshCookieOptions)
+                .clearCookie(refreshCookieName, refreshCookieOptions)
                 .status(200)
                 .json({ success: true, message: "logout successfull" });
         } catch (error) {
@@ -66,30 +68,43 @@ export class AuthController implements IAuthController {
     //signup controller
     async signup(req: Request, res: Response) {
         try {
-            const { email } = req.body;
-            if (!email) {
+            const { email, role } = req.body;
+            if (!email || !role) {
                 throw new Error("invalid credentials missing");
             }
 
-            const jsonUserData = await this._cacheService.get(email);
+            const jsonCachedUserData = await this._cacheService.get(email);
 
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { otpHashed, ...userData } = JSON.parse(jsonUserData as string);
-            if (!userData) {
-                throw new Error("time limit exceeded.please try again");
+            if (!jsonCachedUserData) {
+                throw new Error("session expired, please try again later");
             }
 
-            const { accessToken, refreshToken, user } = await this._authService.signupUser(userData);
+            const { otpVerified, ...userData } = JSON.parse(jsonCachedUserData as string);
 
-            return res
-                .cookie(refreshCookieName, refreshToken, refreshCookieOptions)
-                .status(HTTP_STATUS.CREATED)
-                .json({ success: true, messsage: "user registration successfull", user, accessToken });
+            if (!otpVerified) {
+                throw new Error("otp is not verified,please try again");
+            }
+
+            let entity: IUser | ICompany;
+
+            if (role == "user") {
+                entity = await this._authService.signupUser(userData as userSignupData);
+            } else {
+                entity = await this._authService.signupCompany(userData as companySignupData);
+            }
+
+            if (entity) {
+                return res.status(HTTP_STATUS.CREATED).json({ success: true, messsage: "user registration successfull" });
+            } else {
+                return res
+                    .status(HTTP_STATUS.BAD_REQUEST)
+                    .json({ success: false, messsage: "user registration unsuccessfull" });
+            }
         } catch (error: unknown) {
             console.log(error);
             return res
                 .status(HTTP_STATUS.BAD_REQUEST)
-                .json({ success: false, message: error instanceof Error ? error?.message : error });
+                .json({ success: false, message: error instanceof Error ? error?.message : "something went wrong" });
         }
     }
 
@@ -111,24 +126,36 @@ export class AuthController implements IAuthController {
     async requestOTP(req: Request, res: Response) {
         try {
             //sanitize data from the request body according to the role
-            const { role, phone, email, password } = req.body;
-            let firstName: string | undefined;
-            let lastName: string | undefined;
-            let name: string | undefined;
-            if (role === "user") {
-                ({ firstName, lastName } = req.body);
+            const { role } = req.body;
+
+            type signupData = userSignupData | companySignupData;
+
+            let user: signupData;
+
+            if (role == "user") {
+                user = {
+                    firstName: req.body.firstName,
+                    lastName: req.body.lastName,
+                    email: req.body.email,
+                    phone: req.body.phone,
+                    role: req.body.role,
+                    password: req.body.password,
+                } as userSignupData;
             } else {
-                ({ name } = req.body);
+                user = {
+                    name: req.body.name,
+                    email: req.body.email,
+                    phone: req.body.phone,
+                    role: req.body.role,
+                    password: req.body.password,
+                } as companySignupData;
             }
 
-            const user: signupData =
-                role == "user"
-                    ? { firstName, lastName, phone, email, password, role }
-                    : { name, email, phone, password, role };
-
-            await this._authService.sendOtpAndCacheTheUser(user);
+            await this._authService.sendOtpAndCacheTheUser({ ...user });
             //return response
-            return res.status(200).json({ success: true, message: "OTP send to email", email, role });
+            return res
+                .status(200)
+                .json({ success: true, message: "OTP send to email", email: user.email, role: user.role });
         } catch (error: unknown) {
             console.log(error);
             return res.status(400).json({ success: false, message: error instanceof Error ? error.message : error });

@@ -1,9 +1,9 @@
 import { IRefreshTokenRepository } from "./refreshToken.repository.interface";
-import { ICache } from "../../services/cache/cache.service.interface";
+import { ICacheService } from "../../services/cache/cache.service.interface";
 import { Role } from "../../models/user/user.interface";
 
 export class RefreshTokenRepository implements IRefreshTokenRepository {
-    constructor(private cache: ICache) {}
+    constructor(private cache: ICacheService) {}
 
     //create key for saving in the cache
     private key(tokenId: string): string {

@@ -7,7 +7,7 @@ companyAuthRoute.post("/signup", authController.signup.bind(authController));
 
 companyAuthRoute.post("/login", authController.login.bind(authController));
 
-companyAuthRoute.get("/logout", authController.logout.bind(authController));
+companyAuthRoute.post("/logout", authController.logout.bind(authController));
 
 companyAuthRoute.post("/googleLogin", authController.google.bind(authController));
 

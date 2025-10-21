@@ -63,7 +63,7 @@ export const companySchema = new Schema<ICompany>(
         subscriptionStatus: {
             type: String,
             enum: ["active", "expired", "pending"],
-            defaut: "pending",
+            default: "pending",
         },
         subscriptionStart: Date,
         subscriptionEnd: Date,

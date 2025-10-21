@@ -6,14 +6,33 @@ export function omit<T extends object, K extends keyof T>(obj: T, key: K): Omit<
     return rest;
 }
 
-export type signupData = {
-    firstName?: string;
-    lastName?: string;
-    name?: string;
+export type userSignupData = {
+    firstName: string;
+    lastName: string;
     email: string;
     phone: string;
     password: string;
     role: string;
+};
+
+export type companySignupData = {
+    name: string;
+    email: string;
+    phone: string;
+    password: string;
+    role: string;
+};
+
+export type cachedUserOrCompanyData = {
+    name?: string;
+    firstName?: string;
+    lastName?: string;
+    phone: string;
+    role: string;
+    email: string;
+    password: string;
+    otpHashed: string;
+    otpVerified: boolean;
 };
 
 export type loginData = {
@@ -33,6 +52,5 @@ export const OTPlimiter = rateLimiter({
 });
 
 export function resetPasswordLink(role: string, resetPasswordToken: string): string {
-    
     return `http://localhost:4200/auth/resetPassword?token=${resetPasswordToken}&role=${role}`;
 }

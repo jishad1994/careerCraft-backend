@@ -1,8 +1,9 @@
-import { ICache } from "./cache.service.interface";
+import { AppError } from "../../errors/app.error.";
+import { ICacheService } from "./cache.service.interface";
 
-export class CacheService implements ICache {
+export class CacheService implements ICacheService {
     //constructor
-    constructor(private cacheRepo: ICache) {}
+    constructor(private cacheRepo: ICacheService) {}
 
     //connect the redis cache service
     async connect(): Promise<void> {
@@ -10,7 +11,7 @@ export class CacheService implements ICache {
             await this.cacheRepo.connect();
         } catch (err) {
             console.log("failed to connect to cache service", err);
-            throw new Error("cache connection failed");
+            throw new AppError("cache connection failed", undefined, false);
         }
     }
 

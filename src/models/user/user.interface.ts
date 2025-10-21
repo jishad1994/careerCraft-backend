@@ -1,6 +1,7 @@
 import { Document, ObjectId } from "mongoose";
 
 export type Role = "user" | "admin" | "company";
+
 //ecuation enum
 
 export enum EducationType {
@@ -43,7 +44,7 @@ export interface IExperience {
 }
 
 export interface IUser extends Document {
-    _id: string;
+    _id: ObjectId;
     firstName: string;
     lastName: string;
     phone: string;
@@ -57,9 +58,11 @@ export interface IUser extends Document {
     address: IAddress;
     resumeURL: string[];
     about: string;
-    skills: ObjectId[];
+    skills: ObjectId[] ;
     education: IEducation[];
     experience: IExperience[];
     location: string;
     jobsApplied: ObjectId[]; //_ids of jobs
+    createdAt: Date;
+    updatedAt: Date;
 }

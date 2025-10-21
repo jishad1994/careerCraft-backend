@@ -1,6 +1,6 @@
 import { Role } from "../models/user/user.interface";
 
-export interface AuthUserDTO {
+export interface AuthResponseUserDTO {
     id: string;
     email: string;
     role: Role;
@@ -10,12 +10,12 @@ export interface AuthUserDTO {
 }
 
 export interface GoogleAuthRequestDTO {
-    credential: string;  //googleId token from the front end
+    credential: string; //googleId token from the front end
     role: Role;
 }
 
 export interface LoginResponseDTO {
     accessToken: string;
     refreshToken?: string;
-    user: AuthUserDTO;
+    user: AuthResponseUserDTO;
 }

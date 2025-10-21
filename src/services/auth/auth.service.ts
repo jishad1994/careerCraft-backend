@@ -4,83 +4,80 @@ import bcrypt from "bcrypt";
 import { IAuthService } from "./auth.service.interface";
 import { createAccessToken, createRefreshToken, verifyAccessToken, verifyRefreshToken } from "../../utils/jwt.utils";
 import { IRefreshTokenRepository } from "../../repositories/refreshToken/refreshToken.repository.interface";
-import { resetPasswordLink, signupData } from "../../utils/auth.utils";
+import { cachedUserOrCompanyData, companySignupData, resetPasswordLink, userSignupData } from "../../utils/auth.utils";
 import { Role } from "../../models/user/user.interface";
-import { ICache } from "../cache/cache.service.interface";
+import { ICacheService } from "../cache/cache.service.interface";
 import { IOtpService } from "../otp_service/otp.service.interface";
 import { ICompanyRepository } from "../../repositories/company/company.repository.interface";
 import { ICompany } from "../../models/company/company.interface";
 import { IEmailService } from "../email_service/email.service.interface";
-import { AuthUserDTO, GoogleAuthRequestDTO } from "../../dtos/auth.dto";
+import { AuthResponseUserDTO, GoogleAuthRequestDTO } from "../../dtos/auth.dto";
 import { verifyGoogleAuthToken } from "../../utils/googleAuth.utils";
 import { toAuthUserResponseDTO } from "../../mappers/user.mapper";
-import { Types } from "mongoose";
+import { AppError } from "../../errors/app.error.";
+import { AuthError } from "../../errors/auth.error";
+import logger from "../../utils/logger";
+
+
+
 export class AuthService implements IAuthService {
     constructor(
         private _userRepository: IUserRepository,
         private _companyRepository: ICompanyRepository,
         private _refreshTokenRepository: IRefreshTokenRepository,
-        private _cacheService: ICache,
+        private _cacheService: ICacheService,
         private _otpService: IOtpService,
         private _emailService: IEmailService
     ) {}
 
     //signup user
-    async signupUser(userData: signupData): Promise<{ user: AuthUserDTO; accessToken: string; refreshToken: string }> {
-        const role: string = userData.role;
-        const existingUser =
-            userData?.role == "user"
-                ? await this._userRepository.findByEmailOrPhone(userData.email as string)
-                : await this._companyRepository.findByEmailOrPhone(userData.email as string);
+    async signupUser(userData: userSignupData): Promise<IUser> {
+        const existingUser = await this._userRepository.findByEmailOrPhone(userData.email as string);
 
         if (existingUser) {
             throw new Error("user already existing with current Email");
         }
 
         //password already hashed while storing inside cache
-        const entity: Partial<IUser | ICompany> =
-            role == "user"
-                ? await this._userRepository.createUser({
-                      firstName: userData.firstName,
-                      lastName: userData.lastName,
-                      email: userData.email,
-                      phone: userData.phone,
-                      password: userData.password,
-                  })
-                : await this._companyRepository.createCompany({
-                      name: userData.name,
-                      email: userData.email,
-                      phone: userData.phone,
-                      password: userData.password,
-                  });
-        const accessToken = createAccessToken(String(entity._id), role as Role);
+        return await this._userRepository.createUser({
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            email: userData.email,
+            phone: userData.phone,
+            password: userData.password,
+        });
+    }
 
-        const { token: refreshToken, jti } = createRefreshToken(String(entity._id), role as Role);
+    //signup user
+    async signupCompany(companyData: companySignupData): Promise<ICompany> {
+        const existingCompany = await this._userRepository.findByEmailOrPhone(companyData.email as string);
 
-        //save the refresh Token in refreshToken repo
-        const exp = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+        if (existingCompany) {
+            throw new Error("company already existing with current Email");
+        }
 
-        await this._refreshTokenRepository.save(jti, String(entity._id), role as Role, entity.email as string, exp);
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const user: AuthUserDTO = toAuthUserResponseDTO(entity);
-
-        return { user, accessToken, refreshToken };
+        //password already hashed while storing inside cache
+        return await this._companyRepository.createCompany({
+            name: companyData.name,
+            email: companyData.email,
+            phone: companyData.phone,
+            password: companyData.password,
+        });
     }
 
     //Login
     async login(email: string, password: string, role: string) {
         const user =
             role == "user"
-                ? await this._userRepository.findByEmail(email as string)
+                ? await this._userRepository.findOne({ email })
                 : await this._companyRepository.findByEmail(email as string);
 
         console.log(user, "user");
 
-        if (!user) throw new Error("invaid credentials");
+        if (!user) throw new AppError("No User Found");
 
         const ok = await bcrypt.compare(password, user.password as string);
-        if (!ok) throw new Error("invalid credentilas");
+        if (!ok) throw new AuthError("invalid credentilas");
 
         const accessToken = createAccessToken(String(user._id), user.role as Role);
 
@@ -90,8 +87,10 @@ export class AuthService implements IAuthService {
 
         await this._refreshTokenRepository.save(jti, String(user._id), user.role as Role, user.email as string, exp);
 
-        const authUserDto: AuthUserDTO = {
+        const authUserDto: AuthResponseUserDTO = {
             id: String(user._id),
+
+            
             role: user.role as Role,
             email: user.email as string,
             firstName: (user as IUser).firstName,
@@ -105,7 +104,7 @@ export class AuthService implements IAuthService {
     async loginWithGoogle({
         credential,
         role,
-    }: GoogleAuthRequestDTO): Promise<{ accessToken: string; refreshToken: string; user: AuthUserDTO }> {
+    }: GoogleAuthRequestDTO): Promise<{ accessToken: string; refreshToken: string; user: AuthResponseUserDTO }> {
         const googleData = await verifyGoogleAuthToken(credential);
 
         if (!googleData.emailVerified) throw new Error("Google email is not verified");
@@ -128,7 +127,7 @@ export class AuthService implements IAuthService {
                           provider: "google",
                           googleId: googleData.sub,
                           profilePicture: googleData.picture,
-                      } as Partial<IUser>)
+                      } as IUser)
                     : await this._companyRepository.createCompany({
                           email: googleData.email,
                           name: googleData.givenName || googleData.email.split("@")[0],
@@ -136,7 +135,7 @@ export class AuthService implements IAuthService {
                           provider: "google",
                           googleId: googleData.sub,
                           bannerImage: googleData.picture,
-                      } as Partial<ICompany>);
+                      } as ICompany);
         }
         const accessToken = createAccessToken(String(entity!._id), role);
         const { token: refreshToken, jti } = createRefreshToken(String(entity._id), role);
@@ -144,7 +143,7 @@ export class AuthService implements IAuthService {
 
         await this._refreshTokenRepository.save(jti, String(entity._id), role, entity.email as string, exp);
 
-        const user: AuthUserDTO = toAuthUserResponseDTO(entity);
+        const user: AuthResponseUserDTO = toAuthUserResponseDTO(entity);
 
         return { accessToken, refreshToken, user };
     }
@@ -159,6 +158,8 @@ export class AuthService implements IAuthService {
         }
 
         await this._refreshTokenRepository.delete(payload.jti);
+
+
 
         const accessToken = createAccessToken(payload.sub, payload.role);
 
@@ -175,59 +176,75 @@ export class AuthService implements IAuthService {
     async logout(refreshToken: string): Promise<void> {
         try {
             const { jti } = verifyRefreshToken(refreshToken);
+
+            console.log("jti",jti)
             await this._refreshTokenRepository.delete(jti);
-            
         } catch (error) {
-            console.log(error);
+            logger.error(error);
         }
     }
 
     //request otp
 
-    async sendOtpAndCacheTheUser(user: signupData) {
+    async sendOtpAndCacheTheUser(user: userSignupData | companySignupData) {
         //generate OTP
         const otp: string = (await this._otpService.generateOTP()).toString();
-
+        console.log("otp generated: ", otp);
         const otpHashed: string = await bcrypt.hash(otp, 10);
 
         const hashedPassword: string = await bcrypt.hash(user.password ?? "", 10); //hash password
 
         user.password = hashedPassword;
 
-        await this._cacheService.set((user.email as string) ?? "", JSON.stringify({ ...user, otpHashed }), 500);
+        await this._cacheService.set(
+            (user.email as string) ?? "",
+            JSON.stringify({ ...user, otpHashed, otpVerified: false }),
+            500
+        );
 
         this._otpService.sendOTP(user.email ?? "", "your one time password", otp);
     }
 
     async resendOtp(email: string) {
-        const cachedData = await this._cacheService.get(email);
+        const jsonCachedUserData = await this._cacheService.get(email);
 
-        if (!cachedData) {
-            throw new Error("User not found or OTP expired");
+        if (!jsonCachedUserData) {
+            throw new Error("session expired,please try again!");
         }
 
-        const user = JSON.parse(cachedData as string);
+        const user: cachedUserOrCompanyData = JSON.parse(jsonCachedUserData as string);
 
         const newOtp: string = (await this._otpService.generateOTP()).toString();
 
         const newOtpHashed: string = await bcrypt.hash(newOtp, 10);
 
-        await this._cacheService.set(email, JSON.stringify({ ...user, otpHashed: newOtpHashed }), 500);
+        user.otpHashed = newOtpHashed;
+
+        console.log("cached userdata while resend otp", user);
+
+        await this._cacheService.set(email, JSON.stringify({ ...user }), 500);
 
         this._otpService.sendOTP(email, "Your new OTP code", newOtp);
     }
 
     async verifyOtp(otp: string, email: string): Promise<boolean> {
-        const jsonTempUserData: string | null = await this._cacheService.get(email as string);
+        const jsonCachedUserData: string | null = await this._cacheService.get(email as string);
 
-        if (!jsonTempUserData) {
-            throw new Error("otp has expired.please try again!!");
+        if (!jsonCachedUserData) {
+            throw new Error("OTP has expired.please try again!!");
         }
 
-        const tempUserData = JSON.parse(jsonTempUserData);
-        const otpHashed = tempUserData.otpHashed || "";
+        const tempUserData: cachedUserOrCompanyData = JSON.parse(jsonCachedUserData);
 
-        return await bcrypt.compare(otp as string, otpHashed);
+        const otpHashed = tempUserData.otpHashed;
+
+        const verificaitonStatus = await bcrypt.compare(otp as string, otpHashed);
+
+        if (verificaitonStatus) {
+            tempUserData.otpVerified = true;
+            await this._cacheService.set(tempUserData.email, JSON.stringify({ ...tempUserData }), 300);
+        }
+        return verificaitonStatus;
     }
 
     async checUserExists(emailOrPhone: string, role: string): Promise<boolean> {
@@ -261,7 +278,7 @@ export class AuthService implements IAuthService {
             "password reset link",
             "click this link to reset your password " + resetPasswordLink(role, resetPasswordToken)
         );
-        console.log("reset password link",resetPasswordLink(role, resetPasswordToken))
+        console.log("reset password link", resetPasswordLink(role, resetPasswordToken));
     }
 
     async resetPassword(resetPasswordToken: string, newPassword: string) {
@@ -286,14 +303,11 @@ export class AuthService implements IAuthService {
         }
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-        console.log(storedResetPasswordToken == resetPasswordToken, "checking both pass");
         if (storedResetPasswordToken == resetPasswordToken) {
             if (role == "user") {
-                console.log("inside user");
-                await this._userRepository.updatePassword(user._id as string | Types.ObjectId, hashedPassword);
+                await this._userRepository.updatePassword(String(user._id), hashedPassword);
             } else {
-                console.log("inside company");
-                await this._companyRepository.updatePassword(user._id as string | Types.ObjectId, hashedPassword);
+                await this._companyRepository.updatePassword(String(user._id), hashedPassword);
             }
             await this._cacheService.delete(email as string);
         } else {
@@ -307,5 +321,14 @@ export class AuthService implements IAuthService {
                 ? await this._userRepository.findByEmailOrPhone(phoneOrEmail)
                 : await this._companyRepository.findByEmailOrPhone(phoneOrEmail);
         return { exists: !!user };
+    }
+}
+
+export class AuthErro {
+    message: string;
+    statusCode: number;
+    constructor(messsage: string, statusCode: number) {
+        this.message = messsage;
+        this.statusCode = statusCode;
     }
 }

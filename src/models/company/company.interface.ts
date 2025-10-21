@@ -2,53 +2,53 @@ import { Document, ObjectId } from "mongoose";
 import { Role } from "../user/user.interface";
 
 export interface ICompany extends Document {
-    _id: string;
+    _id: ObjectId;
     name: string;
 
     email: string;
 
-    phone: string;
+    phone?: string;
 
-    website: string;
+    website?: string;
 
-    password: string;
+    password?: string;
 
-    googleId: string;
+    googleId?: string;
 
-    provider: string;
+    provider: "google" | "local";
     role: Role;
 
     isBlocked: boolean;
 
     isVerified: boolean;
 
-    industry: string;
+    industry?: string;
 
-    location: string;
+    location?: string;
 
-    GSTIN: string;
+    GSTIN?: string;
 
-    address: string[];
+    address?: string[];
 
-    logo: string;
+    logo?: string;
 
-    bannerImage: string;
+    bannerImage?: string;
 
-    description: string;
+    description?: string;
 
-    subscriptionPackage: ObjectId;
+    subscriptionPackage?: ObjectId;
 
-    subscriptionStatus: string;
+    subscriptionStatus?: "active" | "expired" | "pending";
 
-    subscriptionStart: Date;
+    subscriptionStart?: Date;
 
-    subscriptionEnd: Date;
+    subscriptionEnd?: Date;
 
-    numberOfEmployees: number;
+    numberOfEmployees?: number;
 
-    staffs: ObjectId[];
+    staffs?: ObjectId[];
 
-    documents: string[];
+    documents?: string[];
 
-    jobsPosted: ObjectId[];
+    jobsPosted?: ObjectId[];
 }

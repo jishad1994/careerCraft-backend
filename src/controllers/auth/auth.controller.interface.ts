@@ -1,7 +1,7 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 
 export interface IAuthController {
-    login(req: Request, res: Response): Promise<Response | void>;
+    login(req: Request, res: Response,next:NextFunction): Promise<Response | void>;
 
     signup(req: Request, res: Response): Promise<Response | void>;
 
@@ -20,4 +20,6 @@ export interface IAuthController {
     resetPassword(req: Request, res: Response): Promise<Response | void>;
 
     google(req: Request, res: Response): Promise<Response | void>;
+
+    
 }

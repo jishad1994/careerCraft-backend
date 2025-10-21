@@ -8,7 +8,9 @@ export interface ICompanyRepository {
     findOne(filter: Partial<ICompany>): Promise<ICompany | null>;
     updatePassword(userId: string | Types.ObjectId, hashedPassword: string): Promise<void>;
     findByGoogleId(googleId: string): Promise<ICompany | null>;
-    findPaginated(page: number, limit: number): Promise<{ data: ICompany[] | null; total: number }>;
+    findPaginated(page: number, limit: number): Promise<{ data: ICompany[] ; total: number }>;
     blockOrUnblock(id: string, flag: boolean): Promise<ICompany | null>;
     findCompanies(query:string): Promise<ICompany[] >;
+
+
 }

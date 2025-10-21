@@ -1,8 +1,8 @@
 import "express";
-import { AccessPayload } from "../utils/jwt.utils";
+import { Role } from "../models/user/user.interface";
 
 declare module "express-serve-static-core" {
     interface Request {
-        user?: AccessPayload;
+        user?: { id: string; role: Role };
     }
 }

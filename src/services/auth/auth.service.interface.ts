@@ -1,25 +1,28 @@
-import { signupData } from "../../utils/auth.utils";
-import { AuthUserDTO, GoogleAuthRequestDTO } from "../../dtos/auth.dto";
+import { userSignupData, companySignupData } from "../../utils/auth.utils";
+import { AuthResponseUserDTO, GoogleAuthRequestDTO } from "../../dtos/auth.dto";
+import { IUser } from "../../models/user/user.interface";
+import { ICompany } from "../../models/company/company.interface";
 
 export interface IAuthService {
-    signupUser(userData: signupData): Promise<{ user: AuthUserDTO; accessToken: string; refreshToken?: string }>;
+    signupUser(userData: userSignupData): Promise<IUser>;
+    signupCompany(userData: companySignupData): Promise<ICompany>;
 
     login(
         email: string,
         password: string,
         role: string
-    ): Promise<{ accessToken: string; refreshToken: string; user: AuthUserDTO }>;
-    
+    ): Promise<{ accessToken: string; refreshToken: string; user: AuthResponseUserDTO }>;
+
     loginWithGoogle({
         credential,
         role,
-    }: GoogleAuthRequestDTO): Promise<{ accessToken: string; refreshToken: string; user: AuthUserDTO }>;
+    }: GoogleAuthRequestDTO): Promise<{ accessToken: string; refreshToken: string; user: AuthResponseUserDTO }>;
 
     logout(refreshToken: string): Promise<void>;
 
     refresh(oldRefreshToken: string): Promise<{ accessToken: string; refreshToken: string }>;
 
-    sendOtpAndCacheTheUser(user: signupData): Promise<void>;
+    sendOtpAndCacheTheUser(user: userSignupData | companySignupData): Promise<void>;
 
     resendOtp(email: string): Promise<void>;
 
@@ -31,4 +34,3 @@ export interface IAuthService {
 
     resetPassword(resetPasswordToken: string, newPassword: string): Promise<void>;
 }
-

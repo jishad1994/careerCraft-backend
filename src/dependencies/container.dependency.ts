@@ -4,12 +4,16 @@ import { RedisCacheRepo } from "../repositories/redis.repository";
 import { OTPService } from "../services/otp_service/otp.service";
 import { UserRepository } from "../repositories/user/user.repository";
 import { AuthService } from "../services/auth/auth.service";
-import { AuthController } from "../controllers/implementations/auth.controller";
+import { AuthController } from "../controllers/auth/auth.controller";
 import { User } from "../models/user/user.model";
 import { RefreshTokenRepository } from "../repositories/refreshToken/refreshToken.repository";
 import { CompanyRepository } from "../repositories/company/company.repository";
 import { Company } from "../models/company/company.model";
-import { AdminController } from "../controllers/implementations/admin.controller";
+import { AdminController } from "../controllers/admin/implementations/admin.controller";
+import { AdminService } from "../services/admin/admin.service";
+import { UserProfileController } from "../controllers/user/implementations/profile.controller";
+import { UserProfileService } from "../services/user/implementations/profile.service";
+
 //redis cache service instance
 const redisRepo = new RedisCacheRepo(process.env.REDIS_URL || "redis://localhost:6379");
 //cahce service
@@ -44,8 +48,16 @@ const authController = new AuthController(authService, otpService, cacheService)
 
 //company authcontroller
 
-export { cacheService, emailService, otpService, authService, authController, adminController };
-
 //admin controller
+const adminService = new AdminService(userRepo, companyRepo);
 
-const adminController = new AdminController(userRepo, companyRepo);
+const adminController = new AdminController(adminService);
+
+// user profile controller
+const userProfileService = new UserProfileService(userRepo);
+
+const userProfileController = new UserProfileController(userProfileService);
+
+
+
+export { cacheService, emailService, otpService, authService, authController, adminController, userProfileController };
