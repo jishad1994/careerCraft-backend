@@ -1,11 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 
 export interface IAuthController {
-    login(req: Request, res: Response,next:NextFunction): Promise<Response | void>;
+    refresh(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
-    signup(req: Request, res: Response): Promise<Response | void>;
+    google(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
-    logout(req: Request, res: Response): Promise<Response | void>;
+    login(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+
+    signup(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+
+    logout(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
     checkUserPhoneOrEmailExists(req: Request, res: Response): Promise<Response | void>;
 
@@ -18,8 +22,4 @@ export interface IAuthController {
     forgotPassword(req: Request, res: Response): Promise<Response | void>;
 
     resetPassword(req: Request, res: Response): Promise<Response | void>;
-
-    google(req: Request, res: Response): Promise<Response | void>;
-
-    
 }

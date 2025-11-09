@@ -137,3 +137,9 @@ Use mongoose.model(name, schema)
 [2025-10-21 00:13:59] [31merror[39m:jwt must be provided
 [2025-10-21 00:14:16] [31merror[39m:jwt must be provided
 [2025-10-21 00:19:19] [31merror[39m:jwt must be provided
+[2025-11-03 11:33:13] [31merror[39m:No User Found
+[2025-11-03 11:33:26] [31merror[39m:No User Found
+[2025-11-03 11:50:41] [31merror[39m:No User Found
+[2025-11-03 11:54:05] [31merror[39m:No User Found
+[2025-11-07 16:55:39] [31merror[39m:No User Found
+[2025-11-07 17:20:53] [31merror[39m:No User Found

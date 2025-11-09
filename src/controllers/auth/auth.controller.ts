@@ -1,29 +1,51 @@
 import { Request, Response, NextFunction } from "express";
 import { HTTP_STATUS } from "../../constants/http.constants";
 import { IAuthService } from "../../services/auth/auth.service.interface";
-import { IOtpService } from "../../services/otp_service/otp.service.interface";
 import { ICacheService } from "../../services/cache/cache.service.interface";
-import { refreshCookieName, refreshCookieOptions } from "../../utils/cookies.utils";
+import {
+    refreshTokenCookieName,
+    refreshTokenCookieOptions,
+    accessTokenCookieName,
+    accessTokenCookieOptions,
+} from "../../utils/cookies.utils";
 import { IAuthController } from "./auth.controller.interface";
 import { companySignupData, userSignupData } from "../../utils/auth.utils";
 import { IUser } from "../../models/user/user.interface";
 import { ICompany } from "../../models/company/company.interface";
+import { ApiResponse } from "../../utils/apiResponse.utils";
+import { AuthUserResponseDTO } from "../../dtos/auth.dto";
 
 export class AuthController implements IAuthController {
-    constructor(private _authService: IAuthService, private _otpService: IOtpService, private _cacheService: ICacheService) {}
+    constructor(private _authService: IAuthService, private _cacheService: ICacheService) {}
+
+    //refresh
+
+    async refresh(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { refreshToken: oldRefreshToken } = req.cookies;
+
+            if (!oldRefreshToken) {
+                return ApiResponse.unauthorized(res);
+            }
+            const { refreshToken, accessToken, user } = await this._authService.refresh(oldRefreshToken);
+            res.cookie(refreshTokenCookieName, refreshToken, refreshTokenCookieOptions);
+            res.cookie(accessTokenCookieName, accessToken, accessTokenCookieOptions);
+            return ApiResponse.success<{ user: AuthUserResponseDTO }>(res, "Token refresh successfull", { user });
+        } catch (error) {
+            next(error);
+        }
+    }
+
     //login
 
     async login(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const { role, email, password } = req.body;
-            console.log("role:", role, "email:", email, password, "in controller");
             const { refreshToken, accessToken, user } = await this._authService.login(email, password, role);
 
-            console.log('refreshtoken type ',typeof refreshToken)
-            return res
-                .cookie(refreshCookieName, refreshToken, refreshCookieOptions)
-                .status(HTTP_STATUS.CREATED)
-                .json({ success: true, message: "user login successfull", user, accessToken });
+            res.cookie(refreshTokenCookieName, refreshToken, refreshTokenCookieOptions);
+            res.cookie(accessTokenCookieName, accessToken, accessTokenCookieOptions);
+            return ApiResponse.success(res, "User login successfull", { user });
         } catch (error) {
             next(error);
         }
@@ -31,42 +53,35 @@ export class AuthController implements IAuthController {
 
     // googlelogin
 
-    async google(req: Request, res: Response) {
+    async google(req: Request, res: Response, next: NextFunction) {
         try {
             const { credential, role } = req.body;
 
-            console.log(credential, role);
             const { refreshToken, accessToken, user } = await this._authService.loginWithGoogle({ credential, role });
 
-            return res
-                .cookie(refreshCookieName, refreshToken, refreshCookieOptions)
-                .status(HTTP_STATUS.CREATED)
-                .json({ success: true, messsage: "user registration successfull", user, accessToken });
+            res.cookie(refreshTokenCookieName, refreshToken, refreshTokenCookieOptions);
+            res.cookie(accessTokenCookieName, accessToken, accessTokenCookieOptions);
+
+            return ApiResponse.success(res, "google authentication successfull", { user });
         } catch (error) {
-            console.log(error);
-            return res.status(400).json({ success: false, message: error instanceof Error ? error.message : error });
+            next(error);
         }
     }
 
-    async logout(req: Request, res: Response) {
-        console.log(req.cookies);
-
+    async logout(req: Request, res: Response, next: NextFunction) {
         const { refreshToken } = req.cookies;
-        console.log('refresh token',refreshToken)
         try {
             await this._authService.logout(refreshToken as string);
-            return res
-                .clearCookie(refreshCookieName, refreshCookieOptions)
-                .status(200)
-                .json({ success: true, message: "logout successfull" });
+            res.clearCookie(refreshTokenCookieName, refreshTokenCookieOptions);
+            res.clearCookie(accessTokenCookieName, accessTokenCookieOptions);
+            return ApiResponse.success(res, "Logout successfull");
         } catch (error) {
-            console.log(error);
-            return res.status(400).json({ success: false, message: error instanceof Error ? error.message : error });
+            next(error);
         }
     }
 
     //signup controller
-    async signup(req: Request, res: Response) {
+    async signup(req: Request, res: Response, next: NextFunction) {
         try {
             const { email, role } = req.body;
             if (!email || !role) {
@@ -100,11 +115,8 @@ export class AuthController implements IAuthController {
                     .status(HTTP_STATUS.BAD_REQUEST)
                     .json({ success: false, messsage: "user registration unsuccessfull" });
             }
-        } catch (error: unknown) {
-            console.log(error);
-            return res
-                .status(HTTP_STATUS.BAD_REQUEST)
-                .json({ success: false, message: error instanceof Error ? error?.message : "something went wrong" });
+        } catch (error) {
+            next(error);
         }
     }
 
@@ -154,7 +166,7 @@ export class AuthController implements IAuthController {
             await this._authService.sendOtpAndCacheTheUser({ ...user });
             //return response
             return res
-                .status(200)
+                .status(HTTP_STATUS.OK)
                 .json({ success: true, message: "OTP send to email", email: user.email, role: user.role });
         } catch (error: unknown) {
             console.log(error);
@@ -173,7 +185,7 @@ export class AuthController implements IAuthController {
 
             await this._authService.resendOtp(email as string);
 
-            return res.status(200).json({ success: true, message: "New OTP sent successfully", email });
+            return res.status(HTTP_STATUS.OK).json({ success: true, message: "New OTP sent successfully", email });
         } catch (error: unknown) {
             console.error(error);
             return res.status(500).json({ success: false, message: error instanceof Error ? error.message : error });

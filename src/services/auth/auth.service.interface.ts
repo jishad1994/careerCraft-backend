@@ -20,7 +20,7 @@ export interface IAuthService {
 
     logout(refreshToken: string): Promise<void>;
 
-    refresh(oldRefreshToken: string): Promise<{ accessToken: string; refreshToken: string }>;
+    refresh(oldRefreshToken: string): Promise<{ accessToken: string; refreshToken: string; user: AuthResponseUserDTO }>;
 
     sendOtpAndCacheTheUser(user: userSignupData | companySignupData): Promise<void>;
 

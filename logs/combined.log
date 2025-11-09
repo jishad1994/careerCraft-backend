@@ -1486,3 +1486,694 @@ Use mongoose.model(name, schema)
 [2025-10-21 00:19:19] [31merror[39m:jwt must be provided
 [2025-10-21 00:22:39] [32minfo[39m:accesssecret
 [2025-10-21 00:22:39] [32minfo[39m:uuid
+[2025-10-21 09:27:54] [32minfo[39m:cache service connected
+[2025-10-21 09:27:54] [32minfo[39m:server running on 3000 
+[2025-10-21 10:54:29] [32minfo[39m:cache service connected
+[2025-10-21 10:54:29] [32minfo[39m:server running on 3000 
+[2025-10-24 11:17:53] [32minfo[39m:cache service connected
+[2025-10-24 11:17:53] [32minfo[39m:server running on 3000 
+[2025-10-24 13:50:57] [32minfo[39m:cache service connected
+[2025-10-24 13:51:20] [32minfo[39m:cache service connected
+[2025-10-24 13:51:36] [32minfo[39m:cache service connected
+[2025-10-24 13:52:05] [32minfo[39m:cache service connected
+[2025-10-24 14:34:29] [32minfo[39m:cache service connected
+[2025-10-24 14:34:51] [32minfo[39m:cache service connected
+[2025-10-24 14:34:58] [32minfo[39m:cache service connected
+[2025-10-24 14:35:02] [32minfo[39m:cache service connected
+[2025-10-24 14:35:34] [32minfo[39m:cache service connected
+[2025-10-24 14:35:42] [32minfo[39m:cache service connected
+[2025-10-24 14:36:04] [32minfo[39m:cache service connected
+[2025-10-24 14:36:16] [32minfo[39m:cache service connected
+[2025-10-24 14:36:32] [32minfo[39m:cache service connected
+[2025-10-24 14:36:51] [32minfo[39m:cache service connected
+[2025-10-24 14:37:22] [32minfo[39m:cache service connected
+[2025-10-24 14:37:30] [32minfo[39m:cache service connected
+[2025-10-24 14:56:31] [32minfo[39m:cache service connected
+[2025-10-24 14:56:55] [32minfo[39m:cache service connected
+[2025-10-24 14:57:00] [32minfo[39m:cache service connected
+[2025-10-24 14:57:21] [32minfo[39m:cache service connected
+[2025-10-24 14:57:25] [32minfo[39m:cache service connected
+[2025-10-24 14:57:57] [32minfo[39m:cache service connected
+[2025-10-24 14:58:02] [32minfo[39m:cache service connected
+[2025-10-24 14:58:20] [32minfo[39m:cache service connected
+[2025-10-24 14:59:05] [32minfo[39m:cache service connected
+[2025-10-24 14:59:05] [32minfo[39m:server running on 3000 
+[2025-10-24 14:59:08] [32minfo[39m:cache service connected
+[2025-10-24 14:59:08] [32minfo[39m:server running on 3000 
+[2025-10-24 14:59:18] [32minfo[39m:cache service connected
+[2025-10-24 14:59:18] [32minfo[39m:server running on 3000 
+[2025-10-24 15:00:14] [32minfo[39m:cache service connected
+[2025-10-24 15:00:14] [32minfo[39m:server running on 3000 
+[2025-10-24 15:25:30] [32minfo[39m:cache service connected
+[2025-10-24 15:25:30] [32minfo[39m:server running on 3000 
+[2025-10-24 15:26:40] [32minfo[39m:cache service connected
+[2025-10-24 15:26:40] [32minfo[39m:server running on 3000 
+[2025-10-24 15:26:46] [32minfo[39m:cache service connected
+[2025-10-24 15:26:46] [32minfo[39m:server running on 3000 
+[2025-10-24 15:26:58] [32minfo[39m:cache service connected
+[2025-10-24 15:26:58] [32minfo[39m:server running on 3000 
+[2025-10-24 15:32:24] [32minfo[39m:cache service connected
+[2025-10-24 15:32:24] [32minfo[39m:server running on 3000 
+[2025-10-24 15:32:57] [32minfo[39m:cache service connected
+[2025-10-24 15:32:57] [32minfo[39m:server running on 3000 
+[2025-10-24 15:33:27] [32minfo[39m:cache service connected
+[2025-10-24 15:33:27] [32minfo[39m:server running on 3000 
+[2025-10-24 15:33:56] [32minfo[39m:cache service connected
+[2025-10-24 15:33:56] [32minfo[39m:server running on 3000 
+[2025-10-24 15:34:00] [32minfo[39m:cache service connected
+[2025-10-24 15:34:00] [32minfo[39m:server running on 3000 
+[2025-10-24 15:36:54] [32minfo[39m:cache service connected
+[2025-10-24 15:36:54] [32minfo[39m:server running on 3000 
+[2025-10-24 15:36:59] [32minfo[39m:cache service connected
+[2025-10-24 15:36:59] [32minfo[39m:server running on 3000 
+[2025-10-24 15:37:09] [32minfo[39m:cache service connected
+[2025-10-24 15:37:09] [32minfo[39m:server running on 3000 
+[2025-10-24 15:37:19] [32minfo[39m:cache service connected
+[2025-10-24 15:37:19] [32minfo[39m:server running on 3000 
+[2025-10-24 15:37:59] [32minfo[39m:cache service connected
+[2025-10-24 15:37:59] [32minfo[39m:server running on 3000 
+[2025-10-24 15:38:51] [32minfo[39m:cache service connected
+[2025-10-24 15:38:51] [32minfo[39m:server running on 3000 
+[2025-10-24 15:39:05] [32minfo[39m:cache service connected
+[2025-10-24 15:39:05] [32minfo[39m:server running on 3000 
+[2025-10-24 15:39:14] [32minfo[39m:cache service connected
+[2025-10-24 15:39:14] [32minfo[39m:server running on 3000 
+[2025-10-24 15:39:40] [32minfo[39m:cache service connected
+[2025-10-24 15:39:40] [32minfo[39m:server running on 3000 
+[2025-10-24 15:39:45] [32minfo[39m:cache service connected
+[2025-10-24 15:39:45] [32minfo[39m:server running on 3000 
+[2025-10-24 15:39:50] [32minfo[39m:cache service connected
+[2025-10-24 15:39:51] [32minfo[39m:server running on 3000 
+[2025-10-24 15:41:13] [32minfo[39m:cache service connected
+[2025-10-24 15:41:13] [32minfo[39m:server running on 3000 
+[2025-10-24 15:41:23] [32minfo[39m:cache service connected
+[2025-10-24 15:41:23] [32minfo[39m:server running on 3000 
+[2025-10-24 15:41:31] [32minfo[39m:cache service connected
+[2025-10-24 15:41:31] [32minfo[39m:server running on 3000 
+[2025-10-24 15:41:48] [32minfo[39m:cache service connected
+[2025-10-24 15:41:48] [32minfo[39m:server running on 3000 
+[2025-10-24 15:42:08] [32minfo[39m:cache service connected
+[2025-10-24 15:42:08] [32minfo[39m:server running on 3000 
+[2025-10-24 15:42:27] [32minfo[39m:cache service connected
+[2025-10-24 15:42:27] [32minfo[39m:server running on 3000 
+[2025-10-25 22:52:45] [32minfo[39m:cache service connected
+[2025-10-25 22:52:45] [32minfo[39m:server running on 3000 
+[2025-10-25 23:32:43] [32minfo[39m:cache service connected
+[2025-10-25 23:32:43] [32minfo[39m:server running on 3000 
+[2025-10-29 17:46:32] [32minfo[39m:cache service connected
+[2025-10-29 17:46:32] [32minfo[39m:server running on 3000 
+[2025-10-30 01:06:54] [32minfo[39m:cache service connected
+[2025-10-30 01:06:54] [32minfo[39m:server running on 3000 
+[2025-10-30 01:07:27] [32minfo[39m:cache service connected
+[2025-10-30 01:07:30] [32minfo[39m:cache service connected
+[2025-10-30 01:07:43] [32minfo[39m:cache service connected
+[2025-10-30 01:08:25] [32minfo[39m:cache service connected
+[2025-10-30 01:08:25] [32minfo[39m:server running on 3000 
+[2025-10-30 01:08:35] [32minfo[39m:cache service connected
+[2025-10-30 01:08:35] [32minfo[39m:server running on 3000 
+[2025-10-30 01:08:45] [32minfo[39m:cache service connected
+[2025-10-30 01:08:45] [32minfo[39m:server running on 3000 
+[2025-10-30 01:09:25] [32minfo[39m:cache service connected
+[2025-10-30 01:09:25] [32minfo[39m:server running on 3000 
+[2025-10-30 01:09:33] [32minfo[39m:cache service connected
+[2025-10-30 01:09:33] [32minfo[39m:server running on 3000 
+[2025-10-30 01:09:37] [32minfo[39m:cache service connected
+[2025-10-30 01:09:37] [32minfo[39m:server running on 3000 
+[2025-10-30 01:10:02] [32minfo[39m:cache service connected
+[2025-10-30 01:10:02] [32minfo[39m:server running on 3000 
+[2025-10-30 01:10:18] [32minfo[39m:cache service connected
+[2025-10-30 01:10:18] [32minfo[39m:server running on 3000 
+[2025-10-30 01:10:57] [32minfo[39m:cache service connected
+[2025-10-30 01:10:57] [32minfo[39m:server running on 3000 
+[2025-10-30 01:11:04] [32minfo[39m:cache service connected
+[2025-10-30 01:11:04] [32minfo[39m:server running on 3000 
+[2025-10-30 09:05:31] [32minfo[39m:cache service connected
+[2025-10-30 09:05:31] [32minfo[39m:server running on 3000 
+[2025-11-01 14:14:55] [32minfo[39m:cache service connected
+[2025-11-01 14:14:55] [32minfo[39m:server running on 3000 
+[2025-11-01 14:15:05] [32minfo[39m:cache service connected
+[2025-11-01 14:15:05] [32minfo[39m:server running on 3000 
+[2025-11-01 14:16:16] [32minfo[39m:accesssecret
+[2025-11-01 14:16:16] [32minfo[39m:uuid
+[2025-11-01 14:16:48] [32minfo[39m:cache service connected
+[2025-11-01 14:16:48] [32minfo[39m:server running on 3000 
+[2025-11-01 14:16:55] [32minfo[39m:cache service connected
+[2025-11-01 14:16:55] [32minfo[39m:server running on 3000 
+[2025-11-01 14:17:02] [32minfo[39m:cache service connected
+[2025-11-01 14:17:02] [32minfo[39m:server running on 3000 
+[2025-11-01 14:17:45] [32minfo[39m:cache service connected
+[2025-11-01 14:17:45] [32minfo[39m:server running on 3000 
+[2025-11-01 14:19:36] [32minfo[39m:cache service connected
+[2025-11-01 14:19:36] [32minfo[39m:server running on 3000 
+[2025-11-01 14:19:42] [32minfo[39m:accesssecret
+[2025-11-01 14:19:42] [32minfo[39m:uuid
+[2025-11-01 14:22:33] [32minfo[39m:cache service connected
+[2025-11-01 14:22:33] [32minfo[39m:server running on 3000 
+[2025-11-01 14:23:15] [32minfo[39m:cache service connected
+[2025-11-01 14:23:15] [32minfo[39m:server running on 3000 
+[2025-11-01 14:23:54] [32minfo[39m:cache service connected
+[2025-11-01 14:23:54] [32minfo[39m:server running on 3000 
+[2025-11-01 14:24:07] [32minfo[39m:cache service connected
+[2025-11-01 14:24:07] [32minfo[39m:server running on 3000 
+[2025-11-01 14:24:15] [32minfo[39m:cache service connected
+[2025-11-01 14:24:15] [32minfo[39m:server running on 3000 
+[2025-11-01 14:31:25] [32minfo[39m:cache service connected
+[2025-11-01 14:31:25] [32minfo[39m:server running on 3000 
+[2025-11-01 14:31:43] [32minfo[39m:cache service connected
+[2025-11-01 14:31:43] [32minfo[39m:server running on 3000 
+[2025-11-01 14:34:12] [32minfo[39m:cache service connected
+[2025-11-01 14:34:12] [32minfo[39m:server running on 3000 
+[2025-11-01 14:35:28] [32minfo[39m:cache service connected
+[2025-11-01 14:35:28] [32minfo[39m:server running on 3000 
+[2025-11-01 14:35:34] [32minfo[39m:cache service connected
+[2025-11-01 14:35:34] [32minfo[39m:server running on 3000 
+[2025-11-01 14:35:42] [32minfo[39m:cache service connected
+[2025-11-01 14:35:42] [32minfo[39m:server running on 3000 
+[2025-11-01 14:36:27] [32minfo[39m:cache service connected
+[2025-11-01 14:36:27] [32minfo[39m:server running on 3000 
+[2025-11-01 14:37:36] [32minfo[39m:cache service connected
+[2025-11-01 14:37:36] [32minfo[39m:server running on 3000 
+[2025-11-01 14:37:40] [32minfo[39m:cache service connected
+[2025-11-01 14:37:40] [32minfo[39m:server running on 3000 
+[2025-11-01 16:56:45] [32minfo[39m:cache service connected
+[2025-11-01 16:56:45] [32minfo[39m:server running on 3000 
+[2025-11-01 16:57:02] [32minfo[39m:cache service connected
+[2025-11-01 16:57:02] [32minfo[39m:server running on 3000 
+[2025-11-01 16:57:09] [32minfo[39m:cache service connected
+[2025-11-01 16:57:09] [32minfo[39m:server running on 3000 
+[2025-11-01 16:57:26] [32minfo[39m:cache service connected
+[2025-11-01 16:57:26] [32minfo[39m:server running on 3000 
+[2025-11-01 16:57:30] [32minfo[39m:cache service connected
+[2025-11-01 16:57:30] [32minfo[39m:server running on 3000 
+[2025-11-01 16:57:35] [32minfo[39m:cache service connected
+[2025-11-01 16:57:35] [32minfo[39m:server running on 3000 
+[2025-11-01 16:58:08] [32minfo[39m:cache service connected
+[2025-11-01 16:58:08] [32minfo[39m:server running on 3000 
+[2025-11-01 16:58:13] [32minfo[39m:cache service connected
+[2025-11-01 16:58:13] [32minfo[39m:server running on 3000 
+[2025-11-01 17:20:45] [32minfo[39m:cache service connected
+[2025-11-01 17:20:45] [32minfo[39m:server running on 3000 
+[2025-11-01 17:20:54] [32minfo[39m:cache service connected
+[2025-11-01 17:20:54] [32minfo[39m:server running on 3000 
+[2025-11-01 17:21:03] [32minfo[39m:cache service connected
+[2025-11-01 17:21:03] [32minfo[39m:server running on 3000 
+[2025-11-01 17:24:01] [32minfo[39m:cache service connected
+[2025-11-01 17:24:01] [32minfo[39m:server running on 3000 
+[2025-11-01 17:26:40] [32minfo[39m:cache service connected
+[2025-11-01 17:26:40] [32minfo[39m:server running on 3000 
+[2025-11-02 00:42:01] [32minfo[39m:cache service connected
+[2025-11-02 00:42:01] [32minfo[39m:server running on 3000 
+[2025-11-02 00:42:27] [32minfo[39m:cache service connected
+[2025-11-02 00:42:27] [32minfo[39m:server running on 3000 
+[2025-11-02 00:44:31] [32minfo[39m:cache service connected
+[2025-11-02 00:44:31] [32minfo[39m:server running on 3000 
+[2025-11-02 00:46:58] [32minfo[39m:cache service connected
+[2025-11-02 00:46:58] [32minfo[39m:server running on 3000 
+[2025-11-02 00:47:13] [32minfo[39m:cache service connected
+[2025-11-02 00:47:13] [32minfo[39m:server running on 3000 
+[2025-11-02 00:47:20] [32minfo[39m:cache service connected
+[2025-11-02 00:47:20] [32minfo[39m:server running on 3000 
+[2025-11-02 00:47:57] [32minfo[39m:cache service connected
+[2025-11-02 00:47:57] [32minfo[39m:server running on 3000 
+[2025-11-02 00:51:06] [32minfo[39m:cache service connected
+[2025-11-02 00:51:06] [32minfo[39m:server running on 3000 
+[2025-11-02 00:51:10] [32minfo[39m:cache service connected
+[2025-11-02 00:51:10] [32minfo[39m:server running on 3000 
+[2025-11-02 01:02:44] [32minfo[39m:cache service connected
+[2025-11-02 01:02:44] [32minfo[39m:server running on 3000 
+[2025-11-02 01:16:27] [32minfo[39m:cache service connected
+[2025-11-02 01:16:27] [32minfo[39m:server running on 3000 
+[2025-11-02 01:18:35] [32minfo[39m:cache service connected
+[2025-11-02 01:18:35] [32minfo[39m:server running on 3000 
+[2025-11-02 01:19:14] [32minfo[39m:cache service connected
+[2025-11-02 01:19:14] [32minfo[39m:server running on 3000 
+[2025-11-02 01:19:43] [32minfo[39m:cache service connected
+[2025-11-02 01:19:43] [32minfo[39m:server running on 3000 
+[2025-11-02 08:36:47] [32minfo[39m:cache service connected
+[2025-11-02 08:36:47] [32minfo[39m:server running on 3000 
+[2025-11-02 08:37:21] [32minfo[39m:cache service connected
+[2025-11-02 08:37:21] [32minfo[39m:server running on 3000 
+[2025-11-02 10:08:05] [32minfo[39m:accesssecret
+[2025-11-02 10:08:05] [32minfo[39m:uuid
+[2025-11-02 10:08:42] [32minfo[39m:accesssecret
+[2025-11-02 10:08:42] [32minfo[39m:uuid
+[2025-11-02 10:08:49] [32minfo[39m:accesssecret
+[2025-11-02 10:08:49] [32minfo[39m:uuid
+[2025-11-02 10:28:36] [32minfo[39m:accesssecret
+[2025-11-02 10:28:36] [32minfo[39m:uuid
+[2025-11-02 10:28:57] [32minfo[39m:accesssecret
+[2025-11-02 10:28:57] [32minfo[39m:uuid
+[2025-11-02 10:29:08] [32minfo[39m:accesssecret
+[2025-11-02 10:29:08] [32minfo[39m:uuid
+[2025-11-02 10:30:09] [32minfo[39m:accesssecret
+[2025-11-02 10:30:09] [32minfo[39m:uuid
+[2025-11-02 10:31:49] [32minfo[39m:cache service connected
+[2025-11-02 10:31:49] [32minfo[39m:server running on 3000 
+[2025-11-02 10:31:55] [32minfo[39m:cache service connected
+[2025-11-02 10:31:55] [32minfo[39m:server running on 3000 
+[2025-11-02 10:32:44] [32minfo[39m:accesssecret
+[2025-11-02 10:32:44] [32minfo[39m:uuid
+[2025-11-02 23:15:27] [32minfo[39m:cache service connected
+[2025-11-02 23:15:27] [32minfo[39m:server running on 3000 
+[2025-11-02 23:15:52] [32minfo[39m:cache service connected
+[2025-11-02 23:15:52] [32minfo[39m:server running on 3000 
+[2025-11-02 23:17:54] [32minfo[39m:cache service connected
+[2025-11-02 23:17:54] [32minfo[39m:server running on 3000 
+[2025-11-03 10:43:13] [32minfo[39m:cache service connected
+[2025-11-03 10:43:13] [32minfo[39m:server running on 3000 
+[2025-11-03 10:43:32] [32minfo[39m:cache service connected
+[2025-11-03 10:43:32] [32minfo[39m:server running on 3000 
+[2025-11-03 10:43:48] [32minfo[39m:cache service connected
+[2025-11-03 10:43:48] [32minfo[39m:server running on 3000 
+[2025-11-03 10:44:18] [32minfo[39m:accesssecret
+[2025-11-03 10:44:18] [32minfo[39m:uuid
+[2025-11-03 11:30:55] [32minfo[39m:accesssecret
+[2025-11-03 11:30:56] [32minfo[39m:uuid
+[2025-11-03 11:31:06] [32minfo[39m:accesssecret
+[2025-11-03 11:31:06] [32minfo[39m:uuid
+[2025-11-03 11:31:06] [32minfo[39m:accesssecret
+[2025-11-03 11:31:06] [32minfo[39m:uuid
+[2025-11-03 11:31:09] [32minfo[39m:accesssecret
+[2025-11-03 11:31:09] [32minfo[39m:uuid
+[2025-11-03 11:31:11] [32minfo[39m:accesssecret
+[2025-11-03 11:31:11] [32minfo[39m:uuid
+[2025-11-03 11:31:14] [32minfo[39m:accesssecret
+[2025-11-03 11:31:14] [32minfo[39m:uuid
+[2025-11-03 11:33:13] [31merror[39m:No User Found
+[2025-11-03 11:33:26] [31merror[39m:No User Found
+[2025-11-03 11:34:45] [32minfo[39m:accesssecret
+[2025-11-03 11:34:45] [32minfo[39m:uuid
+[2025-11-03 11:50:41] [31merror[39m:No User Found
+[2025-11-03 11:54:05] [31merror[39m:No User Found
+[2025-11-03 11:54:08] [32minfo[39m:accesssecret
+[2025-11-03 11:54:08] [32minfo[39m:uuid
+[2025-11-03 11:54:21] [32minfo[39m:accesssecret
+[2025-11-03 11:54:21] [32minfo[39m:uuid
+[2025-11-03 11:55:31] [32minfo[39m:accesssecret
+[2025-11-03 11:55:31] [32minfo[39m:uuid
+[2025-11-03 12:07:55] [32minfo[39m:accesssecret
+[2025-11-03 12:07:55] [32minfo[39m:uuid
+[2025-11-03 12:08:01] [32minfo[39m:accesssecret
+[2025-11-03 12:08:01] [32minfo[39m:uuid
+[2025-11-03 12:08:05] [32minfo[39m:accesssecret
+[2025-11-03 12:08:05] [32minfo[39m:uuid
+[2025-11-03 12:08:07] [32minfo[39m:accesssecret
+[2025-11-03 12:08:07] [32minfo[39m:uuid
+[2025-11-03 12:08:08] [32minfo[39m:accesssecret
+[2025-11-03 12:08:08] [32minfo[39m:uuid
+[2025-11-03 12:08:09] [32minfo[39m:accesssecret
+[2025-11-03 12:08:09] [32minfo[39m:uuid
+[2025-11-03 14:18:52] [32minfo[39m:accesssecret
+[2025-11-03 14:18:52] [32minfo[39m:uuid
+[2025-11-03 14:18:52] [32minfo[39m:accesssecret
+[2025-11-03 14:18:52] [32minfo[39m:uuid
+[2025-11-03 14:18:55] [32minfo[39m:accesssecret
+[2025-11-03 14:18:55] [32minfo[39m:uuid
+[2025-11-03 14:18:58] [32minfo[39m:accesssecret
+[2025-11-03 14:18:58] [32minfo[39m:uuid
+[2025-11-03 21:20:10] [32minfo[39m:accesssecret
+[2025-11-03 21:20:10] [32minfo[39m:uuid
+[2025-11-03 21:20:11] [32minfo[39m:accesssecret
+[2025-11-03 21:20:11] [32minfo[39m:uuid
+[2025-11-03 21:26:34] [32minfo[39m:accesssecret
+[2025-11-03 21:26:34] [32minfo[39m:uuid
+[2025-11-03 21:26:34] [32minfo[39m:accesssecret
+[2025-11-03 21:26:34] [32minfo[39m:uuid
+[2025-11-03 21:33:33] [32minfo[39m:accesssecret
+[2025-11-03 21:33:33] [32minfo[39m:uuid
+[2025-11-03 21:33:33] [32minfo[39m:accesssecret
+[2025-11-03 21:33:33] [32minfo[39m:uuid
+[2025-11-03 22:03:27] [32minfo[39m:accesssecret
+[2025-11-03 22:03:27] [32minfo[39m:uuid
+[2025-11-03 22:03:27] [32minfo[39m:accesssecret
+[2025-11-03 22:03:27] [32minfo[39m:uuid
+[2025-11-03 22:03:43] [32minfo[39m:accesssecret
+[2025-11-03 22:03:43] [32minfo[39m:uuid
+[2025-11-03 22:13:28] [32minfo[39m:accesssecret
+[2025-11-03 22:13:28] [32minfo[39m:uuid
+[2025-11-03 22:13:29] [32minfo[39m:accesssecret
+[2025-11-03 22:13:29] [32minfo[39m:uuid
+[2025-11-03 22:23:52] [32minfo[39m:accesssecret
+[2025-11-03 22:23:52] [32minfo[39m:uuid
+[2025-11-03 22:23:52] [32minfo[39m:accesssecret
+[2025-11-03 22:23:52] [32minfo[39m:uuid
+[2025-11-04 00:38:26] [32minfo[39m:accesssecret
+[2025-11-04 00:38:26] [32minfo[39m:uuid
+[2025-11-04 00:38:26] [32minfo[39m:accesssecret
+[2025-11-04 00:38:26] [32minfo[39m:uuid
+[2025-11-04 00:38:40] [32minfo[39m:accesssecret
+[2025-11-04 00:38:40] [32minfo[39m:uuid
+[2025-11-04 00:38:40] [32minfo[39m:accesssecret
+[2025-11-04 00:38:40] [32minfo[39m:uuid
+[2025-11-04 00:47:57] [32minfo[39m:accesssecret
+[2025-11-04 00:47:57] [32minfo[39m:uuid
+[2025-11-04 00:48:17] [32minfo[39m:accesssecret
+[2025-11-04 00:48:17] [32minfo[39m:uuid
+[2025-11-04 00:56:41] [32minfo[39m:accesssecret
+[2025-11-04 00:56:41] [32minfo[39m:uuid
+[2025-11-04 00:57:48] [32minfo[39m:accesssecret
+[2025-11-04 00:57:48] [32minfo[39m:uuid
+[2025-11-04 00:58:09] [32minfo[39m:accesssecret
+[2025-11-04 00:58:09] [32minfo[39m:uuid
+[2025-11-04 00:58:13] [32minfo[39m:accesssecret
+[2025-11-04 00:58:13] [32minfo[39m:uuid
+[2025-11-04 00:58:23] [32minfo[39m:accesssecret
+[2025-11-04 00:58:23] [32minfo[39m:uuid
+[2025-11-04 00:58:48] [32minfo[39m:accesssecret
+[2025-11-04 00:58:48] [32minfo[39m:uuid
+[2025-11-04 00:59:01] [32minfo[39m:accesssecret
+[2025-11-04 00:59:01] [32minfo[39m:uuid
+[2025-11-04 00:59:04] [32minfo[39m:accesssecret
+[2025-11-04 00:59:04] [32minfo[39m:uuid
+[2025-11-04 00:59:26] [32minfo[39m:accesssecret
+[2025-11-04 00:59:26] [32minfo[39m:uuid
+[2025-11-04 00:59:27] [32minfo[39m:accesssecret
+[2025-11-04 00:59:27] [32minfo[39m:uuid
+[2025-11-04 01:25:56] [32minfo[39m:accesssecret
+[2025-11-04 01:25:56] [32minfo[39m:uuid
+[2025-11-04 01:26:17] [32minfo[39m:accesssecret
+[2025-11-04 01:26:17] [32minfo[39m:uuid
+[2025-11-04 01:28:15] [32minfo[39m:accesssecret
+[2025-11-04 01:28:15] [32minfo[39m:uuid
+[2025-11-04 01:28:25] [32minfo[39m:accesssecret
+[2025-11-04 01:28:25] [32minfo[39m:uuid
+[2025-11-04 09:33:54] [32minfo[39m:cache service connected
+[2025-11-04 09:33:54] [32minfo[39m:server running on 3000 
+[2025-11-04 14:04:31] [32minfo[39m:accesssecret
+[2025-11-04 14:04:31] [32minfo[39m:uuid
+[2025-11-04 14:04:31] [32minfo[39m:accesssecret
+[2025-11-04 14:04:31] [32minfo[39m:uuid
+[2025-11-04 14:04:31] [32minfo[39m:accesssecret
+[2025-11-04 14:04:31] [32minfo[39m:uuid
+[2025-11-04 14:04:42] [32minfo[39m:accesssecret
+[2025-11-04 14:04:42] [32minfo[39m:uuid
+[2025-11-04 14:04:42] [32minfo[39m:accesssecret
+[2025-11-04 14:04:42] [32minfo[39m:uuid
+[2025-11-04 14:40:02] [32minfo[39m:accesssecret
+[2025-11-04 14:40:02] [32minfo[39m:uuid
+[2025-11-04 14:40:02] [32minfo[39m:accesssecret
+[2025-11-04 14:40:02] [32minfo[39m:uuid
+[2025-11-04 14:40:22] [32minfo[39m:accesssecret
+[2025-11-04 14:40:22] [32minfo[39m:uuid
+[2025-11-04 14:40:22] [32minfo[39m:accesssecret
+[2025-11-04 14:40:22] [32minfo[39m:uuid
+[2025-11-05 18:54:19] [32minfo[39m:cache service connected
+[2025-11-05 18:54:19] [32minfo[39m:server running on 3000 
+[2025-11-06 00:14:03] [32minfo[39m:cache service connected
+[2025-11-06 00:14:03] [32minfo[39m:server running on 3000 
+[2025-11-06 00:14:13] [32minfo[39m:cache service connected
+[2025-11-06 00:14:13] [32minfo[39m:server running on 3000 
+[2025-11-06 00:15:10] [32minfo[39m:cache service connected
+[2025-11-06 00:15:10] [32minfo[39m:server running on 3000 
+[2025-11-06 00:15:20] [32minfo[39m:cache service connected
+[2025-11-06 00:15:20] [32minfo[39m:server running on 3000 
+[2025-11-06 00:15:32] [32minfo[39m:cache service connected
+[2025-11-06 00:15:32] [32minfo[39m:server running on 3000 
+[2025-11-06 00:15:42] [32minfo[39m:cache service connected
+[2025-11-06 00:15:42] [32minfo[39m:server running on 3000 
+[2025-11-06 00:17:45] [32minfo[39m:cache service connected
+[2025-11-06 00:17:45] [32minfo[39m:server running on 3000 
+[2025-11-06 00:17:53] [32minfo[39m:cache service connected
+[2025-11-06 00:17:53] [32minfo[39m:server running on 3000 
+[2025-11-06 00:18:25] [32minfo[39m:cache service connected
+[2025-11-06 00:18:25] [32minfo[39m:server running on 3000 
+[2025-11-06 00:18:32] [32minfo[39m:cache service connected
+[2025-11-06 00:18:32] [32minfo[39m:server running on 3000 
+[2025-11-06 01:32:11] [32minfo[39m:cache service connected
+[2025-11-06 01:32:11] [32minfo[39m:server running on 3000 
+[2025-11-06 01:36:04] [32minfo[39m:cache service connected
+[2025-11-06 01:36:04] [32minfo[39m:server running on 3000 
+[2025-11-06 01:36:24] [32minfo[39m:cache service connected
+[2025-11-06 01:36:24] [32minfo[39m:server running on 3000 
+[2025-11-06 01:36:57] [32minfo[39m:cache service connected
+[2025-11-06 01:36:57] [32minfo[39m:server running on 3000 
+[2025-11-06 01:37:24] [32minfo[39m:cache service connected
+[2025-11-06 01:37:24] [32minfo[39m:server running on 3000 
+[2025-11-06 01:37:38] [32minfo[39m:cache service connected
+[2025-11-06 01:37:38] [32minfo[39m:server running on 3000 
+[2025-11-06 01:38:09] [32minfo[39m:cache service connected
+[2025-11-06 01:38:09] [32minfo[39m:server running on 3000 
+[2025-11-06 01:39:57] [32minfo[39m:cache service connected
+[2025-11-06 01:39:57] [32minfo[39m:server running on 3000 
+[2025-11-06 01:40:03] [32minfo[39m:cache service connected
+[2025-11-06 01:40:03] [32minfo[39m:server running on 3000 
+[2025-11-06 01:40:49] [32minfo[39m:cache service connected
+[2025-11-06 01:40:49] [32minfo[39m:server running on 3000 
+[2025-11-06 01:55:50] [32minfo[39m:cache service connected
+[2025-11-06 01:55:50] [32minfo[39m:server running on 3000 
+[2025-11-06 01:56:29] [32minfo[39m:cache service connected
+[2025-11-06 01:56:29] [32minfo[39m:server running on 3000 
+[2025-11-06 01:56:34] [32minfo[39m:cache service connected
+[2025-11-06 01:56:34] [32minfo[39m:server running on 3000 
+[2025-11-06 01:56:48] [32minfo[39m:cache service connected
+[2025-11-06 01:56:48] [32minfo[39m:server running on 3000 
+[2025-11-06 01:57:05] [32minfo[39m:cache service connected
+[2025-11-06 01:57:05] [32minfo[39m:server running on 3000 
+[2025-11-06 01:57:21] [32minfo[39m:cache service connected
+[2025-11-06 01:57:21] [32minfo[39m:server running on 3000 
+[2025-11-06 01:59:42] [32minfo[39m:cache service connected
+[2025-11-06 01:59:42] [32minfo[39m:server running on 3000 
+[2025-11-06 01:59:50] [32minfo[39m:cache service connected
+[2025-11-06 01:59:50] [32minfo[39m:server running on 3000 
+[2025-11-06 02:01:51] [32minfo[39m:cache service connected
+[2025-11-06 02:01:51] [32minfo[39m:server running on 3000 
+[2025-11-06 02:02:04] [32minfo[39m:cache service connected
+[2025-11-06 02:02:04] [32minfo[39m:server running on 3000 
+[2025-11-06 02:03:56] [32minfo[39m:cache service connected
+[2025-11-06 02:03:56] [32minfo[39m:server running on 3000 
+[2025-11-06 02:04:24] [32minfo[39m:cache service connected
+[2025-11-06 02:04:24] [32minfo[39m:server running on 3000 
+[2025-11-06 02:04:31] [32minfo[39m:cache service connected
+[2025-11-06 02:04:31] [32minfo[39m:server running on 3000 
+[2025-11-06 02:04:38] [32minfo[39m:cache service connected
+[2025-11-06 02:04:38] [32minfo[39m:server running on 3000 
+[2025-11-06 02:04:58] [32minfo[39m:cache service connected
+[2025-11-06 02:04:58] [32minfo[39m:server running on 3000 
+[2025-11-06 02:05:28] [32minfo[39m:cache service connected
+[2025-11-06 02:05:28] [32minfo[39m:server running on 3000 
+[2025-11-06 02:05:39] [32minfo[39m:cache service connected
+[2025-11-06 02:05:39] [32minfo[39m:server running on 3000 
+[2025-11-06 02:05:42] [32minfo[39m:cache service connected
+[2025-11-06 02:05:42] [32minfo[39m:server running on 3000 
+[2025-11-06 02:06:05] [32minfo[39m:cache service connected
+[2025-11-06 02:06:05] [32minfo[39m:server running on 3000 
+[2025-11-06 02:06:08] [32minfo[39m:cache service connected
+[2025-11-06 02:06:08] [32minfo[39m:server running on 3000 
+[2025-11-06 02:06:46] [32minfo[39m:cache service connected
+[2025-11-06 02:06:46] [32minfo[39m:server running on 3000 
+[2025-11-06 02:06:49] [32minfo[39m:cache service connected
+[2025-11-06 02:06:49] [32minfo[39m:server running on 3000 
+[2025-11-06 02:08:22] [32minfo[39m:cache service connected
+[2025-11-06 02:08:22] [32minfo[39m:server running on 3000 
+[2025-11-06 02:08:50] [32minfo[39m:cache service connected
+[2025-11-06 02:08:50] [32minfo[39m:server running on 3000 
+[2025-11-06 02:09:03] [32minfo[39m:cache service connected
+[2025-11-06 02:09:03] [32minfo[39m:server running on 3000 
+[2025-11-06 02:09:19] [32minfo[39m:cache service connected
+[2025-11-06 02:09:19] [32minfo[39m:server running on 3000 
+[2025-11-06 02:09:38] [32minfo[39m:cache service connected
+[2025-11-06 02:09:38] [32minfo[39m:server running on 3000 
+[2025-11-06 02:09:45] [32minfo[39m:cache service connected
+[2025-11-06 02:09:45] [32minfo[39m:server running on 3000 
+[2025-11-06 02:10:24] [32minfo[39m:cache service connected
+[2025-11-06 02:10:24] [32minfo[39m:server running on 3000 
+[2025-11-06 02:10:55] [32minfo[39m:cache service connected
+[2025-11-06 02:10:55] [32minfo[39m:server running on 3000 
+[2025-11-06 02:11:01] [32minfo[39m:cache service connected
+[2025-11-06 02:11:01] [32minfo[39m:server running on 3000 
+[2025-11-06 02:11:07] [32minfo[39m:cache service connected
+[2025-11-06 02:11:07] [32minfo[39m:server running on 3000 
+[2025-11-06 02:11:12] [32minfo[39m:cache service connected
+[2025-11-06 02:11:12] [32minfo[39m:server running on 3000 
+[2025-11-06 02:11:15] [32minfo[39m:cache service connected
+[2025-11-06 02:11:15] [32minfo[39m:server running on 3000 
+[2025-11-06 02:11:36] [32minfo[39m:cache service connected
+[2025-11-06 02:11:36] [32minfo[39m:server running on 3000 
+[2025-11-06 02:12:20] [32minfo[39m:cache service connected
+[2025-11-06 02:12:20] [32minfo[39m:server running on 3000 
+[2025-11-06 02:12:55] [32minfo[39m:cache service connected
+[2025-11-06 02:12:55] [32minfo[39m:server running on 3000 
+[2025-11-06 02:13:02] [32minfo[39m:cache service connected
+[2025-11-06 02:13:02] [32minfo[39m:server running on 3000 
+[2025-11-06 02:13:12] [32minfo[39m:cache service connected
+[2025-11-06 02:13:12] [32minfo[39m:server running on 3000 
+[2025-11-06 02:13:23] [32minfo[39m:cache service connected
+[2025-11-06 02:13:23] [32minfo[39m:server running on 3000 
+[2025-11-06 02:13:26] [32minfo[39m:cache service connected
+[2025-11-06 02:13:26] [32minfo[39m:server running on 3000 
+[2025-11-06 02:13:35] [32minfo[39m:cache service connected
+[2025-11-06 02:13:35] [32minfo[39m:server running on 3000 
+[2025-11-06 02:13:53] [32minfo[39m:cache service connected
+[2025-11-06 02:13:53] [32minfo[39m:server running on 3000 
+[2025-11-06 02:14:15] [32minfo[39m:cache service connected
+[2025-11-06 02:14:15] [32minfo[39m:server running on 3000 
+[2025-11-06 02:14:27] [32minfo[39m:cache service connected
+[2025-11-06 02:14:27] [32minfo[39m:server running on 3000 
+[2025-11-06 02:14:31] [32minfo[39m:cache service connected
+[2025-11-06 02:14:31] [32minfo[39m:server running on 3000 
+[2025-11-06 02:18:15] [32minfo[39m:cache service connected
+[2025-11-06 02:18:15] [32minfo[39m:server running on 3000 
+[2025-11-06 02:18:58] [32minfo[39m:cache service connected
+[2025-11-06 02:18:58] [32minfo[39m:server running on 3000 
+[2025-11-07 16:22:45] [32minfo[39m:cache service connected
+[2025-11-07 16:22:45] [32minfo[39m:server running on 3000 
+[2025-11-07 16:22:59] [32minfo[39m:accesssecret
+[2025-11-07 16:22:59] [32minfo[39m:uuid
+[2025-11-07 16:23:16] [32minfo[39m:accesssecret
+[2025-11-07 16:23:16] [32minfo[39m:uuid
+[2025-11-07 16:23:16] [32minfo[39m:accesssecret
+[2025-11-07 16:23:16] [32minfo[39m:uuid
+[2025-11-07 16:23:59] [32minfo[39m:accesssecret
+[2025-11-07 16:23:59] [32minfo[39m:uuid
+[2025-11-07 16:24:26] [32minfo[39m:accesssecret
+[2025-11-07 16:24:26] [32minfo[39m:uuid
+[2025-11-07 16:25:28] [32minfo[39m:cache service connected
+[2025-11-07 16:25:28] [32minfo[39m:server running on 3000 
+[2025-11-07 16:25:36] [32minfo[39m:cache service connected
+[2025-11-07 16:25:36] [32minfo[39m:server running on 3000 
+[2025-11-07 16:28:25] [32minfo[39m:cache service connected
+[2025-11-07 16:28:25] [32minfo[39m:server running on 3000 
+[2025-11-07 16:53:28] [32minfo[39m:accesssecret
+[2025-11-07 16:53:28] [32minfo[39m:uuid
+[2025-11-07 16:53:35] [32minfo[39m:accesssecret
+[2025-11-07 16:53:35] [32minfo[39m:uuid
+[2025-11-07 16:53:55] [32minfo[39m:accesssecret
+[2025-11-07 16:53:55] [32minfo[39m:uuid
+[2025-11-07 16:54:11] [32minfo[39m:accesssecret
+[2025-11-07 16:54:11] [32minfo[39m:uuid
+[2025-11-07 16:54:54] [32minfo[39m:accesssecret
+[2025-11-07 16:54:54] [32minfo[39m:uuid
+[2025-11-07 16:55:39] [31merror[39m:No User Found
+[2025-11-07 16:55:42] [32minfo[39m:accesssecret
+[2025-11-07 16:55:42] [32minfo[39m:uuid
+[2025-11-07 17:05:30] [32minfo[39m:accesssecret
+[2025-11-07 17:05:30] [32minfo[39m:uuid
+[2025-11-07 17:10:16] [32minfo[39m:accesssecret
+[2025-11-07 17:10:16] [32minfo[39m:uuid
+[2025-11-07 17:16:02] [32minfo[39m:accesssecret
+[2025-11-07 17:16:02] [32minfo[39m:uuid
+[2025-11-07 17:16:45] [32minfo[39m:accesssecret
+[2025-11-07 17:16:45] [32minfo[39m:uuid
+[2025-11-07 17:18:22] [32minfo[39m:cache service connected
+[2025-11-07 17:18:22] [32minfo[39m:server running on 3000 
+[2025-11-07 17:18:44] [32minfo[39m:cache service connected
+[2025-11-07 17:18:44] [32minfo[39m:server running on 3000 
+[2025-11-07 17:19:00] [32minfo[39m:cache service connected
+[2025-11-07 17:19:00] [32minfo[39m:server running on 3000 
+[2025-11-07 17:19:20] [32minfo[39m:cache service connected
+[2025-11-07 17:19:20] [32minfo[39m:server running on 3000 
+[2025-11-07 17:19:30] [32minfo[39m:cache service connected
+[2025-11-07 17:19:30] [32minfo[39m:server running on 3000 
+[2025-11-07 17:19:42] [32minfo[39m:cache service connected
+[2025-11-07 17:19:42] [32minfo[39m:server running on 3000 
+[2025-11-07 17:19:48] [32minfo[39m:cache service connected
+[2025-11-07 17:19:48] [32minfo[39m:server running on 3000 
+[2025-11-07 17:20:29] [32minfo[39m:accesssecret
+[2025-11-07 17:20:29] [32minfo[39m:uuid
+[2025-11-07 17:20:30] [32minfo[39m:accesssecret
+[2025-11-07 17:20:30] [32minfo[39m:uuid
+[2025-11-07 17:20:43] [32minfo[39m:accesssecret
+[2025-11-07 17:20:43] [32minfo[39m:uuid
+[2025-11-07 17:20:43] [32minfo[39m:accesssecret
+[2025-11-07 17:20:43] [32minfo[39m:uuid
+[2025-11-07 17:20:53] [31merror[39m:No User Found
+[2025-11-07 17:20:59] [32minfo[39m:accesssecret
+[2025-11-07 17:20:59] [32minfo[39m:uuid
+[2025-11-07 17:20:59] [32minfo[39m:accesssecret
+[2025-11-07 17:20:59] [32minfo[39m:uuid
+[2025-11-07 17:39:36] [32minfo[39m:cache service connected
+[2025-11-07 17:39:36] [32minfo[39m:server running on 3000 
+[2025-11-07 17:39:57] [32minfo[39m:cache service connected
+[2025-11-07 17:39:57] [32minfo[39m:server running on 3000 
+[2025-11-07 17:40:00] [32minfo[39m:cache service connected
+[2025-11-07 17:40:00] [32minfo[39m:server running on 3000 
+[2025-11-07 17:40:36] [32minfo[39m:cache service connected
+[2025-11-07 17:40:36] [32minfo[39m:server running on 3000 
+[2025-11-07 17:40:43] [32minfo[39m:cache service connected
+[2025-11-07 17:40:43] [32minfo[39m:server running on 3000 
+[2025-11-07 17:40:48] [32minfo[39m:cache service connected
+[2025-11-07 17:40:48] [32minfo[39m:server running on 3000 
+[2025-11-07 17:41:21] [32minfo[39m:cache service connected
+[2025-11-07 17:41:21] [32minfo[39m:server running on 3000 
+[2025-11-07 17:41:26] [32minfo[39m:cache service connected
+[2025-11-07 17:41:26] [32minfo[39m:server running on 3000 
+[2025-11-07 17:41:31] [32minfo[39m:cache service connected
+[2025-11-07 17:41:31] [32minfo[39m:server running on 3000 
+[2025-11-07 17:41:49] [32minfo[39m:cache service connected
+[2025-11-07 17:41:49] [32minfo[39m:server running on 3000 
+[2025-11-07 17:41:56] [32minfo[39m:cache service connected
+[2025-11-07 17:41:56] [32minfo[39m:server running on 3000 
+[2025-11-07 17:42:18] [32minfo[39m:cache service connected
+[2025-11-07 17:42:18] [32minfo[39m:server running on 3000 
+[2025-11-07 17:42:26] [32minfo[39m:cache service connected
+[2025-11-07 17:42:26] [32minfo[39m:server running on 3000 
+[2025-11-07 17:42:36] [32minfo[39m:cache service connected
+[2025-11-07 17:42:36] [32minfo[39m:server running on 3000 
+[2025-11-07 17:43:21] [32minfo[39m:cache service connected
+[2025-11-07 17:43:21] [32minfo[39m:server running on 3000 
+[2025-11-07 17:43:55] [32minfo[39m:cache service connected
+[2025-11-07 17:43:55] [32minfo[39m:server running on 3000 
+[2025-11-07 17:44:11] [32minfo[39m:cache service connected
+[2025-11-07 17:44:11] [32minfo[39m:server running on 3000 
+[2025-11-07 17:44:29] [32minfo[39m:cache service connected
+[2025-11-07 17:44:29] [32minfo[39m:server running on 3000 
+[2025-11-07 17:44:48] [32minfo[39m:cache service connected
+[2025-11-07 17:44:48] [32minfo[39m:server running on 3000 
+[2025-11-07 17:44:56] [32minfo[39m:cache service connected
+[2025-11-07 17:44:56] [32minfo[39m:server running on 3000 
+[2025-11-07 17:45:27] [32minfo[39m:cache service connected
+[2025-11-07 17:45:27] [32minfo[39m:server running on 3000 
+[2025-11-07 17:45:44] [32minfo[39m:cache service connected
+[2025-11-07 17:45:44] [32minfo[39m:server running on 3000 
+[2025-11-07 17:47:46] [32minfo[39m:cache service connected
+[2025-11-07 17:47:46] [32minfo[39m:server running on 3000 
+[2025-11-07 17:47:54] [32minfo[39m:cache service connected
+[2025-11-07 17:47:54] [32minfo[39m:server running on 3000 
+[2025-11-07 17:48:09] [32minfo[39m:cache service connected
+[2025-11-07 17:48:09] [32minfo[39m:server running on 3000 
+[2025-11-07 17:48:19] [32minfo[39m:cache service connected
+[2025-11-07 17:48:19] [32minfo[39m:server running on 3000 
+[2025-11-07 17:48:37] [32minfo[39m:cache service connected
+[2025-11-07 17:48:37] [32minfo[39m:server running on 3000 
+[2025-11-07 17:48:41] [32minfo[39m:cache service connected
+[2025-11-07 17:48:41] [32minfo[39m:server running on 3000 
+[2025-11-07 17:50:11] [32minfo[39m:cache service connected
+[2025-11-07 17:50:11] [32minfo[39m:server running on 3000 
+[2025-11-07 17:53:08] [32minfo[39m:cache service connected
+[2025-11-07 17:53:08] [32minfo[39m:server running on 3000 
+[2025-11-07 17:53:13] [32minfo[39m:cache service connected
+[2025-11-07 17:53:13] [32minfo[39m:server running on 3000 
+[2025-11-07 17:58:19] [32minfo[39m:cache service connected
+[2025-11-07 17:58:19] [32minfo[39m:server running on 3000 
+[2025-11-07 18:01:46] [32minfo[39m:cache service connected
+[2025-11-07 18:01:46] [32minfo[39m:server running on 3000 
+[2025-11-07 18:05:07] [32minfo[39m:cache service connected
+[2025-11-07 18:05:07] [32minfo[39m:server running on 3000 
+[2025-11-07 18:05:30] [32minfo[39m:cache service connected
+[2025-11-07 18:05:30] [32minfo[39m:server running on 3000 
+[2025-11-07 18:05:40] [32minfo[39m:cache service connected
+[2025-11-07 18:05:40] [32minfo[39m:server running on 3000 
+[2025-11-07 18:05:47] [32minfo[39m:cache service connected
+[2025-11-07 18:05:47] [32minfo[39m:server running on 3000 
+[2025-11-07 18:06:04] [32minfo[39m:cache service connected
+[2025-11-07 18:06:04] [32minfo[39m:server running on 3000 
+[2025-11-07 18:06:12] [32minfo[39m:cache service connected
+[2025-11-07 18:06:12] [32minfo[39m:server running on 3000 
+[2025-11-07 18:06:40] [32minfo[39m:cache service connected
+[2025-11-07 18:06:40] [32minfo[39m:server running on 3000 
+[2025-11-07 22:14:41] [32minfo[39m:cache service connected
+[2025-11-07 22:14:41] [32minfo[39m:server running on 3000 
+[2025-11-07 22:22:41] [32minfo[39m:cache service connected
+[2025-11-07 22:22:41] [32minfo[39m:server running on 3000 
+[2025-11-07 22:23:19] [32minfo[39m:cache service connected
+[2025-11-07 22:23:19] [32minfo[39m:server running on 3000 
+[2025-11-07 22:23:45] [32minfo[39m:cache service connected
+[2025-11-07 22:23:45] [32minfo[39m:server running on 3000 
+[2025-11-07 22:38:59] [32minfo[39m:accesssecret
+[2025-11-07 22:38:59] [32minfo[39m:uuid
+[2025-11-09 17:06:00] [32minfo[39m:cache service connected
+[2025-11-09 17:06:00] [32minfo[39m:server running on 3000 
+[2025-11-09 17:11:27] [32minfo[39m:cache service connected
+[2025-11-09 17:11:27] [32minfo[39m:server running on 3000 
+[2025-11-09 17:11:39] [32minfo[39m:cache service connected
+[2025-11-09 17:11:39] [32minfo[39m:server running on 3000 

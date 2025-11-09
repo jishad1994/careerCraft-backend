@@ -3,7 +3,8 @@ import logger from "../utils/logger";
 import { AccessPayload, verifyAccessToken } from "../utils/jwt.utils";
 
 export function companyAuthMiddleware(req: Request, res: Response, next: NextFunction) {
-    const token = req.headers.authorization?.split(" ")[1];
+    // const token = req.headers.authorization?.split(" ")[1];
+    const token = req.cookies.accessToken;
 
     logger.info("token:", token);
 

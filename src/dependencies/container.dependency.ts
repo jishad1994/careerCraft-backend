@@ -44,7 +44,7 @@ const authService = new AuthService(userRepo, companyRepo, refreshTokenRepo, cac
 //copmany auth service
 
 //userAuth controller
-const authController = new AuthController(authService, otpService, cacheService);
+const authController = new AuthController(authService, cacheService);
 
 //company authcontroller
 

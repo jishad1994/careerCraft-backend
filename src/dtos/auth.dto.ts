@@ -1,12 +1,13 @@
 import { Role } from "../models/user/user.interface";
 
-export interface AuthResponseUserDTO {
+export interface AuthUserResponseDTO {
     id: string;
-    email: string;
-    role: Role;
+    name?: string;
     firstName?: string;
     lastName?: string;
-    name?: string;
+    email: string;
+    role: "user" | "company"|"admin";
+    profilePicture?: string;
 }
 
 export interface GoogleAuthRequestDTO {
@@ -17,5 +18,5 @@ export interface GoogleAuthRequestDTO {
 export interface LoginResponseDTO {
     accessToken: string;
     refreshToken?: string;
-    user: AuthResponseUserDTO;
+    user: AuthUserResponseDTO;
 }

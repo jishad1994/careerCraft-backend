@@ -7,6 +7,7 @@ import { ConflictError } from "../../errors/conflict.error";
 import { DataBaseError } from "../../errors/database.error";
 
 export class UserRepository extends BaseRepository<IUser> implements IUserRepository {
+    
     constructor(model: Model<IUser>) {
         super(model);
     }

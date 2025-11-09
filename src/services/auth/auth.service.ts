@@ -11,14 +11,12 @@ import { IOtpService } from "../otp_service/otp.service.interface";
 import { ICompanyRepository } from "../../repositories/company/company.repository.interface";
 import { ICompany } from "../../models/company/company.interface";
 import { IEmailService } from "../email_service/email.service.interface";
-import { AuthResponseUserDTO, GoogleAuthRequestDTO } from "../../dtos/auth.dto";
+import { AuthUserResponseDTO, GoogleAuthRequestDTO } from "../../dtos/auth.dto";
 import { verifyGoogleAuthToken } from "../../utils/googleAuth.utils";
 import { toAuthUserResponseDTO } from "../../mappers/user.mapper";
 import { AppError } from "../../errors/app.error.";
 import { AuthError } from "../../errors/auth.error";
 import logger from "../../utils/logger";
-
-
 
 export class AuthService implements IAuthService {
     constructor(
@@ -87,11 +85,9 @@ export class AuthService implements IAuthService {
 
         await this._refreshTokenRepository.save(jti, String(user._id), user.role as Role, user.email as string, exp);
 
-        const authUserDto: AuthResponseUserDTO = {
+        const authUserDto: AuthUserResponseDTO = {
             id: String(user._id),
-
-            
-            role: user.role as Role,
+            role: user.role as "user" | "company" | "admin",
             email: user.email as string,
             firstName: (user as IUser).firstName,
             lastName: (user as IUser).lastName,
@@ -104,7 +100,7 @@ export class AuthService implements IAuthService {
     async loginWithGoogle({
         credential,
         role,
-    }: GoogleAuthRequestDTO): Promise<{ accessToken: string; refreshToken: string; user: AuthResponseUserDTO }> {
+    }: GoogleAuthRequestDTO): Promise<{ accessToken: string; refreshToken: string; user: AuthUserResponseDTO }> {
         const googleData = await verifyGoogleAuthToken(credential);
 
         if (!googleData.emailVerified) throw new Error("Google email is not verified");
@@ -143,14 +139,16 @@ export class AuthService implements IAuthService {
 
         await this._refreshTokenRepository.save(jti, String(entity._id), role, entity.email as string, exp);
 
-        const user: AuthResponseUserDTO = toAuthUserResponseDTO(entity);
+        const user: AuthUserResponseDTO = toAuthUserResponseDTO(entity);
 
         return { accessToken, refreshToken, user };
     }
 
     //issue new refreshtoken
 
-    async refresh(oldRefreshToken: string): Promise<{ accessToken: string; refreshToken: string }> {
+    async refresh(
+        oldRefreshToken: string
+    ): Promise<{ accessToken: string; refreshToken: string; user: AuthUserResponseDTO }> {
         const payload = verifyRefreshToken(oldRefreshToken);
         const record = await this._refreshTokenRepository.find(payload.jti);
         if (!record || record.role !== payload.role || record.userId !== payload.sub) {
@@ -159,16 +157,21 @@ export class AuthService implements IAuthService {
 
         await this._refreshTokenRepository.delete(payload.jti);
 
-
-
         const accessToken = createAccessToken(payload.sub, payload.role);
+
+        const userDoc =
+            payload.role == "user"
+                ? await this._userRepository.findById(payload.sub as string)
+                : await this._companyRepository.findById(payload.sub);
+
+        const user = userDoc as AuthUserResponseDTO;
 
         const { jti, token: newRefreshToken } = createRefreshToken(payload.sub, payload.role);
         const exp = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
         await this._refreshTokenRepository.save(jti, record.userId, record.role, record.email, exp);
 
-        return { accessToken, refreshToken: newRefreshToken };
+        return { accessToken, refreshToken: newRefreshToken, user };
     }
 
     //Logout
@@ -177,7 +180,7 @@ export class AuthService implements IAuthService {
         try {
             const { jti } = verifyRefreshToken(refreshToken);
 
-            console.log("jti",jti)
+            console.log("jti", jti);
             await this._refreshTokenRepository.delete(jti);
         } catch (error) {
             logger.error(error);
@@ -324,11 +327,4 @@ export class AuthService implements IAuthService {
     }
 }
 
-export class AuthErro {
-    message: string;
-    statusCode: number;
-    constructor(messsage: string, statusCode: number) {
-        this.message = messsage;
-        this.statusCode = statusCode;
-    }
-}
+

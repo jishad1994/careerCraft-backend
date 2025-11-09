@@ -1,10 +1,10 @@
-import { AuthResponseUserDTO } from "../dtos/auth.dto";
+import { AuthUserResponseDTO } from "../dtos/auth.dto";
 import { UserProfileDTO, UserSkillDTO } from "../dtos/userProfile.dto";
 import { ICompany } from "../models/company/company.interface";
 import { IUser } from "../models/user/user.interface";
 import { ISkills } from "../models/skills/skill.interface";
 
-export function toAuthUserResponseDTO(entity: IUser | ICompany): AuthResponseUserDTO {
+export function toAuthUserResponseDTO(entity: IUser | ICompany): AuthUserResponseDTO {
     return entity.role == "user"
         ? {
               id: String(entity._id),
