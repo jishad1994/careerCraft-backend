@@ -7,8 +7,6 @@ userAuthRoute.post("/signup", authController.signup.bind(authController));
 
 userAuthRoute.post("/login", authController.login.bind(authController)); 
 
-// userAuthRoute.post("/logout", authController.logout.bind(authController)); 
-
 userAuthRoute.post("/googleLogin", authController.google.bind(authController));
 
 userAuthRoute.post("/check-availability", authController.checkUserPhoneOrEmailExists.bind(authController));

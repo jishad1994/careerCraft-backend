@@ -10,13 +10,38 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
         return await this.model.create(entity);
     }
 
-    //find by ID
+    async findByIdWithPopulate<T>(
+        id: string,
+        populateFields: Array<string | { path: string; select?: string }>
+    ): Promise<T | null> {
+        const query = this.model.findById(id);
 
+        populateFields.forEach((field) => {
+            if (typeof field == "string") {
+                query.populate(field);
+            } else {
+                query.populate(field);
+            }
+        });
+
+        return await query.lean<T>().exec();
+    }
+
+    //find by ID
     async findById(id: string): Promise<T | null> {
         try {
             return await this.model.findById(id);
         } catch {
             throw new DataBaseError("db error while findById");
+        }
+    }
+
+    //find all
+    async findAll(): Promise<T[]> {
+        try {
+            return await this.model.find();
+        } catch {
+            throw new DataBaseError("db error while find all");
         }
     }
 
@@ -33,7 +58,6 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
     //find by email
     async findByEmail(email: string): Promise<T | null> {
         try {
-            console.log("entered");
             return await this.model.findOne({ email });
         } catch {
             throw new DataBaseError("db error while findByEmail");
@@ -46,15 +70,6 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
             return await this.model.findOne({ filter });
         } catch {
             throw new DataBaseError("db error while findbyfilter");
-        }
-    }
-
-    //find all
-    async findAll(): Promise<T[]> {
-        try {
-            return await this.model.find();
-        } catch {
-            throw new DataBaseError("db error while find all");
         }
     }
 

@@ -1,8 +1,12 @@
 import mongoose, { Schema, Model } from "mongoose";
-import { ISkills } from "./skill.interface";
+import { ISkill } from "./skill.interface";
 
-export const skillSchema = new Schema<ISkills>({
-    name: { type: String, required: true, unique: true },
-    description: String,
-});
-export const Skill: Model<ISkills> = mongoose.models.Skill || mongoose.model<ISkills>("Skill", skillSchema);
+export const skillSchema = new Schema<ISkill>(
+    {
+        name: { type: String, required: true, unique: true },
+        description: String,
+    },
+    { timestamps: true }
+);
+
+export const Skill: Model<ISkill> = mongoose.models.Skill || mongoose.model<ISkill>("Skill", skillSchema);

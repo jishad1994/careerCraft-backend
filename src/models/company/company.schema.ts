@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { ICompany } from "./company.interface";
+import { addressSchema } from "../user/user.schema";
 
 export const companySchema = new Schema<ICompany>(
     {
@@ -29,6 +30,7 @@ export const companySchema = new Schema<ICompany>(
                 return !this.googleId;
             },
         },
+        profilePicture: String,
         provider: {
             type: String,
             enum: ["google", "local"],
@@ -52,7 +54,7 @@ export const companySchema = new Schema<ICompany>(
         location: String,
         industry: String,
         GSTIN: String,
-        address: [String],
+        address: [addressSchema],
         logo: String,
         bannerImage: String,
         description: String,

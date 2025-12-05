@@ -7,17 +7,14 @@ import { ConflictError } from "../../errors/conflict.error";
 import { DataBaseError } from "../../errors/database.error";
 
 export class UserRepository extends BaseRepository<IUser> implements IUserRepository {
-    
     constructor(model: Model<IUser>) {
         super(model);
     }
 
     async createUser(user: Partial<IUser>) {
         try {
-
             const doc = await super.create(user);
             return doc.toObject();
-            
         } catch (error: unknown) {
             if (error instanceof MongoServerError) {
                 if (error.code == 11000) {
@@ -28,6 +25,8 @@ export class UserRepository extends BaseRepository<IUser> implements IUserReposi
             throw new DataBaseError("db error while creating new user");
         }
     }
+
+ 
 
     async findByEmailOrPhone(emailOrPhone: string): Promise<IUser | null> {
         try {

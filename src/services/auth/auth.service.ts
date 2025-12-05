@@ -13,7 +13,7 @@ import { ICompany } from "../../models/company/company.interface";
 import { IEmailService } from "../email_service/email.service.interface";
 import { AuthUserResponseDTO, GoogleAuthRequestDTO } from "../../dtos/auth.dto";
 import { verifyGoogleAuthToken } from "../../utils/googleAuth.utils";
-import { toAuthUserResponseDTO } from "../../mappers/user.mapper";
+import { toAuthUserResponseDTO } from "../../mappers/base-user.mapper";
 import { AppError } from "../../errors/app.error.";
 import { AuthError } from "../../errors/auth.error";
 import logger from "../../utils/logger";
@@ -326,5 +326,3 @@ export class AuthService implements IAuthService {
         return { exists: !!user };
     }
 }
-
-

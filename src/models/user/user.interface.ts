@@ -1,7 +1,9 @@
 import { Document, ObjectId } from "mongoose";
+import { ISkill } from "../skills/skill.interface";
 
 export type Role = "user" | "admin" | "company";
-
+export type Provider = "local" | "google";
+export type JobAppliedStatus = "success" | "pending" | "processing" | "rejected";
 //ecuation enum
 
 export enum EducationType {
@@ -40,7 +42,7 @@ export interface IExperience {
     startDate: Date;
     endDate?: Date;
     isCurrent?: boolean;
-    description: string;
+    description?: string;
 }
 
 export interface IUser extends Document {
@@ -51,18 +53,41 @@ export interface IUser extends Document {
     email: string;
     password: string;
     googleId: string;
-    provider: string;
+    provider: Provider;
     role: Role;
     profilePicture?: string;
     isBlocked: boolean;
     address: IAddress;
     resumeURL: string[];
     about: string;
-    skills: ObjectId[] ;
+    skills: ObjectId[];
     education: IEducation[];
     experience: IExperience[];
     location: string;
     jobsApplied: ObjectId[]; //_ids of jobs
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export interface IUserPopulated {
+    _id: ObjectId;
+    firstName: string;
+    lastName: string;
+    phone: string;
+    email: string;
+    password?: string;
+    googleId?: string;
+    provider: Provider;
+    role: Role;
+    profilePicture?: string;
+    isBlocked: boolean;
+    address?: IAddress;
+    resumeURL: string[];
+    about: string;
+    skills: ISkill[];
+    education: IEducation[];
+    experience: IExperience[];
+    location: string;
     createdAt: Date;
     updatedAt: Date;
 }

@@ -1,8 +1,17 @@
 import { Response } from "express";
 
+export interface PaginationMeta {
+    page: number;
+    limit: number;
+    totalItems: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+}
+
 export class ApiResponse {
-    static  success<T>(res: Response, message: string, data?: T, statusCode = 200) {
-        return res.status(statusCode).json({ success: true, message, data: data || null });
+    static success<T>(res: Response, message: string, data?: T, statusCode = 200, pagination?: PaginationMeta) {
+        return res.status(statusCode).json({ success: true, message, data: data || null, pagination });
     }
 
     static error<T>(res: Response, message: string, errors?: T, statusCode = 400) {

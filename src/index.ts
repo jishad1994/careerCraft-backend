@@ -14,6 +14,7 @@ import { cacheService } from "./dependencies/container.dependency";
 import adminRoutes from "./routes/admin.routes";
 import cookieParser from "cookie-parser";
 import logger from "./utils/logger";
+import companyRoutes from "./routes/company/company.profile.routes";
 
 const app: Application = express();
 
@@ -50,7 +51,8 @@ await cacheService
 app.use("/api/auth/user", userAuthRoutes);
 app.use("/api/auth/company", companyAuthRoutes);
 app.use("/api/auth", commonRoutes);
-app.use("/api/users", userRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/company", companyRoutes);
 app.use("/api/admin", adminRoutes);
 
 //errro handler middleware

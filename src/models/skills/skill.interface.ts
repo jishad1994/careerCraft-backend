@@ -1,6 +1,6 @@
-import { Document, ObjectId,  } from "mongoose";
+import {  ObjectId,  } from "mongoose";
 
-export interface ISkills extends Document {
+export interface ISkill  {
     _id:ObjectId
     name: string;
     description?: string;

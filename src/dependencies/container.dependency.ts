@@ -13,6 +13,8 @@ import { AdminController } from "../controllers/admin/implementations/admin.cont
 import { AdminService } from "../services/admin/admin.service";
 import { UserProfileController } from "../controllers/user/implementations/profile.controller";
 import { UserProfileService } from "../services/user/implementations/profile.service";
+import { CompanyProfileController } from "../controllers/company/implementations/company-profile.controller";
+import { CompanyProfileService } from "../services/company/implementations/profile.service";
 
 //redis cache service instance
 const redisRepo = new RedisCacheRepo(process.env.REDIS_URL || "redis://localhost:6379");
@@ -56,8 +58,10 @@ const adminController = new AdminController(adminService);
 // user profile controller
 const userProfileService = new UserProfileService(userRepo);
 
+const companyProfileService = new CompanyProfileService(companyRepo);
+
 const userProfileController = new UserProfileController(userProfileService);
 
+const companyProfileController = new CompanyProfileController(companyProfileService);
 
-
-export { cacheService, emailService, otpService, authService, authController, adminController, userProfileController };
+export { cacheService, emailService, otpService, authService, authController, adminController, userProfileController,companyProfileController };

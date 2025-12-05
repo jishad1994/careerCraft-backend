@@ -14,6 +14,17 @@ import { IUser } from "../../models/user/user.interface";
 import { ICompany } from "../../models/company/company.interface";
 import { ApiResponse } from "../../utils/apiResponse.utils";
 import { AuthUserResponseDTO } from "../../dtos/auth.dto";
+import {
+    cachedUserValidator,
+    emailAndRoleValidator,
+    emailValidator,
+    loginCredentialsValidator,
+    LoginRequestDTO,
+    SignupRequestDTO,
+    signupValidator,
+} from "../../validators/auth.validator";
+import { AppError } from "../../errors/app.error.";
+import { email } from "zod";
 
 export class AuthController implements IAuthController {
     constructor(private _authService: IAuthService, private _cacheService: ICacheService) {}
@@ -40,8 +51,24 @@ export class AuthController implements IAuthController {
 
     async login(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
-            const { role, email, password } = req.body;
-            const { refreshToken, accessToken, user } = await this._authService.login(email, password, role);
+            const result = loginCredentialsValidator.safeParse(req.body);
+
+            if (!result.success) {
+                const formattedErrors = result.error.issues.map((issue) => ({
+                    field: issue.path.join("."),
+                    message: issue.message,
+                }));
+
+                return ApiResponse.validationError(res, "invalid credentials", formattedErrors);
+            }
+
+            const credentials: LoginRequestDTO = result.data;
+
+            const { refreshToken, accessToken, user } = await this._authService.login(
+                credentials.email,
+                credentials.password,
+                credentials.role
+            );
 
             res.cookie(refreshTokenCookieName, refreshToken, refreshTokenCookieOptions);
             res.cookie(accessTokenCookieName, accessToken, accessTokenCookieOptions);
@@ -83,37 +110,52 @@ export class AuthController implements IAuthController {
     //signup controller
     async signup(req: Request, res: Response, next: NextFunction) {
         try {
-            const { email, role } = req.body;
-            if (!email || !role) {
-                throw new Error("invalid credentials missing");
+            const result = emailAndRoleValidator.safeParse(req.body);
+
+            if (!result.success) {
+                const formattedErrors = result.error.issues.map((issue) => ({
+                    field: issue.path.join("."),
+                    message: issue.message,
+                }));
+
+                return ApiResponse.validationError(res, "invalid credentials", formattedErrors);
             }
 
-            const jsonCachedUserData = await this._cacheService.get(email);
+            const jsonCachedUserData = await this._cacheService.get(result.data?.email);
 
             if (!jsonCachedUserData) {
-                throw new Error("session expired, please try again later");
+                return ApiResponse.error(res, "Session expired, please try again later");
             }
 
-            const { otpVerified, ...userData } = JSON.parse(jsonCachedUserData as string);
+            const cachedUserData = JSON.parse(jsonCachedUserData as string);
 
-            if (!otpVerified) {
-                throw new Error("otp is not verified,please try again");
+            const validatedCache = cachedUserValidator.safeParse(cachedUserData);
+
+            if (!validatedCache.success) {
+                const formattedErrors = validatedCache.error.issues.map((issue) => ({
+                    field: issue.path.join("."),
+                    message: issue.message,
+                }));
+
+                return ApiResponse.validationError(res, "invalid credentials", formattedErrors);
+            }
+
+            if (!validatedCache.data?.otpVerified) {
+                throw new AppError("Otp is not verifie.please try again", 400);
             }
 
             let entity: IUser | ICompany;
 
-            if (role == "user") {
-                entity = await this._authService.signupUser(userData as userSignupData);
+            if (validatedCache.data?.role == "user") {
+                entity = await this._authService.signupUser(validatedCache.data as userSignupData);
             } else {
-                entity = await this._authService.signupCompany(userData as companySignupData);
+                entity = await this._authService.signupCompany(validatedCache.data as companySignupData);
             }
 
             if (entity) {
-                return res.status(HTTP_STATUS.CREATED).json({ success: true, messsage: "user registration successfull" });
+                return ApiResponse.created(res, "User registration succefull");
             } else {
-                return res
-                    .status(HTTP_STATUS.BAD_REQUEST)
-                    .json({ success: false, messsage: "user registration unsuccessfull" });
+                return ApiResponse.error(res, "User registration unsuccessfull");
             }
         } catch (error) {
             next(error);
@@ -121,74 +163,57 @@ export class AuthController implements IAuthController {
     }
 
     //check phone or email exists
-    async checkUserPhoneOrEmailExists(req: Request, res: Response) {
+    async checkUserPhoneOrEmailExists(req: Request, res: Response, next: NextFunction) {
         try {
             const { phoneOrEmail, role } = req.body;
             const result = await this._authService.checkPhoneOrEmailExists(phoneOrEmail, role); //returns an object {exists:boolean}
-            return res.status(HTTP_STATUS.OK).json({ success: true, message: null, ...result });
-        } catch (error: unknown) {
-            console.log(error);
-            return res
-                .status(HTTP_STATUS.BAD_REQUEST)
-                .json({ success: false, message: error instanceof Error ? error?.message : error });
+
+            return ApiResponse.success(res, "", result);
+        } catch (error) {
+            next(error);
         }
     }
 
     //send OTP controller
-    async requestOTP(req: Request, res: Response) {
+    async requestOTP(req: Request, res: Response, next: NextFunction) {
         try {
-            //sanitize data from the request body according to the role
-            const { role } = req.body;
+            const result = signupValidator.safeParse(req.body);
 
-            type signupData = userSignupData | companySignupData;
+            if (!result.success) {
+                const formattedErrors = result.error.issues.map((issue) => ({
+                    field: issue.path.join("."),
+                    message: issue.message,
+                }));
 
-            let user: signupData;
-
-            if (role == "user") {
-                user = {
-                    firstName: req.body.firstName,
-                    lastName: req.body.lastName,
-                    email: req.body.email,
-                    phone: req.body.phone,
-                    role: req.body.role,
-                    password: req.body.password,
-                } as userSignupData;
-            } else {
-                user = {
-                    name: req.body.name,
-                    email: req.body.email,
-                    phone: req.body.phone,
-                    role: req.body.role,
-                    password: req.body.password,
-                } as companySignupData;
+                return ApiResponse.validationError(res, "Validation failed", formattedErrors);
             }
 
+            const user: SignupRequestDTO = result.data;
+
             await this._authService.sendOtpAndCacheTheUser({ ...user });
-            //return response
-            return res
-                .status(HTTP_STATUS.OK)
-                .json({ success: true, message: "OTP send to email", email: user.email, role: user.role });
-        } catch (error: unknown) {
-            console.log(error);
-            return res.status(400).json({ success: false, message: error instanceof Error ? error.message : error });
+
+            return ApiResponse.success(res, "Otp send to user email", { email: user.email, role: user.role });
+        } catch (error) {
+            next(error);
         }
     }
     // RESEND OTP CONTROLLER
-    async resendOTP(req: Request, res: Response) {
+    async resendOTP(req: Request, res: Response, next: NextFunction) {
         try {
-            console.log(req.body);
-            const { email } = req.body;
+            const result = emailValidator.safeParse(req.body);
+            if (!result.success) {
+                const formattedErrors = result.error.issues.map((issue) => ({
+                    field: issue.path.join("."),
+                    message: issue.message,
+                }));
 
-            if (!email) {
-                return res.status(400).json({ success: false, message: "Email is required" });
+                return ApiResponse.validationError(res, "email validation failed", formattedErrors);
             }
 
-            await this._authService.resendOtp(email as string);
-
-            return res.status(HTTP_STATUS.OK).json({ success: true, message: "New OTP sent successfully", email });
+            await this._authService.resendOtp(result.data?.email as string);
+            return ApiResponse.success(res, "New otp sent successfully", email);
         } catch (error: unknown) {
-            console.error(error);
-            return res.status(500).json({ success: false, message: error instanceof Error ? error.message : error });
+            next(error);
         }
     }
 
@@ -222,20 +247,22 @@ export class AuthController implements IAuthController {
         }
     }
 
-    async forgotPassword(req: Request, res: Response) {
+    async forgotPassword(req: Request, res: Response, next: NextFunction) {
         try {
-            const { email, role } = req.body;
-            if (!email || !role) throw new Error("email and role is required");
-            await this._authService.sendResetPasswordLink(email, role);
-            return res
-                .status(HTTP_STATUS.ACCEPTED)
-                .json({ success: true, message: "reset password link send to user email" });
-        } catch (error: unknown) {
-            console.log(error);
+            const result = emailAndRoleValidator.safeParse(req.body);
 
-            return res
-                .status(HTTP_STATUS.BAD_REQUEST)
-                .json({ success: false, message: error instanceof Error ? error.message : error });
+            if (!result.success) {
+                const formattedErrors = result.error.issues.map((issue) => ({
+                    field: issue.path.join("."),
+                    message: issue.message,
+                }));
+
+                return ApiResponse.validationError(res, "invalid credentials", formattedErrors);
+            }
+            await this._authService.sendResetPasswordLink(result.data?.email, result.data?.role);
+            return ApiResponse.success(res, "Password reset link send to user email");
+        } catch (error) {
+            next(error);
         }
     }
 
@@ -244,6 +271,7 @@ export class AuthController implements IAuthController {
             const { newPassword, resetPasswordToken } = req.body;
 
             await this._authService.resetPassword(resetPasswordToken, newPassword);
+            return ApiResponse.created(res, "Password reset successfull");
             return res.status(HTTP_STATUS.ACCEPTED).json({ success: true, message: "password reset successfull" });
         } catch (error: unknown) {
             return res

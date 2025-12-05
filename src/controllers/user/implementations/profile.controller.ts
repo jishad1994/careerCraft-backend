@@ -9,8 +9,10 @@ export class UserProfileController implements IUserProfileController {
     async getProfile(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const user = req.user;
+
+            console.log('user is',user)
             if (!user) throw new AppError("User Not Found");
-            const userProfileData: UserProfileDTO = await this._userProfileService.getProfile(user.id);
+            const userProfileData: UserProfileDTO = await this._userProfileService.getUserProfile(user.id);
             res.status(200).json({
                 success: true,
                 message: "user profile fetching successfull",
@@ -18,7 +20,6 @@ export class UserProfileController implements IUserProfileController {
             });
         } catch (error) {
             next(error);
-    
         }
     }
 }

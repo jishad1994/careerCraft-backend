@@ -1,48 +1,63 @@
-import { Timestamp } from "mongodb";
-import { ISkills } from "../models/skills/skill.interface";
-import { Role } from "../models/user/user.interface";
+import { EducationType, Role } from "../models/user/user.interface";
 
-export interface UserProfileDTO {
-    id: string;
-    firstName: string;
+export class UserProfileDTO {
+    id!: string;
+    firstName!: string;
     lastName?: string;
-    email: string;
+    email!: string;
     phone?: string;
-    role: Role;
-    provider: string;
+    role!: Role;
+
     profilePicture?: string;
-    resumeURL?: string[];
     about?: string;
-    skills?: {
-        id: string;
-        name: string;
-        description?: string;
-    }[];
-    education?: {
-        type: string;
-        institution: string;
-        fieldOfStudy: string;
-        startDate: Date;
-        endDate?: Date;
-        isCurrent?: boolean;
-        grade?: string;
-    }[];
-    experience?: {
-        jobTitle: string;
-        company: string;
-        startDate: Date;
-        endDate?: Date;
-        isCurrent?: boolean;
-        description?: string;
-    }[];
+    provider!: "local" | "google";
+    isBlocked!: boolean;
+
+    skills?: SkillDTO[];
+    education?: EducationDTO[];
+    experience?: ExperienceDTO[];
     location?: string;
-    address?: {
-        city: string;
-        state: string;
-        country: string;
-        postalCode: string;
-    };
-    jobsApplied?: string[];
-    createdAt: Date;
-    updatedAt: Date;
+    address?: AddressDTO;
+
+    // jobsApplied?: IJobsApplied[];
+    createdAt!: string;
+    updatedAt!: string;
+}
+
+export class EducationDTO {
+    type!: EducationType;
+    institution!: string;
+    fieldOfStudy!: string;
+    startDate!: string;
+    endDate?: string;
+    isCurrent?: boolean;
+    grade?: string;
+}
+
+export class SkillDTO {
+    id!: string;
+    name!: string;
+    description?: string;
+}
+
+export class ExperienceDTO {
+    jobTitle!: string;
+    company!: string;
+    startDate!: string;
+    endDate?: string;
+    isCurrent?: boolean;
+    description?: string;
+}
+
+export class AddressDTO {
+    city!: string;
+    state!: string;
+    country!: string;
+    postalCode!: string;
+}
+
+export class JobsAppliedDTO {
+    id!: string;
+    jobName!: string;
+    companyName!: string;
 }

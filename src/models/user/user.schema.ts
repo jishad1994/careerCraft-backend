@@ -11,6 +11,8 @@ export const EducationSchema = new Schema<IEducation>({
         type: String,
         required: true,
     },
+
+
     fieldOfStudy: {
         type: String,
         required: true,

@@ -1,5 +1,5 @@
-import { AuthResponseUserDTO } from "../../../dtos/auth.dto";
-import { toAuthUserResponseDTO } from "../../../mappers/user.mapper";
+import { AuthUserResponseDTO } from "../../../dtos/auth.dto";
+import { toAuthUserResponseDTO } from "../../../mappers/base-user.mapper";
 import { IAdminService } from "../../../services/admin/admin.service.interface";
 import { IAdminController } from "../interfaces/admin.controller.interface";
 import { Request, Response } from "express";
@@ -76,7 +76,7 @@ export class AdminController implements IAdminController {
             const id = req.params.id as string;
 
             const rawUser = await this._adminService.blockUser(id);
-            let user: AuthResponseUserDTO;
+            let user: AuthUserResponseDTO;
             if (rawUser) {
                 user = toAuthUserResponseDTO(rawUser);
             } else {
@@ -97,7 +97,7 @@ export class AdminController implements IAdminController {
 
             const rawUser = await this._adminService.unblockUser(id);
 
-            let user: AuthResponseUserDTO;
+            let user: AuthUserResponseDTO;
             if (rawUser) {
                 user = toAuthUserResponseDTO(rawUser);
             } else {
@@ -117,7 +117,7 @@ export class AdminController implements IAdminController {
             const id = req.params.id as string;
 
             const rawCompany = await this._adminService.blockCompany(id);
-            let company: AuthResponseUserDTO;
+            let company: AuthUserResponseDTO;
             if (rawCompany) {
                 company = toAuthUserResponseDTO(rawCompany);
             } else {
@@ -137,7 +137,7 @@ export class AdminController implements IAdminController {
             const id = req.params.id as string;
 
             const rawCompany = await this._adminService.unblockCompany(id);
-            let company: AuthResponseUserDTO;
+            let company: AuthUserResponseDTO;
             if (rawCompany) {
                 company = toAuthUserResponseDTO(rawCompany);
             } else {
