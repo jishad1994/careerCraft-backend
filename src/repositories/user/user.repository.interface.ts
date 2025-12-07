@@ -1,4 +1,4 @@
-import { IUser} from "../../models/user/user.interface";
+import { IUser } from "../../models/user/user.interface";
 import { Types } from "mongoose";
 import { IBaseRepository } from "../base.repository.inteface";
 export interface IUserRepository extends IBaseRepository<IUser> {
@@ -15,4 +15,5 @@ export interface IUserRepository extends IBaseRepository<IUser> {
     findPaginated(page: number, limit: number): Promise<{ data: IUser[]; total: number }>;
     blockOrUnblock(id: string, flag: boolean): Promise<IUser | null>;
     findUsers(query: string): Promise<IUser[]>;
+    addSkills(userId: string, skillIds: string[]): Promise<IUser | null>;
 }

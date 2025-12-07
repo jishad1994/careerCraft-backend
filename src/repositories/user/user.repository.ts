@@ -26,8 +26,6 @@ export class UserRepository extends BaseRepository<IUser> implements IUserReposi
         }
     }
 
- 
-
     async findByEmailOrPhone(emailOrPhone: string): Promise<IUser | null> {
         try {
             return await this.model.findOne({
@@ -36,6 +34,10 @@ export class UserRepository extends BaseRepository<IUser> implements IUserReposi
         } catch {
             throw new DataBaseError("db erro while finding user by email or phone");
         }
+    }
+
+    async addSkills(userId: string, skillIds: string[]): Promise<IUser|null> {
+        return this.model.findByIdAndUpdate(userId, { $addToSet: { skills: { $each: skillIds } } }, { new: true }).exec();
     }
 
     async findByEmailAndUpdate(email: Partial<IUser>, update: Partial<IUser>) {
