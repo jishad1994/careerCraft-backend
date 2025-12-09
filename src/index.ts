@@ -15,6 +15,7 @@ import adminRoutes from "./routes/admin.routes";
 import cookieParser from "cookie-parser";
 import logger from "./utils/logger";
 import companyRoutes from "./routes/company/company.profile.routes";
+import skillsRoutes from "./routes/skills/skills.routes";
 
 const app: Application = express();
 
@@ -54,6 +55,7 @@ app.use("/api/auth", commonRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/company", companyRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/skills", skillsRoutes);
 
 //errro handler middleware
 app.use(errorHandler);

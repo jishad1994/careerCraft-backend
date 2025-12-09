@@ -1,6 +1,6 @@
 import { IUser } from "../../models/user/user.interface";
 import { IUserRepository } from "./user.repository.interface";
-import { BaseRepository } from "../base.repository";
+import { BaseRepository } from "../base-repository/base.repository";
 import { Model } from "mongoose";
 import { MongoServerError } from "mongodb";
 import { ConflictError } from "../../errors/conflict.error";

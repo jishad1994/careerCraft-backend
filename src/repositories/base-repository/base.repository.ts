@@ -1,6 +1,6 @@
 import { Model, Document, Types, FilterQuery } from "mongoose";
 import { IBaseRepository } from "./base.repository.inteface";
-import { DataBaseError } from "../errors/database.error";
+import { DataBaseError } from "../../errors/database.error";
 
 export class BaseRepository<T extends Document> implements IBaseRepository<T> {
     constructor(protected readonly model: Model<T>) {}
@@ -65,9 +65,9 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
     }
 
     //find by phone
-    async findByFilter(filter: string): Promise<T | null> {
+    async findByFilter(filter: Partial<T>): Promise<T | null> {
         try {
-            return await this.model.findOne({ filter });
+            return await this.model.findOne(filter as FilterQuery<T>);
         } catch {
             throw new DataBaseError("db error while findbyfilter");
         }

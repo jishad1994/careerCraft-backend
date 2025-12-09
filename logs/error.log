@@ -227,3 +227,7 @@ Use mongoose.model(name, schema)
 [2025-12-06 03:12:50] [31merror[39m:invalid refresh token
 [2025-12-06 03:13:03] [31merror[39m:Schema hasn't been registered for model "Skill".
 Use mongoose.model(name, schema)
+[2025-12-08 23:00:03] [31merror[39m:invalid credentilas
+[2025-12-08 23:00:04] [31merror[39m:invalid credentilas
+[2025-12-08 23:03:27] [31merror[39m:invalid credentilas
+[2025-12-08 23:03:27] [31merror[39m:invalid credentilas

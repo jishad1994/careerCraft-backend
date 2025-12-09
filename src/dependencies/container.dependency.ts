@@ -15,6 +15,10 @@ import { UserProfileController } from "../controllers/user/implementations/profi
 import { UserProfileService } from "../services/user/implementations/profile.service";
 import { CompanyProfileController } from "../controllers/company/implementations/company-profile.controller";
 import { CompanyProfileService } from "../services/company/implementations/profile.service";
+import { SkillRepository } from "../repositories/skill/skill.repository";
+import { Skill } from "../models/skill/skill.model";
+import { SkillController } from "../controllers/skill/implementation/skill.controller";
+import { SkillsService } from "../services/skills/implementations/skills.services";
 
 //redis cache service instance
 const redisRepo = new RedisCacheRepo(process.env.REDIS_URL || "redis://localhost:6379");
@@ -64,4 +68,22 @@ const userProfileController = new UserProfileController(userProfileService);
 
 const companyProfileController = new CompanyProfileController(companyProfileService);
 
-export { cacheService, emailService, otpService, authService, authController, adminController, userProfileController,companyProfileController };
+//skill controller
+
+const skillRepository = new SkillRepository(Skill);
+
+const skillService = new SkillsService(skillRepository);
+
+const skillController = new SkillController(skillService);
+
+export {
+    cacheService,
+    emailService,
+    otpService,
+    authService,
+    authController,
+    adminController,
+    userProfileController,
+    companyProfileController,
+    skillController,
+};

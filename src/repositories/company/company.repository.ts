@@ -1,5 +1,5 @@
 import { ICompany } from "../../models/company/company.interface";
-import { BaseRepository } from "../base.repository";
+import { BaseRepository } from "../base-repository/base.repository";
 import { Model } from "mongoose";
 import { MongoServerError } from "mongodb";
 import { ICompanyRepository } from "./company.repository.interface";

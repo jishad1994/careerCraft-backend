@@ -1,5 +1,5 @@
 import { Document, ObjectId } from "mongoose";
-import { ISkill } from "../skills/skill.interface";
+import { ISkill } from "../skill/skill.interface";
 
 export type Role = "user" | "admin" | "company";
 export type Provider = "local" | "google";

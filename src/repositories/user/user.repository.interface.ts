@@ -1,6 +1,6 @@
 import { IUser } from "../../models/user/user.interface";
 import { Types } from "mongoose";
-import { IBaseRepository } from "../base.repository.inteface";
+import { IBaseRepository } from "../base-repository/base.repository.inteface";
 export interface IUserRepository extends IBaseRepository<IUser> {
     createUser(user: Partial<IUser>): Promise<IUser>;
     findByEmail(email: string): Promise<IUser | null>;

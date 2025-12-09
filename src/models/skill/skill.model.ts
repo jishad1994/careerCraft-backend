@@ -5,6 +5,7 @@ export const skillSchema = new Schema<ISkill>(
     {
         name: { type: String, required: true, unique: true },
         description: String,
+        blocked: { type: Boolean, default: false },
     },
     { timestamps: true }
 );
