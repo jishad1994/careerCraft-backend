@@ -21,7 +21,15 @@ const app: Application = express();
 
 const port = process.env.PORT || 3000;
 
-app.use(cors({ origin: process.env.FRONTEND_URL, methods: "*", credentials: true })); //cors
+app.use(
+    cors({
+        origin: process.env.FRONTEND_URL,
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+        credentials: true,
+        optionsSuccessStatus:200
+    })
+); //cors
 app.use(cookieParser());
 
 if (process.env.NODE_ENV !== "production") {

@@ -4,4 +4,5 @@ export interface IUserProfileController {
     getUserProfile(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
     updateUserProfile(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
     addUserSkills(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+    updateProfilePicture(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 }

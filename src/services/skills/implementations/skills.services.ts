@@ -13,7 +13,7 @@ export class SkillsService implements ISkillServivce {
         const existingSkill = await this._skillRepository.findOne({ name });
 
         if (existingSkill) {
-            throw new ValidationError("Skill already exists");
+            throw new ValidationError("Skill already exists", 409);
         }
 
         return await this._skillRepository.create({ name, description });
@@ -62,7 +62,7 @@ export class SkillsService implements ISkillServivce {
 
         skill.blocked = !skill.blocked;
 
-        skill.save();
+        await skill.save();
 
         return skill;
     }

@@ -61,4 +61,21 @@ export class UserProfileController implements IUserProfileController {
             next(error);
         }
     }
+
+    async updateProfilePicture(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const user = req.user;
+            if (!user) {
+                throw new AuthError("Unauthorized");
+            }
+            const file = req.file?.buffer;
+            if (!file) {
+                throw new AppError("File not found");
+            }
+
+            const updatedProfilePicture = await this._userProfileService.updateUserProfilePicture(user.id, file);
+        } catch (error) {
+            next(error);
+        }
+    }
 }

@@ -7,8 +7,6 @@ import { IUserRepository } from "../../../repositories/user/user.repository.inte
 import { IUserProfileService } from "../interfaces/profile.service.interface";
 import mongoose from "mongoose";
 
-
-
 export class UserProfileService implements IUserProfileService {
     constructor(private _userRepository: IUserRepository) {}
 
@@ -24,7 +22,6 @@ export class UserProfileService implements IUserProfileService {
 
         return toUserProfileDTO(userProfileDataPopulated);
     }
-
 
     async updateUserProfile(id: string, profileData: Partial<IUser>): Promise<UserProfileDTO> {
         if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -44,8 +41,6 @@ export class UserProfileService implements IUserProfileService {
         return toUserProfileDTO(populatedUser);
     }
 
-
-
     async addUserSkills(userId: string, skillIds: string[]): Promise<UserProfileDTO> {
         if (!mongoose.Types.ObjectId.isValid(userId)) {
             throw new ValidationError("Invalid user id");
@@ -64,10 +59,4 @@ export class UserProfileService implements IUserProfileService {
 
         return toUserProfileDTO(populatedUser);
     }
-
-    // updateUserProfilePicture(userId: string, profilePicture: File): Promise<UserProfileDTO> {
-        
-
-        
-    // }
 }
