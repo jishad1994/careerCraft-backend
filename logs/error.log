@@ -231,3 +231,9 @@ Use mongoose.model(name, schema)
 [2025-12-08 23:00:04] [31merror[39m:invalid credentilas
 [2025-12-08 23:03:27] [31merror[39m:invalid credentilas
 [2025-12-08 23:03:27] [31merror[39m:invalid credentilas
+[2025-12-18 02:43:47] [31merror[39m:No User Found
+[2025-12-18 02:45:38] [31merror[39m:Cannot read properties of undefined (reading 'uploadProfilePicture')
+[2025-12-18 02:56:19] [31merror[39m:Cannot read properties of undefined (reading 'uploadProfilePicture')
+[2025-12-18 03:00:09] [31merror[39m:Cannot read properties of undefined (reading 'uploadProfilePicture')
+[2025-12-18 03:05:37] [31merror[39m:Cannot read properties of undefined (reading 'uploadProfilePicture')
+[2025-12-18 03:15:39] [31merror[39m:The bucket does not allow ACLs

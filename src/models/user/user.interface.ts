@@ -25,6 +25,11 @@ export interface IEducation {
     grade?: string;
 }
 
+export interface IProfilePicture {
+    key: string;
+    location: string;
+}
+
 //address
 
 export interface IAddress {
@@ -55,7 +60,7 @@ export interface IUser extends Document {
     googleId: string;
     provider: Provider;
     role: Role;
-    profilePicture?: string;
+    profilePicture?: IProfilePicture;
     isBlocked: boolean;
     address: IAddress;
     resumeURL: string[];

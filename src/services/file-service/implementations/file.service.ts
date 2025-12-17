@@ -1,4 +1,7 @@
+import dotenv from "dotenv";
+dotenv.config();
 import { IFileService } from "../interfaces/file.service.interface";
+import { S3_BUCKET } from "../../../config/aws";
 
 export class FileService implements IFileService {
     constructor(private readonly provider: IFileService) {}
@@ -15,14 +18,21 @@ export class FileService implements IFileService {
         return this.provider.generateSignedUrl(key, expiresIn);
     }
 
-    async uploadProfilePicture(file: Express.Multer.File, userId: string): Promise<string> {
-        return this.provider.uplodaFile(file, "profilePictures", userId);
+    async uploadProfilePicture(file: Express.Multer.File, userId: string): Promise<{ key: string; location: string }> {
+
+        console.log('userid: in file service',userId)
+        const key: string = await this.provider.uplodaFile(file, "profilePictures", userId, true);
+
+        const location = `https://${S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+
+        return { key, location };
     }
 
-    async uploadCertificate(file: Express.Multer.File, userId: string): Promise<string> {
+    async uploadCertificates(file: Express.Multer.File, userId: string): Promise<string> {
         return this.provider.uplodaFile(file, "certificates", userId);
     }
+
     async uploadResume(file: Express.Multer.File, userId: string): Promise<string> {
-        return this.provider.uplodaFile(file, "certificates", userId);
+        return this.provider.uplodaFile(file, "resumes", userId);
     }
 }

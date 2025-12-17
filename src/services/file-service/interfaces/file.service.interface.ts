@@ -5,9 +5,12 @@ export interface IFileService {
 
     generateSignedUrl(key: string, expiresIn?: number): Promise<string>;
 
-    uploadProfilePicture?(file: Express.Multer.File, userId: string): Promise<string>;
+    uploadProfilePicture(
+        file: Express.Multer.File,
+        userId: string,
+    ): Promise<{ key: string; location: string }>;
 
-    uploadResume?(file: Express.Multer.File, userId: string): Promise<string>;
+    uploadResume(file: Express.Multer.File, userId: string): Promise<string>;
 
-    uploadCertificates?(file: Express.Multer.File, userId: string): Promise<string>;
+    uploadCertificates(file: Express.Multer.File, userId: string): Promise<string>;
 }

@@ -1,7 +1,7 @@
 import { CacheService } from "../services/cache/cache.service";
 import { EmailService } from "../services/email_service/email.service";
 import { RedisCacheRepo } from "../repositories/redis.repository";
-import { OTPService } from "../services/otp_service/otp.service";
+import { OTPService } from "../services/otp_service/OTP.service";
 import { UserRepository } from "../repositories/user/user.repository";
 import { AuthService } from "../services/auth/auth.service";
 import { AuthController } from "../controllers/auth/auth.controller";
@@ -19,6 +19,8 @@ import { SkillRepository } from "../repositories/skill/skill.repository";
 import { Skill } from "../models/skill/skill.model";
 import { SkillController } from "../controllers/skill/implementation/skill.controller";
 import { SkillsService } from "../services/skills/implementations/skills.services";
+import { FileService } from "../services/file-service/implementations/file.service";
+import { S3Service } from "../shared/services/s3.service";
 
 //redis cache service instance
 const redisRepo = new RedisCacheRepo(process.env.REDIS_URL || "redis://localhost:6379");
@@ -59,8 +61,14 @@ const adminService = new AdminService(userRepo, companyRepo);
 
 const adminController = new AdminController(adminService);
 
+//file service
+
+const s3Service = new S3Service();
+
+const fileService = new FileService(s3Service);
+
 // user profile controller
-const userProfileService = new UserProfileService(userRepo);
+const userProfileService = new UserProfileService(userRepo, fileService);
 
 const companyProfileService = new CompanyProfileService(companyRepo);
 

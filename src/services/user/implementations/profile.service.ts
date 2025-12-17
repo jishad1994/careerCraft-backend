@@ -1,14 +1,16 @@
+import { profileEnd } from "console";
 import { UserProfileDTO } from "../../../dtos/userProfile.dto";
 import { AppError } from "../../../errors/app.error.";
 import { ValidationError } from "../../../errors/validation.error";
 import { toUserProfileDTO } from "../../../mappers/user.mapper";
 import { IUser, IUserPopulated } from "../../../models/user/user.interface";
 import { IUserRepository } from "../../../repositories/user/user.repository.interface";
+import { IFileService } from "../../file-service/interfaces/file.service.interface";
 import { IUserProfileService } from "../interfaces/profile.service.interface";
 import mongoose from "mongoose";
 
 export class UserProfileService implements IUserProfileService {
-    constructor(private _userRepository: IUserRepository) {}
+    constructor(private _userRepository: IUserRepository, private _fileService: IFileService) {}
 
     async getUserProfile(id: string): Promise<UserProfileDTO> {
         if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -53,6 +55,28 @@ export class UserProfileService implements IUserProfileService {
 
         const populatedUser = await this._userRepository.findByIdWithPopulate<IUserPopulated>(userId, ["skills"]);
 
+        if (!populatedUser) {
+            throw new AppError("User not found after populate");
+        }
+
+        return toUserProfileDTO(populatedUser);
+    }
+
+    async updateUserProfilePicture(userId: string, profilePicture: Express.Multer.File): Promise<UserProfileDTO> {
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            throw new ValidationError("Invalid user id");
+        }
+
+        console.log('inside profile service')
+        console.log('profo;e picuter',profileEnd)
+        console.log('user id',userId)
+        const { key, location } = await this._fileService.uploadProfilePicture(profilePicture, userId);
+
+        const updatedUser = await this._userRepository.findByIdAndUpdate(userId, { profilePicture: { key, location } });
+        if (!updatedUser) {
+            throw new AppError("User not found");
+        }
+        const populatedUser = await this._userRepository.findByIdWithPopulate<IUserPopulated>(userId, ["skills"]);
         if (!populatedUser) {
             throw new AppError("User not found after populate");
         }

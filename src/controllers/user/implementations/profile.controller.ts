@@ -68,12 +68,14 @@ export class UserProfileController implements IUserProfileController {
             if (!user) {
                 throw new AuthError("Unauthorized");
             }
-            const file = req.file?.buffer;
+            const file = req.file;
             if (!file) {
                 throw new AppError("File not found");
             }
 
-            const updatedProfilePicture = await this._userProfileService.updateUserProfilePicture(user.id, file);
+            const updatedUser = await this._userProfileService.updateUserProfilePicture(user.id, file);
+
+            return ApiResponse.success(res,"User profile picture updated successfully",updatedUser)
         } catch (error) {
             next(error);
         }

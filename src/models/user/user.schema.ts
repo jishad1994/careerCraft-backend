@@ -1,4 +1,4 @@
-import { IAddress, IEducation, IExperience, IUser } from "./user.interface";
+import { IAddress, IEducation, IExperience, IProfilePicture, IUser } from "./user.interface";
 import mongoose, { Schema } from "mongoose";
 
 export const EducationSchema = new Schema<IEducation>({
@@ -11,7 +11,6 @@ export const EducationSchema = new Schema<IEducation>({
         type: String,
         required: true,
     },
-
 
     fieldOfStudy: {
         type: String,
@@ -71,6 +70,14 @@ export const addressSchema = new Schema<IAddress>({
     },
 });
 
+export const profilePictureSchema = new Schema<IProfilePicture>(
+    {
+        key: { type: String, required: true },
+        location: { type: String, required: true },
+    },
+    { _id: false }
+);
+
 export const userSchema = new Schema<IUser>(
     {
         firstName: {
@@ -118,10 +125,10 @@ export const userSchema = new Schema<IUser>(
             type: Boolean,
             default: false,
         },
-        profilePicture: String,
+        profilePicture: profilePictureSchema,
         resumeURL: [String],
         about: String,
-        skills: [{ type: mongoose.Schema.Types.ObjectId, ref: "Skill" }]  ,
+        skills: [{ type: mongoose.Schema.Types.ObjectId, ref: "Skill" }],
         education: [EducationSchema],
         experience: [experienceSchema],
         location: String,

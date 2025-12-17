@@ -1,11 +1,11 @@
-import { ICache } from "../cache/cache.service.interface";
+import { ICacheService } from "../cache/cache.service.interface";
 import { IEmailService } from "../email_service/email.service.interface";
 import { IOtpService } from "./otp.service.interface";
 
 //OTP Service
 
 export class OTPService implements IOtpService {
-    constructor(private cacheService: ICache, private emailService: IEmailService) {}
+    constructor(private cacheService: ICacheService, private emailService: IEmailService) {}
 
     //generate otp
     async generateOTP(): Promise<number> {

@@ -1,4 +1,4 @@
-import { EducationType, Role } from "../models/user/user.interface";
+import { EducationType, IProfilePicture, Role } from "../models/user/user.interface";
 
 export class UserProfileDTO {
     id!: string;
@@ -8,7 +8,7 @@ export class UserProfileDTO {
     phone?: string;
     role!: Role;
 
-    profilePicture?: string;
+    profilePicture?: IProfilePicture;
     about?: string;
     provider!: "local" | "google";
     isBlocked!: boolean;
