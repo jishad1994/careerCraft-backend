@@ -55,7 +55,11 @@ await cacheService
             logger.error("cache error", err.message);
         }
     });
-
+// Add this BEFORE your routes in the main app file
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.path}`);
+    next();
+});
 //routes
 app.use("/api/auth/user", userAuthRoutes);
 app.use("/api/auth/company", companyAuthRoutes);

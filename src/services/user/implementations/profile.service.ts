@@ -1,9 +1,8 @@
-import { profileEnd } from "console";
 import { UserProfileDTO } from "../../../dtos/userProfile.dto";
 import { AppError } from "../../../errors/app.error.";
 import { ValidationError } from "../../../errors/validation.error";
 import { toUserProfileDTO } from "../../../mappers/user.mapper";
-import { IUser, IUserPopulated } from "../../../models/user/user.interface";
+import { IEducation, IUser, IUserPopulated } from "../../../models/user/user.interface";
 import { IUserRepository } from "../../../repositories/user/user.repository.interface";
 import { IFileService } from "../../file-service/interfaces/file.service.interface";
 import { IUserProfileService } from "../interfaces/profile.service.interface";
@@ -67,15 +66,80 @@ export class UserProfileService implements IUserProfileService {
             throw new ValidationError("Invalid user id");
         }
 
-        console.log('inside profile service')
-        console.log('profo;e picuter',profileEnd)
-        console.log('user id',userId)
         const { key, location } = await this._fileService.uploadProfilePicture(profilePicture, userId);
 
-        const updatedUser = await this._userRepository.findByIdAndUpdate(userId, { profilePicture: { key, location } });
-        if (!updatedUser) {
+        const user = await this._userRepository.findById(userId);
+        if (!user) {
             throw new AppError("User not found");
         }
+
+        const oldProfilePictureKey = user.profilePicture?.key;
+
+        user.profilePicture = { key, location };
+        await user.save();
+
+        if (oldProfilePictureKey) {
+            try {
+                await this._fileService.deleteFile(oldProfilePictureKey);
+
+                console.log("old one deleted");
+            } catch (err) {
+                console.error("Failed to delete old profile picture:", err);
+            }
+        }
+
+        const populatedUser = await this._userRepository.findByIdWithPopulate<IUserPopulated>(userId, ["skills"]);
+        if (!populatedUser) {
+            throw new AppError("User not found after populate");
+        }
+
+        return toUserProfileDTO(populatedUser);
+    }
+
+    async deleteUserProfilePicture(userId: string): Promise<UserProfileDTO> {
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            throw new ValidationError("Invalid user id");
+        }
+
+        const user = await this._userRepository.findById(userId);
+        if (!user) {
+            throw new AppError("User not found");
+        }
+
+        const oldProfilePictureKey = user.profilePicture?.key;
+
+        if (oldProfilePictureKey) {
+            try {
+                user.profilePicture = undefined;
+                await user.save();
+                await this._fileService.deleteFile(oldProfilePictureKey);
+
+                console.log("old one deleted");
+            } catch (err) {
+                console.error("Failed to delete old profile picture:", err);
+            }
+        }
+
+        const populatedUser = await this._userRepository.findByIdWithPopulate<IUserPopulated>(userId, ["skills"]);
+        if (!populatedUser) {
+            throw new AppError("User not found after populate");
+        }
+
+        return toUserProfileDTO(populatedUser);
+    }
+
+    async addUserEducation(userId: string, education: IEducation): Promise<UserProfileDTO> {
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            throw new ValidationError("Invalid user id");
+        }
+
+        const user = await this._userRepository.findById(userId);
+
+        if (!user) {
+            throw new AppError("User not found");
+        }
+        user?.education.push(education);
+        await user?.save();
         const populatedUser = await this._userRepository.findByIdWithPopulate<IUserPopulated>(userId, ["skills"]);
         if (!populatedUser) {
             throw new AppError("User not found after populate");

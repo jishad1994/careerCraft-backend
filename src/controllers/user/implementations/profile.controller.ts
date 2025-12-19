@@ -75,7 +75,39 @@ export class UserProfileController implements IUserProfileController {
 
             const updatedUser = await this._userProfileService.updateUserProfilePicture(user.id, file);
 
-            return ApiResponse.success(res,"User profile picture updated successfully",updatedUser)
+            return ApiResponse.success(res, "User profile picture updated successfully", updatedUser);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async deleteProfilePicture(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const user = req.user;
+            if (!user) {
+                throw new AuthError("Unauthorized");
+            }
+
+            const updatedUser = await this._userProfileService.deleteUserProfilePicture(user.id);
+
+            return ApiResponse.success(res, "User profile picture deleted successfully", updatedUser);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async addEducation(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const user = req.user;
+            if (!user) {
+                throw new AuthError("Unauthorized");
+            }
+
+            const education = req.body;
+
+            const updatedUser = await this._userProfileService.addUserEducation(user.id, education);
+
+            return ApiResponse.success(res, "User profile picture deleted successfully", updatedUser);
         } catch (error) {
             next(error);
         }
