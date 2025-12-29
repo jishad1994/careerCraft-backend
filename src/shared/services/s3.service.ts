@@ -80,4 +80,22 @@ export class S3Service implements IFileService {
 
         return { key, location };
     }
+
+    async uploadBannerImage(file: Express.Multer.File, userId: string): Promise<{ key: string; location: string; }> {
+         const key = `bannerImages/${userId}/${Date.now()}-${file.originalname}`;
+
+        await s3.send(
+            new PutObjectCommand({
+                Bucket: S3_BUCKET,
+                Key: key,
+                Body: file.buffer,
+                ContentType: file.mimetype,
+                // ACL: "public-read",
+            })
+        );
+
+        const location = `https://${S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+
+        return { key, location };
+    }
 }

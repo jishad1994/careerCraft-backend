@@ -9,11 +9,14 @@ export function toUserProfileDTO(user: IUserPopulated): UserProfileDTO {
         email: user.email,
         phone: user.phone || "",
         role: user.role,
-        profilePicture: user.profilePicture || "",
-        about: user.about,
+        profilePicture: user.profilePicture,
+        about: user.about,  
         provider: user.provider,
         isBlocked: user.isBlocked,
-
+        location: user.location,
+        address: user.address,
+        resumeURL: user.resumeURL,
+        certificates:user.certificates,
         skills: user.skills?.map((skill) => ({ id: skill._id.toString(), name: skill.name })),
 
         education: user.education?.map((edu) => ({
@@ -35,8 +38,6 @@ export function toUserProfileDTO(user: IUserPopulated): UserProfileDTO {
             description: exp.description,
         })),
 
-        location: user.location,
-        address: user.address,
         createdAt: user.createdAt.toISOString(),
         updatedAt: user.updatedAt.toISOString(),
     };

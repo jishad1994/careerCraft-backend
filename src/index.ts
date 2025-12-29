@@ -14,8 +14,10 @@ import { cacheService } from "./dependencies/container.dependency";
 import adminRoutes from "./routes/admin.routes";
 import cookieParser from "cookie-parser";
 import logger from "./utils/logger";
-import companyRoutes from "./routes/company/company.profile.routes";
+
 import skillsRoutes from "./routes/skills/skills.routes";
+import { API_ROUTES } from "./constants/api-routes.constants";
+import companyRoutes from "./routes/company/company.routes";
 
 const app: Application = express();
 
@@ -27,7 +29,7 @@ app.use(
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
         credentials: true,
-        optionsSuccessStatus:200
+        optionsSuccessStatus: 200,
     })
 ); //cors
 app.use(cookieParser());
@@ -65,7 +67,7 @@ app.use("/api/auth/user", userAuthRoutes);
 app.use("/api/auth/company", companyAuthRoutes);
 app.use("/api/auth", commonRoutes);
 app.use("/api/user", userRoutes);
-app.use("/api/company", companyRoutes);
+app.use(API_ROUTES.COMPANY,companyRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/skills", skillsRoutes);
 

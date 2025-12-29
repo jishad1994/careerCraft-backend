@@ -36,8 +36,12 @@ export class UserRepository extends BaseRepository<IUser> implements IUserReposi
         }
     }
 
-    async addSkills(userId: string, skillIds: string[]): Promise<IUser|null> {
-        return this.model.findByIdAndUpdate(userId, { $addToSet: { skills: { $each: skillIds } } }, { new: true }).exec();
+    async addSkill(userId: string, skillId: string): Promise<IUser | null> {
+        return this.model.findByIdAndUpdate(userId, { $addToSet: { skills: skillId } }, { new: true }).exec();
+    }
+    
+    async removeSkill(userId: string, skillId: string): Promise<IUser | null> {
+        return this.model.findByIdAndUpdate(userId, { $pull: { skills: skillId } }, { new: true }).exec();
     }
 
     async findByEmailAndUpdate(email: Partial<IUser>, update: Partial<IUser>) {

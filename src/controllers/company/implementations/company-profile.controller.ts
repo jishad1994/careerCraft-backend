@@ -9,9 +9,9 @@ export class CompanyProfileController implements ICompanyProfileController {
 
     async getProfile(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
-            const user = req.cookies.user;
+            const user = req.user;
             if (!user) throw new AppError("User not found");
-            const companyProfileData: CompanyProfileDTO = await this._companyProfileService.getCompanyProfile(user.id);
+            const companyProfileData: CompanyProfileDTO = await this._companyProfileService.getProfile(user.id);
             res.status(200).json({
                 success: true,
                 message: "company profile fetching successfull",

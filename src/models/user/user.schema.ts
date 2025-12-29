@@ -1,7 +1,7 @@
-import { IAddress, IEducation, IExperience, IProfilePicture, IUser } from "./user.interface";
+import { IAddress, IDocument, IEducation, IExperience, IProfilePicture, IUser } from "./user.interface";
 import mongoose, { Schema } from "mongoose";
 
-export const EducationSchema = new Schema<IEducation>({
+export const educationSchema = new Schema<IEducation>({
     type: {
         type: String,
         enum: ["Degree", "Diploma", "High School", "PhD", "Certification"],
@@ -78,6 +78,16 @@ export const profilePictureSchema = new Schema<IProfilePicture>(
     { _id: false }
 );
 
+export const documentSchema = new Schema<IDocument>(
+    {
+        originalName: { type: String, required: true },
+        key: { type: String, required: true },
+        size: { type: Number, required: true },
+        mimeType: { type: String, required: true },
+    },
+    { _id: false, timestamps: true }
+);
+
 export const userSchema = new Schema<IUser>(
     {
         firstName: {
@@ -126,10 +136,11 @@ export const userSchema = new Schema<IUser>(
             default: false,
         },
         profilePicture: profilePictureSchema,
-        resumeURL: [String],
+        certificates: [documentSchema],
+        resumeURL: [documentSchema],
         about: String,
         skills: [{ type: mongoose.Schema.Types.ObjectId, ref: "Skill" }],
-        education: [EducationSchema],
+        education: [educationSchema],
         experience: [experienceSchema],
         location: String,
         jobsApplied: [{ type: mongoose.Schema.Types.ObjectId, ref: "Job" }],

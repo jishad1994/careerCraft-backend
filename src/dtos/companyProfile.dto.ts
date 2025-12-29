@@ -1,3 +1,4 @@
+import { IProfilePicture } from "../models/user/user.interface";
 import { AddressDTO } from "./userProfile.dto";
 
 export class CompanyProfileDTO {
@@ -6,10 +7,11 @@ export class CompanyProfileDTO {
     email!: string;
     role: string = "company";
     phone?: string;
-    profilePicture?: string;
+    profilePicture?: IProfilePicture;
     isBlocked!: boolean;
     isVerified!: boolean;
     website?: string;
+    GSTIN?: string;
     location?: string;
     industry?: string;
     address?: AddressDTO[];
@@ -17,4 +19,5 @@ export class CompanyProfileDTO {
     bannerImage?: string;
     description?: string;
     createdAt!: string;
+    updatedAt!: string;
 }

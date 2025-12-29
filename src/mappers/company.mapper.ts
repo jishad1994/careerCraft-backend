@@ -13,6 +13,7 @@ export function toCompanyProfileDTO(company: ICompanyPopulated): CompanyProfileD
         isVerified: company.isVerified,
         website: company.website,
         location: company.location,
+        GSTIN: company.GSTIN,
         industry: company.industry,
         address: company.address?.map((address) => ({
             city: address.city,
@@ -24,5 +25,6 @@ export function toCompanyProfileDTO(company: ICompanyPopulated): CompanyProfileD
         bannerImage: company.bannerImage,
         description: company.description,
         createdAt: company.createdAt.toISOString(),
+        updatedAt: company.createdAt.toISOString(),
     };
 }

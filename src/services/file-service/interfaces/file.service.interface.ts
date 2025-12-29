@@ -9,6 +9,10 @@ export interface IFileService {
         file: Express.Multer.File,
         userId: string,
     ): Promise<{ key: string; location: string }>;
+    uploadBannerImage(
+        file: Express.Multer.File,
+        userId: string,
+    ): Promise<{ key: string; location: string }>;
 
     uploadResume(file: Express.Multer.File, userId: string): Promise<string>;
 

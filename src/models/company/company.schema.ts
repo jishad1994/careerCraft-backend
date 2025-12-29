@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { ICompany } from "./company.interface";
-import { addressSchema, profilePictureSchema } from "../user/user.schema";
+import { addressSchema, documentSchema, profilePictureSchema } from "../user/user.schema";
 
 export const companySchema = new Schema<ICompany>(
     {
@@ -31,6 +31,7 @@ export const companySchema = new Schema<ICompany>(
             },
         },
         profilePicture: profilePictureSchema,
+        bannerImage: String,
         provider: {
             type: String,
             enum: ["google", "local"],
@@ -56,7 +57,6 @@ export const companySchema = new Schema<ICompany>(
         GSTIN: String,
         address: [addressSchema],
         logo: String,
-        bannerImage: String,
         description: String,
         subscriptionPackage: {
             type: mongoose.Schema.Types.ObjectId,
@@ -71,7 +71,7 @@ export const companySchema = new Schema<ICompany>(
         subscriptionEnd: Date,
         numberOfEmployees: Number,
         staffs: [{ type: mongoose.Types.ObjectId, ref: "Staff" }],
-        documents: [String],
+        documents: [documentSchema],
         jobsPosted: [{ type: mongoose.Types.ObjectId, ref: "Job" }],
     },
     { timestamps: true }

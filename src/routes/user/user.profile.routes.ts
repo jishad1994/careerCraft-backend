@@ -3,35 +3,53 @@ import { userAuthMiddleware } from "../../middlewares/user.auth.middleware";
 import { userProfileController } from "../../dependencies/container.dependency";
 import { upload } from "../../middlewares/multer.middleware";
 
- const userRoutes = express.Router();
+const userRoutes = express.Router();
 
 userRoutes.get("/me", userAuthMiddleware, userProfileController.getUserProfile.bind(userProfileController));
+
 userRoutes.patch("/me", userAuthMiddleware, userProfileController.updateUserProfile.bind(userProfileController));
+
+userRoutes.post("/me/user-skills", userAuthMiddleware, userProfileController.addUserSkill.bind(userProfileController));
+
+userRoutes.delete(
+    "/me/user-skills/:id",
+    userAuthMiddleware,
+    userProfileController.removeUserSkill.bind(userProfileController)
+);
+
 userRoutes.delete(
     "/me/profile-picture",
     userAuthMiddleware,
     userProfileController.deleteProfilePicture.bind(userProfileController)
 );
+
 userRoutes.post(
     "/me/profile-picture",
     userAuthMiddleware,
     upload.single("profilePicture"),
     userProfileController.updateProfilePicture.bind(userProfileController)
 );
-userRoutes.post(
-    "/me/userEducation",
+
+userRoutes.post("/me/user-education", userAuthMiddleware, userProfileController.addEducation.bind(userProfileController));
+
+userRoutes.put("/me/user-education", userAuthMiddleware, userProfileController.updateEducation.bind(userProfileController));
+
+userRoutes.delete(
+    "/me/user-education/:index",
     userAuthMiddleware,
-    userProfileController.updateProfilePicture.bind(userProfileController)
+    userProfileController.deleteEducation.bind(userProfileController)
 );
-userRoutes.patch(
-    "/me/userEducation",
+
+userRoutes.post("/me/user-experience", userAuthMiddleware, userProfileController.addExperience.bind(userProfileController));
+userRoutes.put(
+    "/me/user-experience",
     userAuthMiddleware,
-    userProfileController.updateProfilePicture.bind(userProfileController)
+    userProfileController.updateExperience.bind(userProfileController)
 );
 userRoutes.delete(
-    "/me/userEducation",
+    "/me/user-experience/:index",
     userAuthMiddleware,
-    userProfileController.updateProfilePicture.bind(userProfileController)
+    userProfileController.deleteExperience.bind(userProfileController)
 );
 
 export default userRoutes;

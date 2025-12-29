@@ -1,5 +1,5 @@
 import { Document, ObjectId } from "mongoose";
-import { Role } from "../user/user.interface";
+import { IBannerImage, IDocument, IProfilePicture, Role } from "../user/user.interface";
 import { AddressDTO } from "../../dtos/userProfile.dto";
 
 export interface ICompany extends Document {
@@ -19,7 +19,7 @@ export interface ICompany extends Document {
     provider: "google" | "local";
     role: Role;
 
-    profilePicture?: string;
+    profilePicture?: IProfilePicture;
 
     isBlocked: boolean;
 
@@ -35,7 +35,7 @@ export interface ICompany extends Document {
 
     logo?: string;
 
-    bannerImage?: string;
+    bannerImage?: IBannerImage;
 
     description?: string;
 
@@ -51,7 +51,7 @@ export interface ICompany extends Document {
 
     staffs?: ObjectId[];
 
-    documents?: string[];
+    documents: IDocument[];
 
     jobsPosted?: ObjectId[];
 
@@ -66,15 +66,18 @@ export interface ICompanyPopulated {
     email: string;
     role: Role;
     phone?: string;
-    profilePicture?: string;
+    profilePicture?: IProfilePicture;
     isBlocked: boolean;
     isVerified: boolean;
     website?: string;
+    documents: IDocument[];
     location?: string;
     industry?: string;
+    GSTIN?: string;
     address?: AddressDTO[];
     logo?: string;
-    bannerImage?: string;
+    bannerImage?: IBannerImage;
     description?: string;
     createdAt: Date;
+    updatedAt: Date;
 }

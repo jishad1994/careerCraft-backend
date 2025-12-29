@@ -44,7 +44,7 @@ export class UserProfileController implements IUserProfileController {
         }
     }
 
-    async addUserSkills(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+    async addUserSkill(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const user = req.user;
 
@@ -52,11 +52,29 @@ export class UserProfileController implements IUserProfileController {
                 throw new AuthError("Unauthorized");
             }
 
-            const skillIds = req.body;
+            const { skillId } = req.body;
 
-            const updatedUser = await this._userProfileService.addUserSkills(user.id, skillIds);
+            const updatedUser = await this._userProfileService.addUserSkill(user.id, skillId);
 
-            return ApiResponse.created(res, "user skills added", updatedUser);
+            return ApiResponse.created(res, "user skill added", updatedUser);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async removeUserSkill(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const user = req.user;
+
+            if (!user) {
+                throw new AuthError("Unauthorized");
+            }
+
+            const skillId = req.params.id;
+
+            const updatedUser = await this._userProfileService.removeUserSkill(user.id, skillId);
+
+            return ApiResponse.created(res, "user skill removed successfully", updatedUser);
         } catch (error) {
             next(error);
         }
@@ -107,7 +125,90 @@ export class UserProfileController implements IUserProfileController {
 
             const updatedUser = await this._userProfileService.addUserEducation(user.id, education);
 
-            return ApiResponse.success(res, "User profile picture deleted successfully", updatedUser);
+            return ApiResponse.success(res, "User education added successfully", updatedUser);
+        } catch (error) {
+            next(error);
+        }
+    }
+    async updateEducation(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const user = req.user;
+            if (!user) {
+                throw new AuthError("Unauthorized");
+            }
+
+            const { index, education } = req.body;
+
+            const updatedUser = await this._userProfileService.updateUserEducation(user.id, index, education);
+
+            return ApiResponse.success(res, "User education updated successfully", updatedUser);
+        } catch (error) {
+            next(error);
+        }
+    }
+    async deleteEducation(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const user = req.user;
+            if (!user) {
+                throw new AuthError("Unauthorized");
+            }
+
+            const index = Number(req.params.index);
+
+            const updatedUser = await this._userProfileService.deleteUserEducation(user.id, index);
+
+            return ApiResponse.success(res, "User education deleted successfully", updatedUser);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async addExperience(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const user = req.user;
+            if (!user) {
+                throw new AuthError("Unauthorized");
+            }
+
+            const experience = req.body;
+
+            const updatedUser = await this._userProfileService.addUserExperience(user.id, experience);
+
+            return ApiResponse.success(res, "User experience successfully", updatedUser);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async updateExperience(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const user = req.user;
+            if (!user) {
+                throw new AuthError("Unauthorized");
+            }
+
+            const { index, experience } = req.body;
+
+            const updatedUser = await this._userProfileService.updateUserExperience(user.id, index, experience);
+
+            return ApiResponse.success(res, "User experience updated successfully", updatedUser);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async deleteExperience(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const user = req.user;
+            if (!user) {
+                throw new AuthError("Unauthorized");
+            }
+
+            const index = Number(req.params.index);
+
+            const updatedUser = await this._userProfileService.deleteUserExperience(user.id, index);
+
+            return ApiResponse.success(res, "User experience deleted successfully", updatedUser);
         } catch (error) {
             next(error);
         }

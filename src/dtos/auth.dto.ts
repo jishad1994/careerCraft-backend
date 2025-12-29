@@ -1,4 +1,4 @@
-import { Role } from "../models/user/user.interface";
+import { IProfilePicture, Role } from "../models/user/user.interface";
 
 export interface AuthUserResponseDTO {
     id: string;
@@ -6,8 +6,8 @@ export interface AuthUserResponseDTO {
     firstName?: string;
     lastName?: string;
     email: string;
-    role: "user" | "company"|"admin";
-    profilePicture?: string;
+    role: "user" | "company" | "admin";
+    profilePicture?: IProfilePicture;
 }
 
 export interface GoogleAuthRequestDTO {

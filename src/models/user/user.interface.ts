@@ -29,6 +29,18 @@ export interface IProfilePicture {
     key: string;
     location: string;
 }
+export interface IBannerImage {
+    key: string;
+    location: string;
+}
+
+export interface IDocument {
+    originalName: string;
+    key: string;
+    mimeType: string;
+    size: number;
+    uploadedAt: Date;
+}
 
 //address
 
@@ -63,9 +75,10 @@ export interface IUser extends Document {
     profilePicture?: IProfilePicture;
     isBlocked: boolean;
     address: IAddress;
-    resumeURL: string[];
     about: string;
     skills: ObjectId[];
+    resumeURL: IDocument[];
+    certificates: IDocument[];
     education: IEducation[];
     experience: IExperience[];
     location: string;
@@ -84,10 +97,11 @@ export interface IUserPopulated {
     googleId?: string;
     provider: Provider;
     role: Role;
-    profilePicture?: string;
+    profilePicture?: IProfilePicture;
     isBlocked: boolean;
     address?: IAddress;
-    resumeURL: string[];
+    resumeURL: IDocument[];
+    certificates: IDocument[];
     about: string;
     skills: ISkill[];
     education: IEducation[];

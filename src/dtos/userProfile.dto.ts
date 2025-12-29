@@ -1,28 +1,4 @@
-import { EducationType, IProfilePicture, Role } from "../models/user/user.interface";
-
-export class UserProfileDTO {
-    id!: string;
-    firstName!: string;
-    lastName?: string;
-    email!: string;
-    phone?: string;
-    role!: Role;
-
-    profilePicture?: IProfilePicture;
-    about?: string;
-    provider!: "local" | "google";
-    isBlocked!: boolean;
-
-    skills?: SkillDTO[];
-    education?: EducationDTO[];
-    experience?: ExperienceDTO[];
-    location?: string;
-    address?: AddressDTO;
-
-    // jobsApplied?: IJobsApplied[];
-    createdAt!: string;
-    updatedAt!: string;
-}
+import { EducationType, IDocument, IProfilePicture, Role } from "../models/user/user.interface";
 
 export class EducationDTO {
     type!: EducationType;
@@ -60,4 +36,31 @@ export class JobsAppliedDTO {
     id!: string;
     jobName!: string;
     companyName!: string;
+}
+
+export class UserProfileDTO {
+    id!: string;
+    firstName!: string;
+    lastName?: string;
+    email!: string;
+    phone?: string;
+    role!: Role;
+    profilePicture?: IProfilePicture;
+    about?: string;
+    isBlocked!: boolean;
+
+    provider!: "local" | "google";
+    location?: string;
+
+    skills?: SkillDTO[];
+    education?: EducationDTO[];
+    experience?: ExperienceDTO[];
+    address?: AddressDTO;
+
+    certificates?: IDocument[];
+    resumeURL?: IDocument[];
+
+    // jobsApplied?: IJobsApplied[];
+    createdAt!: string;
+    updatedAt!: string;
 }
