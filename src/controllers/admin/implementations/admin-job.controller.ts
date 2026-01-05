@@ -1,0 +1,92 @@
+import { IAdminJobService } from "../../../services/job/interfaces/admin-job.service.interface";
+
+import { Request, Response, NextFunction } from "express";
+import { IAdminJobController } from "../interfaces/admin-job.controller.interface";
+import { AuthError } from "../../../errors/auth.error";
+import { IJob, JobStatus } from "../../../models/job/job.interface";
+import { ApiResponse } from "../../../utils/apiResponse.utils";
+
+export class AdminJobController implements IAdminJobController {
+    constructor(private _adminJobService: IAdminJobService) {}
+
+    async getAllJobs(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const admin = req.user;
+            if (!admin) throw new AuthError("Unauthorized");
+
+            const page = Number(req.query.page) || 1;
+            const limit = Number(req.query.limit) || 10;
+
+            // Optional filters
+            const filters: Partial<IJob> = {};
+            if (req.query.status) filters.status = req.query.status.toString() as JobStatus;
+            if (req.query.isVerified) filters.isVerified = req.query.isVerified === "true";
+
+            const { jobs, paginationMeta } = await this._adminJobService.getAllJobs(page, limit, filters);
+
+            return ApiResponse.success(res, "Jobs fetched successfully", jobs, 200, paginationMeta);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async verifyJob(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const admin = req.user;
+            if (!admin) throw new AuthError("Unauthorized");
+
+            const { jobId } = req.params;
+
+            const job = await this._adminJobService.verifyJob(jobId);
+
+            return ApiResponse.success(res, "Job verified successfully", job);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async blockJob(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const admin = req.user;
+            if (!admin) throw new AuthError("Unauthorized");
+
+            const { jobId } = req.params;
+
+            const job = await this._adminJobService.blockJob(jobId);
+
+            return ApiResponse.success(res, "Job blocked successfully", job);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async unblockJob(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const admin = req.user;
+            if (!admin) throw new AuthError("Unauthorized");
+
+            const { jobId } = req.params;
+
+            const job = await this._adminJobService.unblockJob(jobId);
+
+            return ApiResponse.success(res, "Job unblocked successfully", job);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async deleteJob(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const admin = req.user;
+            if (!admin) throw new AuthError("Unauthorized");
+
+            const { jobId } = req.params;
+
+            await this._adminJobService.deleteJob(jobId);
+
+            return ApiResponse.success(res, "Job deleted successfully", null);
+        } catch (error) {
+            next(error);
+        }
+    }
+}

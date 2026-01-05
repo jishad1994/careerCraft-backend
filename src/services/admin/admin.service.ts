@@ -4,47 +4,50 @@ import { IUserRepository } from "../../repositories/user/user.repository.interfa
 import { IAdminService } from "./admin.service.interface";
 import { IUser } from "../../models/user/user.interface";
 import { ICompany } from "../../models/company/company.interface";
+import { PaginationMeta } from "../../utils/apiResponse.utils";
 
 export class AdminService implements IAdminService {
     constructor(private _userRepository: IUserRepository, private _companyRepository: ICompanyRepository) {}
 
-    async getUsersPaginated(page: number, limit: number): Promise<UsersPaginatedDTO<IUser>> {
+    async getUsers(page: number, limit: number, search?: string): Promise<UsersPaginatedDTO<IUser>> {
         if (!page || !limit) {
             throw new Error("page/limit constraints not provided");
         }
 
-        const { data, total } = await this._userRepository.findPaginated(page, limit);
+        const [data, total] = await this._userRepository.findPaginated(page, limit, search);
 
-        return { data, total };
+        const totalPages = Math.ceil(total / limit);
+
+        const paginationMeta: PaginationMeta = {
+            page,
+            limit,
+            totalItems: total,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1,
+        };
+        return { data, paginationMeta };
     }
 
-    async getCompaniesPaginated(page: number, limit: number): Promise<UsersPaginatedDTO<ICompany>> {
+    async getCompanies(page: number, limit: number, search?: string): Promise<UsersPaginatedDTO<ICompany>> {
         if (!page || !limit) {
             throw new Error("page/limit constraints not provided");
         }
 
-        const { data, total } = await this._companyRepository.findPaginated(page, limit);
+        const [data, total] = await this._companyRepository.findPaginated(page, limit, search);
 
-        return { data, total };
-    }
+        const totalPages = Math.ceil(total / limit);
 
-    async searchUsers(searchQuery: string) {
-        if (!searchQuery) {
-            throw new Error("please enter a valid serach query");
-        }
+        const paginationMeta: PaginationMeta = {
+            page,
+            limit,
+            totalItems: total,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1,
+        };
 
-        const users = await this._userRepository.findUsers(searchQuery);
-
-        return users;
-    }
-    async searchCompanies(searchQuery: string) {
-        if (!searchQuery) {
-            throw new Error("please enter a valid serach query");
-        }
-
-        const companies = await this._companyRepository.findCompanies(searchQuery);
-
-        return companies;
+        return { data, paginationMeta };
     }
 
     async blockUser(id: string) {

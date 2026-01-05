@@ -21,6 +21,18 @@ import { SkillController } from "../controllers/skill/implementation/skill.contr
 import { SkillsService } from "../services/skills/implementations/skills.services";
 import { FileService } from "../services/file-service/implementations/file.service";
 import { S3Service } from "../shared/services/s3.service";
+import { JobRepository } from "../repositories/job/job.repository";
+import { Job } from "../models/job/job.schema";
+import { UserJobService } from "../services/job/implementations/user-job.service";
+import { CompanyJobService } from "../services/job/implementations/company-job.service";
+import { JobApplicationRepository } from "../repositories/application/job-application.repository";
+import { JobApplication } from "../models/job-application/job-application.schema";
+import { AdminJobService } from "../services/job/implementations/admin-job.service";
+import { PublicJobService } from "../services/job/implementations/public-Job.service";
+import { UserJobController } from "../controllers/user/implementations/user-job.controller";
+import { AdminJobController } from "../controllers/admin/implementations/admin-job.controller";
+import { CompanyJobController } from "../controllers/company/implementations/company-jobs.controller";
+import { PublicJobController } from "../controllers/job/implementations/public-job.controller";
 
 //redis cache service instance
 const redisRepo = new RedisCacheRepo(process.env.REDIS_URL || "redis://localhost:6379");
@@ -70,7 +82,7 @@ const fileService = new FileService(s3Service);
 // user profile controller
 const userProfileService = new UserProfileService(userRepo, fileService);
 
-const companyProfileService = new CompanyProfileService(companyRepo);
+const companyProfileService = new CompanyProfileService(companyRepo, fileService);
 
 const userProfileController = new UserProfileController(userProfileService);
 
@@ -84,6 +96,21 @@ const skillService = new SkillsService(skillRepository);
 
 const skillController = new SkillController(skillService);
 
+// jobs controller
+
+const jobRepository = new JobRepository(Job);
+const jobApplicationRepository = new JobApplicationRepository(JobApplication);
+
+const userJobService = new UserJobService(jobRepository, jobApplicationRepository);
+const companyJobService = new CompanyJobService(jobRepository);
+const adminJobService = new AdminJobService(jobRepository);
+const publicJobService = new PublicJobService(jobRepository);
+
+const userJobController = new UserJobController(userJobService);
+const adminJobController = new AdminJobController(adminJobService);
+const companyJobController = new CompanyJobController(companyJobService);
+const publicJobController = new PublicJobController(publicJobService);
+
 export {
     cacheService,
     emailService,
@@ -94,4 +121,8 @@ export {
     userProfileController,
     companyProfileController,
     skillController,
+    userJobController,
+    adminJobController,
+    companyJobController,
+    publicJobController,
 };

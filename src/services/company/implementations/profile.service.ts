@@ -54,7 +54,8 @@ export class CompanyProfileService implements ICompanyProfileService {
         if (!company) {
             throw new AppError("Company not found");
         }
-        const { key, location } = await this._fileService.uploadProfilePicture(profilePicture, companyId);
+
+        const { key, location } = await this._fileService.uploadProfilePicture(profilePicture, company.id);
 
         const oldProfilePictureKey = company.profilePicture?.key;
 
@@ -81,6 +82,7 @@ export class CompanyProfileService implements ICompanyProfileService {
     }
 
     async deleteProfilePicture(companyId: string): Promise<CompanyProfileDTO> {
+
         if (!mongoose.Types.ObjectId.isValid(companyId)) {
             throw new ValidationError("Invalid company id");
         }
@@ -162,7 +164,7 @@ export class CompanyProfileService implements ICompanyProfileService {
 
         if (oldBannerImageKey) {
             try {
-                company.profilePicture = undefined;
+                company.bannerImage = undefined;
                 await company.save();
                 await this._fileService.deleteFile(oldBannerImageKey);
 

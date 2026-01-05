@@ -2,6 +2,11 @@ import { Document, ObjectId } from "mongoose";
 import { IBannerImage, IDocument, IProfilePicture, Role } from "../user/user.interface";
 import { AddressDTO } from "../../dtos/userProfile.dto";
 
+export interface IPublicFileAsset {
+    key: string;
+    location: string;
+}
+
 export interface ICompany extends Document {
     _id: ObjectId;
     name: string;
@@ -80,4 +85,29 @@ export interface ICompanyPopulated {
     description?: string;
     createdAt: Date;
     updatedAt: Date;
+}
+
+export interface ICompanyListItem {
+    _id: string;
+
+    name: string;
+    email: string;
+    phone?: string;
+
+    provider: "local" | "google";
+    role: "company";
+
+    isBlocked: boolean;
+    isVerified: boolean;
+
+    industry?: string;
+    location?: string;
+
+    profilePicture?: IPublicFileAsset;
+    bannerImage?: IPublicFileAsset;
+
+    subscriptionStatus: "active" | "expired" | "pending";
+
+    createdAt: string;
+    updatedAt: string;
 }

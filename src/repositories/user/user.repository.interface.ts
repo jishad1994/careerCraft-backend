@@ -12,9 +12,8 @@ export interface IUserRepository extends IBaseRepository<IUser> {
     findOne(filter: Partial<IUser>): Promise<IUser | null>;
     updatePassword(userId: string | Types.ObjectId, hashedPassword: string): Promise<void>;
     findByGoogleId(googleId: string): Promise<IUser | null>;
-    findPaginated(page: number, limit: number): Promise<{ data: IUser[]; total: number }>;
+    findPaginated(page: number, limit: number, search?: string): Promise<[IUser[], number]>;
     blockOrUnblock(id: string, flag: boolean): Promise<IUser | null>;
-    findUsers(query: string): Promise<IUser[]>;
     addSkill(userId: string, skillId: string): Promise<IUser | null>;
     removeSkill(userId: string, skillId: string): Promise<IUser | null>;
 }

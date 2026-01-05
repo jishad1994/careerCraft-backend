@@ -1,6 +1,15 @@
 import mongoose, { Schema } from "mongoose";
 import { ICompany } from "./company.interface";
 import { addressSchema, documentSchema, profilePictureSchema } from "../user/user.schema";
+import { IBannerImage } from "../user/user.interface";
+
+export const bannerImageSchema = new Schema<IBannerImage>(
+    {
+        key: { type: String, required: true },
+        location: { type: String, required: true },
+    },
+    { _id: false }
+);
 
 export const companySchema = new Schema<ICompany>(
     {
@@ -31,7 +40,7 @@ export const companySchema = new Schema<ICompany>(
             },
         },
         profilePicture: profilePictureSchema,
-        bannerImage: String,
+        bannerImage: bannerImageSchema,
         provider: {
             type: String,
             enum: ["google", "local"],

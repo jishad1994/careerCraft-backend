@@ -1,5 +1,6 @@
-import { Document, ObjectId } from "mongoose";
+import { Document, ObjectId, Types } from "mongoose";
 import { ISkill } from "../skill/skill.interface";
+import { IPublicFileAsset } from "../company/company.interface";
 
 export type Role = "user" | "admin" | "company";
 export type Provider = "local" | "google";
@@ -76,13 +77,13 @@ export interface IUser extends Document {
     isBlocked: boolean;
     address: IAddress;
     about: string;
-    skills: ObjectId[];
+    skills: Types.ObjectId[];
     resumeURL: IDocument[];
     certificates: IDocument[];
     education: IEducation[];
     experience: IExperience[];
     location: string;
-    jobsApplied: ObjectId[]; //_ids of jobs
+    jobsApplied: Types.ObjectId[]; //_ids of jobs
     createdAt: Date;
     updatedAt: Date;
 }
@@ -110,3 +111,25 @@ export interface IUserPopulated {
     createdAt: Date;
     updatedAt: Date;
 }
+
+export interface IUserListItem {
+  _id: string;
+
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+
+  provider: 'local' | 'google';
+  role: 'user' | 'company';
+
+  isBlocked: boolean;
+
+  profilePicture?: IPublicFileAsset;
+
+  location?: string;
+
+  createdAt: string; // ISO string
+  updatedAt: string;
+}
+

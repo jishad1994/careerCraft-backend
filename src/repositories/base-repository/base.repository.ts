@@ -37,9 +37,9 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
     }
 
     //find all
-    async findAll(): Promise<T[]> {
+    async findAll(filter?:Partial<T>): Promise<T[]> {
         try {
-            return await this.model.find();
+            return await this.model.find(filter as FilterQuery<T>);
         } catch {
             throw new DataBaseError("db error while find all");
         }

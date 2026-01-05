@@ -1,77 +1,44 @@
 import { AuthUserResponseDTO } from "../../../dtos/auth.dto";
 import { toAuthUserResponseDTO } from "../../../mappers/base-user.mapper";
 import { IAdminService } from "../../../services/admin/admin.service.interface";
+import { ApiResponse } from "../../../utils/apiResponse.utils";
 import { IAdminController } from "../interfaces/admin.controller.interface";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 
 export class AdminController implements IAdminController {
     constructor(private _adminService: IAdminService) {}
-    async getCompaniesPaginated(req: Request, res: Response): Promise<Response | void> {
-        try {
-            const page = parseInt(req.query.page as string);
-            const limit = parseInt(req.query.limit as string);
 
-            const { data, total } = await this._adminService.getCompaniesPaginated(page, limit);
-            return res.json({
-                success: true,
-                message: "companies fetch successfull",
-                data,
-                pagination: { total, page, limit },
-            });
+    async getCompanies(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const page = Number(req.query.page as string) || 1;
+            const limit = Number(req.query.limit as string) || 10;
+            const search = (req.query.search as string) || "";
+
+            const { data, paginationMeta } = await this._adminService.getCompanies(page, limit, search);
+
+            return ApiResponse.success(res, "Companies fetch successfull", data, 200, paginationMeta);
         } catch (error) {
-            return res.status(500).json({ success: false, message: error instanceof Error ? error.message : error });
+            next(error);
         }
     }
 
-    async getUsersPaginated(req: Request, res: Response): Promise<Response | void> {
+    async getUsers(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
-            const page = parseInt(req.query.page as string);
-            const limit = parseInt(req.query.limit as string);
+            const page = Number(req.query.page as string) || 1;
 
-            const { data, total } = await this._adminService.getUsersPaginated(page, limit);
-            return res.json({
-                success: true,
-                message: "users fetch successfull",
-                data,
-                pagination: { total, page, limit },
-            });
+            const limit = Number(req.query.limit as string) || 10;
+
+            const search = (req.query?.search as string) || "";
+
+            const { data, paginationMeta } = await this._adminService.getUsers(page, limit, search);
+
+            return ApiResponse.success(res, "Users fetch successfull", data, 200, paginationMeta);
         } catch (error) {
-            return res.status(500).json({ success: false, message: error instanceof Error ? error.message : error });
+            next(error);
         }
     }
 
-    async getUsers(req: Request, res: Response): Promise<Response | void> {
-        try {
-            const search = req.query.search as string;
-
-            const users = await this._adminService.searchUsers(search);
-            return res.json({
-                success: true,
-                message: "users fetch successfull",
-                users,
-            });
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({ success: false, message: error instanceof Error ? error.message : error });
-        }
-    }
-
-    async getCompanies(req: Request, res: Response): Promise<Response | void> {
-        try {
-            const search = req.query.search as string;
-
-            const companies = await this._adminService.searchCompanies(search);
-            return res.json({
-                success: true,
-                message: "companies fetch successfull",
-                companies,
-            });
-        } catch (error) {
-            return res.status(500).json({ success: false, message: error instanceof Error ? error.message : error });
-        }
-    }
-
-    async blockUser(req: Request, res: Response): Promise<Response | void> {
+    async blockUser(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const id = req.params.id as string;
 
@@ -82,16 +49,12 @@ export class AdminController implements IAdminController {
             } else {
                 throw new Error("User not found");
             }
-            return res.json({
-                success: true,
-                message: "users blocked successfull",
-                user,
-            });
+            return ApiResponse.success(res, "User blocked successfully", user);
         } catch (error) {
-            return res.status(500).json({ success: false, message: error instanceof Error ? error.message : error });
+            next(error);
         }
     }
-    async unblockUser(req: Request, res: Response): Promise<Response | void> {
+    async unblockUser(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const id = req.params.id as string;
 
@@ -103,16 +66,12 @@ export class AdminController implements IAdminController {
             } else {
                 throw new Error("User not found");
             }
-            return res.json({
-                success: true,
-                message: "user unblocked successfully",
-                user,
-            });
+            return ApiResponse.success(res, "User unblocked successfully", user);
         } catch (error) {
-            return res.status(500).json({ success: false, message: error instanceof Error ? error.message : error });
+            next(error);
         }
     }
-    async blockCompany(req: Request, res: Response): Promise<Response | void> {
+    async blockCompany(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const id = req.params.id as string;
 
@@ -123,16 +82,13 @@ export class AdminController implements IAdminController {
             } else {
                 throw new Error("company not found");
             }
-            return res.json({
-                success: true,
-                message: "company blocked successfull",
-                company,
-            });
+
+            return ApiResponse.success(res, "Company blocked successfully", company);
         } catch (error) {
-            return res.status(500).json({ success: false, message: error instanceof Error ? error.message : error });
+            next(error);
         }
     }
-    async unblockCompany(req: Request, res: Response): Promise<Response | void> {
+    async unblockCompany(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const id = req.params.id as string;
 
@@ -143,13 +99,9 @@ export class AdminController implements IAdminController {
             } else {
                 throw new Error("company not found");
             }
-            return res.json({
-                success: true,
-                message: "company unblocked successfull",
-                company,
-            });
+            return ApiResponse.success(res, "Company unblocked successfully", company);
         } catch (error) {
-            return res.status(500).json({ success: false, message: error instanceof Error ? error.message : error });
+            next(error);
         }
     }
 }

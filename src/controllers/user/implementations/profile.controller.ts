@@ -11,8 +11,6 @@ export class UserProfileController implements IUserProfileController {
     async getUserProfile(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const user = req.user;
-
-            console.log("user is", user);
             if (!user) throw new AppError("User Not Found");
             const userProfileData: UserProfileDTO = await this._userProfileService.getUserProfile(user.id);
             res.status(200).json({

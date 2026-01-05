@@ -288,3 +288,29 @@ Use mongoose.model(name, schema)
 [2025-12-30 03:42:14] [31merror[39m:unauthorized request expired request 
 [2025-12-30 03:42:14] [31merror[39m:invalid refresh token
 [2025-12-30 03:42:27] [31merror[39m:User not found
+[2025-12-30 17:37:51] [31merror[39m:unauthorized request expired request 
+[2025-12-30 18:10:31] [31merror[39m:unauthorized request expired request 
+[2025-12-30 18:10:31] [31merror[39m:invalid refresh token
+[2025-12-30 18:18:25] [31merror[39m:Cannot read properties of undefined (reading 'uploadProfilePicture')
+[2025-12-30 18:22:39] [31merror[39m:Cannot read properties of undefined (reading 'uploadProfilePicture')
+[2025-12-30 18:25:41] [31merror[39m:Cannot read properties of undefined (reading 'uploadProfilePicture')
+[2025-12-30 18:28:12] [31merror[39m:Cannot read properties of undefined (reading 'uploadProfilePicture')
+[2025-12-30 18:35:32] [31merror[39m:Cannot read properties of undefined (reading 'uploadProfilePicture')
+[2025-12-30 18:40:11] [31merror[39m:Cannot read properties of undefined (reading 'uploadProfilePicture')
+[2025-12-30 18:59:05] [31merror[39m:Company validation failed: bannerImage: Cast to string failed for value "{
+  key: 'bannerImages/694d4e1f328964aad9d43353/1767101342705-131.PNG',
+  location: 'https://careercraft-files.s3.eu-north-1.amazonaws.com/bannerImages/694d4e1f328964aad9d43353/1767101342705-131.PNG'
+}" (type Object) at path "bannerImage"
+[2025-12-30 20:01:34] [31merror[39m:unauthorized request expired request 
+[2025-12-30 20:01:34] [31merror[39m:invalid refresh token
+[2025-12-30 20:21:39] [31merror[39m:unauthorized request expired request 
+[2025-12-30 20:21:39] [31merror[39m:invalid refresh token
+[2025-12-31 00:23:09] [31merror[39m:unauthorized request expired request 
+[2025-12-31 00:23:09] [31merror[39m:invalid refresh token
+[2025-12-31 01:31:32] [31merror[39m:unauthorized request expired request 
+[2025-12-31 01:31:32] [31merror[39m:invalid refresh token
+[2025-12-31 02:01:18] [31merror[39m:unauthorized request expired request 
+[2025-12-31 02:01:19] [31merror[39m:invalid refresh token
+[2026-01-02 03:48:29] [31merror[39m:No User Found
+[2026-01-02 15:03:33] [31merror[39m:invalid refresh token
+[2026-01-02 15:04:39] [31merror[39m:invalid refresh token

@@ -1,6 +1,8 @@
+import { PaginationMeta } from "../utils/apiResponse.utils";
+
 export interface UsersPaginatedDTO<T> {
     data: T[];
-    total: number;
+    paginationMeta: PaginationMeta;
 }
 
 export interface UsersPaginatedResponseDTO<T> {

@@ -1,3 +1,5 @@
+import { Role } from "../models/user/user.interface";
+
 //temporary user Data to be saved on cache
 export interface ITempUserData {
     firstName: string;
@@ -15,4 +17,9 @@ export interface ITempCompanyData {
     password: string;
     role: string;
     otpHashed: string;
+}
+
+export interface IAuthUser {
+    id: string;
+    role: Role;
 }

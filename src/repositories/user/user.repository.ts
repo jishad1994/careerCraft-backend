@@ -39,7 +39,7 @@ export class UserRepository extends BaseRepository<IUser> implements IUserReposi
     async addSkill(userId: string, skillId: string): Promise<IUser | null> {
         return this.model.findByIdAndUpdate(userId, { $addToSet: { skills: skillId } }, { new: true }).exec();
     }
-    
+
     async removeSkill(userId: string, skillId: string): Promise<IUser | null> {
         return this.model.findByIdAndUpdate(userId, { $pull: { skills: skillId } }, { new: true }).exec();
     }
@@ -60,42 +60,32 @@ export class UserRepository extends BaseRepository<IUser> implements IUserReposi
         }
     }
 
-    async findPaginated(page: number, limit: number): Promise<{ data: IUser[]; total: number }> {
-        try {
-            const skip = (page - 1) * limit;
-            const [data, total] = await Promise.all([
-                this.model
-                    .find({ role: "user" }, { firstName: 1, lastName: 1, email: 1, role: 1, isBlocked: 1 })
-                    .skip(skip)
-                    .limit(limit),
-                this.model.countDocuments(),
-            ]);
-            return { data, total };
-        } catch {
-            throw new DataBaseError("db error while user find paginated");
-        }
-    }
+    async findPaginated(page: number, limit: number, search?: string): Promise<[IUser[], number]> {
+        page = Math.max(page, 1);
+        limit = Math.min(Math.max(limit, 1), 50);
 
-    async findUsers(query: string): Promise<IUser[]> {
-        try {
-            let users = [];
+        const skip = (page - 1) * limit;
 
-            users = await this.model
-                .find(
-                    {
-                        $or: [
-                            { email: { $regex: query, $options: "i" } },
-                            { firstName: { $regex: query, $options: "i" } },
-                            { lastName: { $regex: query, $options: "i" } },
-                        ],
-                    },
-                    { firstName: 1, lastName: 1, email: 1, role: 1 }
-                )
-                .lean();
-            return users;
-        } catch {
-            throw new DataBaseError("db error whiel findUsers");
-        }
+        const escapedSearch = search ? search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") : "";
+        const filter = {
+            role: "user",
+            $or: [
+                { email: { $regex: escapedSearch, $options: "i" } },
+                { name: { $regex: escapedSearch, $options: "i" } },
+                { lastName: { $regex: escapedSearch, $options: "i" } },
+            ],
+        };
+
+        const [data, total] = await Promise.all([
+            this.model
+                .find(filter, { firstName: 1, lastName: 1, email: 1, role: 1, isBlocked: 1 })
+                .lean()
+                .skip(skip)
+                .limit(limit),
+            this.model.countDocuments(filter),
+        ]);
+
+        return [data, total];
     }
 
     async blockOrUnblock(id: string, flag: boolean): Promise<IUser | null> {

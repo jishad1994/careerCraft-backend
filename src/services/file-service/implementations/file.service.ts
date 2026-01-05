@@ -19,6 +19,7 @@ export class FileService implements IFileService {
     }
 
     async uploadProfilePicture(file: Express.Multer.File, userId: string): Promise<{ key: string; location: string }> {
+        console.log("uploading profile picture");
 
         const key: string = await this.provider.uplodaFile(file, "profilePictures", userId, true);
 
@@ -26,15 +27,13 @@ export class FileService implements IFileService {
 
         return { key, location };
     }
-    
 
-    async uploadBannerImage(file: Express.Multer.File, userId: string): Promise<{ key: string; location: string; }> {
+    async uploadBannerImage(file: Express.Multer.File, userId: string): Promise<{ key: string; location: string }> {
         const key: string = await this.provider.uplodaFile(file, "bannerImages", userId, true);
 
         const location = `https://${S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
 
         return { key, location };
-
     }
 
     async uploadCertificates(file: Express.Multer.File, userId: string): Promise<string> {

@@ -35,17 +35,25 @@ export class CompanyRepository extends BaseRepository<ICompany> implements IComp
         }
     }
 
-    async findPaginated(page: number, limit: number): Promise<{ data: ICompany[]; total: number }> {
-        try {
-            const skip = (page - 1) * limit;
-            const [data, total] = await Promise.all([
-                this.model.find({ role: "company" }, { name: 1, email: 1, role: 1, isBlocked: 1 }).skip(skip).limit(limit),
-                this.model.countDocuments(),
-            ]);
-            return { data, total };
-        } catch {
-            throw new DataBaseError("databse error while finding paginated company");
-        }
+
+    async findPaginated(page: number, limit: number, search?: string): Promise<[ICompany[], number]> {
+        page = Math.max(page, 1);
+        limit = Math.min(Math.max(limit, 1), 50);
+
+        const skip = (page - 1) * limit;
+
+        const escapedSearch = search ? search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") : "";
+        const filter = {
+            role: "company",
+            $or: [{ email: { $regex: escapedSearch, $options: "i" } }, { name: { $regex: escapedSearch, $options: "i" } }],
+        };
+
+        const [data, total] = await Promise.all([
+            this.model.find(filter, { name: 1, email: 1, role: 1, isBlocked: 1 }).lean().skip(skip).limit(limit),
+            this.model.countDocuments(filter),
+        ]);
+
+        return [data, total];
     }
 
     async blockOrUnblock(id: string, flag: boolean): Promise<ICompany | null> {
@@ -53,24 +61,6 @@ export class CompanyRepository extends BaseRepository<ICompany> implements IComp
             return await super.findByIdAndUpdate(id, { isBlocked: flag });
         } catch {
             throw new DataBaseError("db error while block or unblock company");
-        }
-    }
-
-    async findCompanies(query: string): Promise<ICompany[]> {
-        try {
-            let companies = [];
-
-            companies = await this.model
-                .find(
-                    {
-                        $or: [{ email: { $regex: query, $options: "i" } }, { name: { $regex: query, $options: "i" } }],
-                    },
-                    { name: 1, email: 1, role: 1 }
-                )
-                .lean();
-            return companies;
-        } catch {
-            throw new DataBaseError("db error while finding companies using query");
         }
     }
 }

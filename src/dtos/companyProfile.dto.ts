@@ -1,4 +1,4 @@
-import { IProfilePicture } from "../models/user/user.interface";
+import { IBannerImage, IDocument, IProfilePicture } from "../models/user/user.interface";
 import { AddressDTO } from "./userProfile.dto";
 
 export class CompanyProfileDTO {
@@ -15,8 +15,9 @@ export class CompanyProfileDTO {
     location?: string;
     industry?: string;
     address?: AddressDTO[];
+    documents!: IDocument[];
     logo?: string;
-    bannerImage?: string;
+    bannerImage?: IBannerImage;
     description?: string;
     createdAt!: string;
     updatedAt!: string;

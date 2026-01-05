@@ -3,53 +3,53 @@ import { userAuthMiddleware } from "../../middlewares/user.auth.middleware";
 import { userProfileController } from "../../dependencies/container.dependency";
 import { upload } from "../../middlewares/multer.middleware";
 
-const userRoutes = express.Router();
+const userProfileRoutes = express.Router();
 
-userRoutes.get("/me", userAuthMiddleware, userProfileController.getUserProfile.bind(userProfileController));
+userProfileRoutes.get("/", userAuthMiddleware, userProfileController.getUserProfile.bind(userProfileController));
 
-userRoutes.patch("/me", userAuthMiddleware, userProfileController.updateUserProfile.bind(userProfileController));
+userProfileRoutes.patch("/", userAuthMiddleware, userProfileController.updateUserProfile.bind(userProfileController));
 
-userRoutes.post("/me/user-skills", userAuthMiddleware, userProfileController.addUserSkill.bind(userProfileController));
+userProfileRoutes.post("/user-skills", userAuthMiddleware, userProfileController.addUserSkill.bind(userProfileController));
 
-userRoutes.delete(
-    "/me/user-skills/:id",
+userProfileRoutes.delete(
+    "/user-skills/:id",
     userAuthMiddleware,
     userProfileController.removeUserSkill.bind(userProfileController)
 );
 
-userRoutes.delete(
-    "/me/profile-picture",
+userProfileRoutes.delete(
+    "/profile-picture",
     userAuthMiddleware,
     userProfileController.deleteProfilePicture.bind(userProfileController)
 );
 
-userRoutes.post(
-    "/me/profile-picture",
+userProfileRoutes.post(
+    "/profile-picture",
     userAuthMiddleware,
     upload.single("profilePicture"),
     userProfileController.updateProfilePicture.bind(userProfileController)
 );
 
-userRoutes.post("/me/user-education", userAuthMiddleware, userProfileController.addEducation.bind(userProfileController));
+userProfileRoutes.post("/user-education", userAuthMiddleware, userProfileController.addEducation.bind(userProfileController));
 
-userRoutes.put("/me/user-education", userAuthMiddleware, userProfileController.updateEducation.bind(userProfileController));
+userProfileRoutes.put("/user-education", userAuthMiddleware, userProfileController.updateEducation.bind(userProfileController));
 
-userRoutes.delete(
-    "/me/user-education/:index",
+userProfileRoutes.delete(
+    "/user-education/:index",
     userAuthMiddleware,
     userProfileController.deleteEducation.bind(userProfileController)
 );
 
-userRoutes.post("/me/user-experience", userAuthMiddleware, userProfileController.addExperience.bind(userProfileController));
-userRoutes.put(
-    "/me/user-experience",
+userProfileRoutes.post("/user-experience", userAuthMiddleware, userProfileController.addExperience.bind(userProfileController));
+userProfileRoutes.put(
+    "/user-experience",
     userAuthMiddleware,
     userProfileController.updateExperience.bind(userProfileController)
 );
-userRoutes.delete(
-    "/me/user-experience/:index",
+userProfileRoutes.delete(
+    "/user-experience/:index",
     userAuthMiddleware,
     userProfileController.deleteExperience.bind(userProfileController)
 );
 
-export default userRoutes;
+export default userProfileRoutes;

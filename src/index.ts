@@ -11,13 +11,14 @@ import userAuthRoutes from "./routes/user.auth.routes";
 import companyAuthRoutes from "./routes/company.auth.routes";
 import commonRoutes from "./routes/common.routes";
 import { cacheService } from "./dependencies/container.dependency";
-import adminRoutes from "./routes/admin.routes";
+import adminRoutes from "./routes/admin/admin.routes";
 import cookieParser from "cookie-parser";
 import logger from "./utils/logger";
 
 import skillsRoutes from "./routes/skills/skills.routes";
 import { API_ROUTES } from "./constants/api-routes.constants";
 import companyRoutes from "./routes/company/company.routes";
+import publicJobRoutes from "./routes/jobs/jobs.public.routes";
 
 const app: Application = express();
 
@@ -66,10 +67,11 @@ app.use((req, res, next) => {
 app.use("/api/auth/user", userAuthRoutes);
 app.use("/api/auth/company", companyAuthRoutes);
 app.use("/api/auth", commonRoutes);
-app.use("/api/user", userRoutes);
-app.use(API_ROUTES.COMPANY,companyRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/skills", skillsRoutes);
+app.use(API_ROUTES.USER, userRoutes);
+app.use(API_ROUTES.COMPANY, companyRoutes);
+app.use(API_ROUTES.ADMIN, adminRoutes);
+app.use(API_ROUTES.SKILLS, skillsRoutes);
+app.use(API_ROUTES.JOBS, publicJobRoutes);
 
 //errro handler middleware
 app.use(errorHandler);
