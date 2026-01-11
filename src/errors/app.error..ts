@@ -1,8 +1,10 @@
+import { HTTP_STATUS } from "../constants/http.constants";
+
 export class AppError extends Error {
     statusCode: number;
     isOperational: boolean;
 
-    constructor(message: string, statusCode: number = 500, isOperational = true) {
+    constructor(message: string, statusCode: number = HTTP_STATUS.INTERNAL_SERVER_ERROR, isOperational = true) {
         super(message);
         this.name = this.constructor.name;
         this.statusCode = statusCode;

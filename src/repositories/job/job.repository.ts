@@ -22,11 +22,7 @@ export class JobRepository extends BaseRepository<IJob> implements IJobRepositor
         const filter = {
             company: companyId,
 
-            $or: [
-                { $text: { $search: escapedSearch } },
-                { slug: { $regex: escapedSearch, $options: "i" } },
-                { title: { $regex: escapedSearch, $options: "i" } },
-            ],
+            $or: [{ slug: { $regex: escapedSearch, $options: "i" } }, { title: { $regex: escapedSearch, $options: "i" } }],
         };
 
         const [jobs, total] = await Promise.all([
@@ -37,8 +33,6 @@ export class JobRepository extends BaseRepository<IJob> implements IJobRepositor
         return [jobs, total];
     }
 
-
-   
     async updateById(id: string, updates: Partial<IJob>): Promise<IJob | null> {
         return await this.model
             .findByIdAndUpdate(id, updates, {

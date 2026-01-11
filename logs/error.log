@@ -314,3 +314,162 @@ Use mongoose.model(name, schema)
 [2026-01-02 03:48:29] [31merror[39m:No User Found
 [2026-01-02 15:03:33] [31merror[39m:invalid refresh token
 [2026-01-02 15:04:39] [31merror[39m:invalid refresh token
+[2026-01-06 15:30:09] [31merror[39m:Unauthorized
+[2026-01-06 15:30:09] [31merror[39m:Unauthorized
+[2026-01-06 15:30:16] [31merror[39m:Unauthorized
+[2026-01-06 15:30:16] [31merror[39m:Unauthorized
+[2026-01-06 15:30:18] [31merror[39m:Unauthorized
+[2026-01-06 15:30:18] [31merror[39m:Unauthorized
+[2026-01-06 15:30:19] [31merror[39m:Unauthorized
+[2026-01-06 15:30:19] [31merror[39m:Unauthorized
+[2026-01-06 15:33:57] [31merror[39m:Unauthorized
+[2026-01-06 15:33:58] [31merror[39m:Unauthorized
+[2026-01-06 15:34:00] [31merror[39m:Unauthorized
+[2026-01-06 15:34:00] [31merror[39m:Unauthorized
+[2026-01-06 15:34:02] [31merror[39m:Unauthorized
+[2026-01-06 15:34:02] [31merror[39m:Unauthorized
+[2026-01-06 15:34:22] [31merror[39m:Unauthorized
+[2026-01-06 15:34:22] [31merror[39m:Unauthorized
+[2026-01-06 15:35:38] [31merror[39m:Unauthorized
+[2026-01-06 15:35:38] [31merror[39m:Unauthorized
+[2026-01-06 16:30:58] [31merror[39m:error processing query: ns=career_craft.jobs limit=10Tree: $and
+    $or
+        slug regex //i
+        title regex //i
+        TEXT : query=, language=english, caseSensitive=0, diacriticSensitive=0
+    company $eq ObjectId('694d4e1f328964aad9d43353')
+Sort: { createdAt: -1 }
+Proj: {}
+ planner returned error :: caused by :: No query solutions
+[2026-01-06 16:57:11] [31merror[39m:unauthorized request expired request 
+[2026-01-06 16:57:11] [31merror[39m:invalid refresh token
+[2026-01-06 17:10:55] [31merror[39m:error processing query: ns=career_craft.jobs limit=10Tree: $and
+    $or
+        slug regex //i
+        title regex //i
+        TEXT : query=, language=english, caseSensitive=0, diacriticSensitive=0
+    company $eq ObjectId('694d4e1f328964aad9d43353')
+Sort: { createdAt: -1 }
+Proj: {}
+ planner returned error :: caused by :: No query solutions
+[2026-01-06 17:10:58] [31merror[39m:error processing query: ns=career_craft.jobs limit=10Tree: $and
+    $or
+        slug regex //i
+        title regex //i
+        TEXT : query=, language=english, caseSensitive=0, diacriticSensitive=0
+    company $eq ObjectId('694d4e1f328964aad9d43353')
+Sort: { createdAt: -1 }
+Proj: {}
+ planner returned error :: caused by :: No query solutions
+[2026-01-06 17:11:19] [31merror[39m:error processing query: ns=career_craft.jobs limit=10Tree: $and
+    $or
+        slug regex //i
+        title regex //i
+        TEXT : query=, language=english, caseSensitive=0, diacriticSensitive=0
+    company $eq ObjectId('694d4e1f328964aad9d43353')
+Sort: { createdAt: -1 }
+Proj: {}
+ planner returned error :: caused by :: No query solutions
+[2026-01-06 17:14:31] [31merror[39m:error processing query: ns=career_craft.jobs limit=10Tree: $and
+    $or
+        slug regex //i
+        title regex //i
+        TEXT : query=, language=english, caseSensitive=0, diacriticSensitive=0
+    company $eq ObjectId('694d4e1f328964aad9d43353')
+Sort: { createdAt: -1 }
+Proj: {}
+ planner returned error :: caused by :: No query solutions
+[2026-01-06 17:17:22] [31merror[39m:error processing query: ns=career_craft.jobs limit=10Tree: $and
+    $or
+        slug regex //i
+        title regex //i
+        TEXT : query=, language=english, caseSensitive=0, diacriticSensitive=0
+    company $eq ObjectId('694d4e1f328964aad9d43353')
+Sort: { createdAt: -1 }
+Proj: {}
+ planner returned error :: caused by :: No query solutions
+[2026-01-06 17:19:46] [31merror[39m:Invalid skill id
+[2026-01-06 17:19:46] [31merror[39m:Invalid skill id
+[2026-01-06 17:19:47] [31merror[39m:Invalid skill id
+[2026-01-06 17:19:48] [31merror[39m:Invalid skill id
+[2026-01-06 17:19:48] [31merror[39m:Invalid skill id
+[2026-01-06 17:19:48] [31merror[39m:Invalid skill id
+[2026-01-06 17:19:48] [31merror[39m:Invalid skill id
+[2026-01-06 17:19:49] [31merror[39m:Invalid skill id
+[2026-01-06 17:19:49] [31merror[39m:Invalid skill id
+[2026-01-06 17:19:49] [31merror[39m:Invalid skill id
+[2026-01-06 17:19:52] [31merror[39m:error processing query: ns=career_craft.jobs limit=10Tree: $and
+    $or
+        slug regex //i
+        title regex //i
+        TEXT : query=, language=english, caseSensitive=0, diacriticSensitive=0
+    company $eq ObjectId('694d4e1f328964aad9d43353')
+Sort: { createdAt: -1 }
+Proj: {}
+ planner returned error :: caused by :: No query solutions
+[2026-01-06 17:20:53] [31merror[39m:error processing query: ns=career_craft.jobs limit=10Tree: $and
+    $or
+        slug regex //i
+        title regex //i
+        TEXT : query=, language=english, caseSensitive=0, diacriticSensitive=0
+    company $eq ObjectId('694d4e1f328964aad9d43353')
+Sort: { createdAt: -1 }
+Proj: {}
+ planner returned error :: caused by :: No query solutions
+[2026-01-06 18:59:35] [31merror[39m:unauthorized request expired request 
+[2026-01-06 18:59:35] [31merror[39m:invalid refresh token
+[2026-01-06 19:27:05] [31merror[39m:error processing query: ns=career_craft.jobs limit=10Tree: $and
+    $or
+        slug regex //i
+        title regex //i
+        TEXT : query=, language=english, caseSensitive=0, diacriticSensitive=0
+    company $eq ObjectId('694d4e1f328964aad9d43353')
+Sort: { createdAt: -1 }
+Proj: {}
+ planner returned error :: caused by :: No query solutions
+[2026-01-06 19:28:39] [31merror[39m:error processing query: ns=career_craft.jobs limit=10Tree: $and
+    $or
+        slug regex //i
+        title regex //i
+        TEXT : query=, language=english, caseSensitive=0, diacriticSensitive=0
+    company $eq ObjectId('694d4e1f328964aad9d43353')
+Sort: { createdAt: -1 }
+Proj: {}
+ planner returned error :: caused by :: No query solutions
+[2026-01-06 19:34:10] [31merror[39m:error processing query: ns=career_craft.jobs limit=10Tree: $and
+    $or
+        slug regex / /i
+        title regex / /i
+        TEXT : query= , language=english, caseSensitive=0, diacriticSensitive=0
+    company $eq ObjectId('694d4e1f328964aad9d43353')
+Sort: { createdAt: -1 }
+Proj: {}
+ planner returned error :: caused by :: No query solutions
+[2026-01-06 19:34:12] [31merror[39m:error processing query: ns=career_craft.jobs limit=10Tree: $and
+    $or
+        slug regex / /i
+        title regex / /i
+        TEXT : query= , language=english, caseSensitive=0, diacriticSensitive=0
+    company $eq ObjectId('694d4e1f328964aad9d43353')
+Sort: { createdAt: -1 }
+Proj: {}
+ planner returned error :: caused by :: No query solutions
+[2026-01-06 21:06:49] [31merror[39m:Invalid skill id
+[2026-01-06 21:06:49] [31merror[39m:Invalid skill id
+[2026-01-06 21:06:49] [31merror[39m:Invalid skill id
+[2026-01-06 21:06:49] [31merror[39m:Invalid skill id
+[2026-01-06 21:06:49] [31merror[39m:Invalid skill id
+[2026-01-06 21:06:50] [31merror[39m:Invalid skill id
+[2026-01-06 21:06:50] [31merror[39m:Invalid skill id
+[2026-01-06 21:06:50] [31merror[39m:Invalid skill id
+[2026-01-06 21:06:50] [31merror[39m:Invalid skill id
+[2026-01-06 21:06:50] [31merror[39m:Invalid skill id
+[2026-01-06 21:06:52] [31merror[39m:Invalid skill id
+[2026-01-06 21:06:52] [31merror[39m:Invalid skill id
+[2026-01-06 21:06:52] [31merror[39m:Invalid skill id
+[2026-01-06 21:06:53] [31merror[39m:Invalid skill id
+[2026-01-06 21:06:53] [31merror[39m:Invalid skill id
+[2026-01-06 21:06:53] [31merror[39m:Invalid skill id
+[2026-01-06 21:06:53] [31merror[39m:Invalid skill id
+[2026-01-06 21:06:53] [31merror[39m:Invalid skill id
+[2026-01-06 21:06:53] [31merror[39m:Invalid skill id

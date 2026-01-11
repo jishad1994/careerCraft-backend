@@ -29,7 +29,7 @@ export class CompanyJobService implements ICompanyJobService {
         limit: number = 10,
         search?: string
     ): Promise<{ jobs: IJob[]; paginationMeta: PaginationMeta }> {
-        const [jobs, total] = await this._jobRepository.findByCompany(companyId, page, limit, search);
+        const [jobs, total] = await this._jobRepository.findByCompany(companyId, page, limit, search ? search : "");
 
         const totalPages = Math.ceil(total / limit);
 

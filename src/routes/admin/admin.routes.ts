@@ -1,6 +1,7 @@
 import express from "express";
 import { adminController } from "../../dependencies/container.dependency";
 import adminJobRoutes from "./admin.jobs.routes";
+import { AdminAuthMiddleware } from "../../middlewares/admin.auth.middleware";
 
 export const adminRoutes = express.Router();
 
@@ -11,6 +12,6 @@ adminRoutes.patch("/comapanies/:id/unblock", adminController.unblockCompany.bind
 adminRoutes.patch("/users/:id/block", adminController.blockUser.bind(adminController));
 adminRoutes.patch("/users/:id/unblock", adminController.unblockUser.bind(adminController));
 
-adminRoutes.use("/jobs", adminJobRoutes);
+adminRoutes.use("/jobs",AdminAuthMiddleware,adminJobRoutes);
 
 export default adminRoutes;

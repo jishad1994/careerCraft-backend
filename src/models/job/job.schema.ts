@@ -145,7 +145,6 @@ jobSchema.index({
 
 jobSchema.index({ status: 1, isVerified: 1 });
 jobSchema.index({ company: 1, createdAt: -1 });
-jobSchema.index({ expiresAt: 1 });
 
 jobSchema.pre("save", function (next) {
     if (!this.expiresAt) {

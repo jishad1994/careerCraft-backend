@@ -30,6 +30,7 @@ export class S3Service implements IFileService {
             new PutObjectCommand({
                 Bucket: S3_BUCKET,
                 Key: key,
+                
                 Body: file.buffer,
                 ContentType: file.mimetype,
                 // ACL: "private",

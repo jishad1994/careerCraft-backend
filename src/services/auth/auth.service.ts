@@ -11,12 +11,13 @@ import { IOtpService } from "../otp_service/otp.service.interface";
 import { ICompanyRepository } from "../../repositories/company/company.repository.interface";
 import { ICompany } from "../../models/company/company.interface";
 import { IEmailService } from "../email_service/email.service.interface";
-import { AuthUserResponseDTO, GoogleAuthRequestDTO } from "../../dtos/auth.dto";
+import { AuthUserResponseDTO } from "../../dtos/auth.dto";
 import { verifyGoogleAuthToken } from "../../utils/googleAuth.utils";
 import { toAuthUserResponseDTO } from "../../mappers/base-user.mapper";
 import { AppError } from "../../errors/app.error.";
 import { AuthError } from "../../errors/auth.error";
 import logger from "../../utils/logger";
+import { RequestOtpDTO } from "../../validators-schemas/auth.schemas";
 
 export class AuthService implements IAuthService {
     constructor(
@@ -97,10 +98,7 @@ export class AuthService implements IAuthService {
         return { accessToken, refreshToken, user: authUserDto };
     }
 
-    async loginWithGoogle({
-        credential,
-        role,
-    }: GoogleAuthRequestDTO): Promise<{ accessToken: string; refreshToken: string; user: AuthUserResponseDTO }> {
+    async loginWithGoogle(credential: string, role: Role) {
         const googleData = await verifyGoogleAuthToken(credential);
 
         if (!googleData.emailVerified) throw new Error("Google email is not verified");
@@ -189,23 +187,30 @@ export class AuthService implements IAuthService {
 
     //request otp
 
-    async sendOtpAndCacheTheUser(user: userSignupData | companySignupData) {
-        //generate OTP
-        const otp: string = (await this._otpService.generateOTP()).toString();
-        console.log("otp generated: ", otp);
-        const otpHashed: string = await bcrypt.hash(otp, 10);
+    async sendOtpCacheUser(user: RequestOtpDTO) {
+        try {
+            const otp: string = (await this._otpService.generateOTP()).toString();
 
-        const hashedPassword: string = await bcrypt.hash(user.password ?? "", 10); //hash password
+            logger.info(`otp generated: ${otp}`);
 
-        user.password = hashedPassword;
+            const otpHashed: string = await bcrypt.hash(otp, 10);
 
-        await this._cacheService.set(
-            (user.email as string) ?? "",
-            JSON.stringify({ ...user, otpHashed, otpVerified: false }),
-            500
-        );
+            const hashedPassword: string = await bcrypt.hash(user.password ?? "", 10); //hash password
 
-        this._otpService.sendOTP(user.email ?? "", "your one time password", otp);
+            user.password = hashedPassword;
+
+            await this._cacheService.set(
+                user.email,
+                JSON.stringify({ ...user, otpHashed, otpVerified: false }),
+                Number(process.env.OTP_VALIDATION_TIME) || 500
+            );
+
+            this._otpService.sendOTP(user.email, "Your Verification Code", otp);
+            logger.info(`OTP sent and user cached for: ${user.email}`);
+        } catch (error) {
+            logger.error("OTP Service Error:", error);
+            throw new AppError("Failed to send verification code. Please try again.");
+        }
     }
 
     async resendOtp(email: string) {

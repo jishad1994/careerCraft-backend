@@ -6,17 +6,14 @@ export interface AuthUserResponseDTO {
     firstName?: string;
     lastName?: string;
     email: string;
-    role: "user" | "company" | "admin";
+    role: Role;
     profilePicture?: IProfilePicture;
 }
 
-export interface GoogleAuthRequestDTO {
-    credential: string; //googleId token from the front end
-    role: Role;
-}
 
-export interface LoginResponseDTO {
-    accessToken: string;
-    refreshToken?: string;
-    user: AuthUserResponseDTO;
-}
+
+
+
+
+
+
