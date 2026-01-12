@@ -1,7 +1,8 @@
 import { userSignupData, companySignupData } from "../../utils/auth.utils";
-import { GoogleAuthRequestDTO, AuthUserResponseDTO } from "../../dtos/auth.dto";
-import { IUser } from "../../models/user/user.interface";
+import {  AuthUserResponseDTO } from "../../dtos/auth.dto";
+import { IUser, Role } from "../../models/user/user.interface";
 import { ICompany } from "../../models/company/company.interface";
+import { RequestOtpDTO } from "../../validators-schemas/auth.schemas";
 
 export interface IAuthService {
     signupUser(userData: userSignupData): Promise<IUser>;
@@ -13,16 +14,16 @@ export interface IAuthService {
         role: string
     ): Promise<{ accessToken: string; refreshToken: string; user: AuthUserResponseDTO }>;
 
-    loginWithGoogle({
-        credential,
-        role,
-    }: GoogleAuthRequestDTO): Promise<{ accessToken: string; refreshToken: string; user: AuthUserResponseDTO }>;
+    loginWithGoogle(
+        credential: string,
+        role: Role
+    ): Promise<{ accessToken: string; refreshToken: string; user: AuthUserResponseDTO }>;
 
     logout(refreshToken: string): Promise<void>;
 
     refresh(oldRefreshToken: string): Promise<{ accessToken: string; refreshToken: string; user: AuthUserResponseDTO }>;
 
-    sendOtpAndCacheTheUser(user: userSignupData | companySignupData): Promise<void>;
+    sendOtpCacheUser(user: RequestOtpDTO): Promise<void>;
 
     resendOtp(email: string): Promise<void>;
 

@@ -17,9 +17,9 @@ export interface IAuthController {
 
     resendOTP(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
-    verifyOTP(req: Request, res: Response): Promise<Response | void>;
+    verifyOTP(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
-    forgotPassword(req: Request, res: Response,next:NextFunction): Promise<Response | void>;
+    forgotPassword(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
-    resetPassword(req: Request, res: Response): Promise<Response | void>;
+    resetPassword(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 }

@@ -1,18 +1,21 @@
-import { NextFunction, Request, Response } from "express";
-import { z } from "zod";
+import { ZodSchema } from "zod";
+
+import { Request, Response, NextFunction } from "express";
 import { ApiResponse } from "../utils/apiResponse.utils";
+import { HTTP_MESSAGES } from "../constants/http.constants";
 
-export const validatorRequest = (schema) => (req: Request, res: Response, next: NextFunction) => {
-    const result = schema.safeParse(req.body);
+export type IRequestObjects = "body" | "params" | "query" | "user" | "cookies";
+export const validate =
+    (schema: ZodSchema, sources: IRequestObjects[]) => (req: Request, res: Response, next: NextFunction) => {
+        for (const source of sources) {
+            const result = schema.safeParse(req[source]);
 
-    if (!result.success) {
-        const formattedErrors = result.error.issues.map((issue) => ({
-            field: issue.path.join("."),
-            message: issue.message,
-        }));
+            if (!result.success) {
+                return ApiResponse.validationError(res, HTTP_MESSAGES.VALIDATION_ERROR, result.error.flatten().fieldErrors);
+            }
 
-        return ApiResponse.validationError(res, "invalid credentials", formattedErrors);
-    }
-    req.body = result.data;
-    next(req);
-};
+            req[source] = result.data;
+        }
+
+        next();
+    };

@@ -6,7 +6,6 @@ import helmet from "helmet";
 import morgan from "morgan";
 import { errorHandler } from "./middlewares/error.middleware";
 import { MongooseDatabase } from "./database/mongooseDatabase";
-import userRoutes from "./routes/user/user.profile.routes";
 import userAuthRoutes from "./routes/user.auth.routes";
 import companyAuthRoutes from "./routes/company.auth.routes";
 import commonRoutes from "./routes/common.routes";
@@ -19,6 +18,7 @@ import skillsRoutes from "./routes/skills/skills.routes";
 import { API_ROUTES } from "./constants/api-routes.constants";
 import companyRoutes from "./routes/company/company.routes";
 import publicJobRoutes from "./routes/jobs/jobs.public.routes";
+import userRoutes from "./routes/user/user.routes";
 
 const app: Application = express();
 

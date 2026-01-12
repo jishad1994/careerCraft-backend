@@ -18,7 +18,7 @@ export class OTPService implements IOtpService {
         // eslint-disable-next-line no-useless-catch
         try {
             this.emailService.send(to, subject, otp);
-            console.log("OTP SEnd:", otp);
+            console.log("OTP Send:", otp);
         } catch (error) {
             throw error;
         }

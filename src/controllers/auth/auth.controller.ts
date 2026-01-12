@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import { HTTP_STATUS } from "../../constants/http.constants";
 import { IAuthService } from "../../services/auth/auth.service.interface";
 import { ICacheService } from "../../services/cache/cache.service.interface";
 import {
@@ -10,163 +9,145 @@ import {
 } from "../../utils/cookies.utils";
 import { IAuthController } from "./auth.controller.interface";
 import { companySignupData, userSignupData } from "../../utils/auth.utils";
-import { IUser } from "../../models/user/user.interface";
-import { ICompany } from "../../models/company/company.interface";
 import { ApiResponse } from "../../utils/apiResponse.utils";
 import { AuthUserResponseDTO } from "../../dtos/auth.dto";
 import {
     cachedUserValidator,
-    emailAndRoleValidator,
-    emailValidator,
-    loginCredentialsValidator,
     LoginRequestDTO,
-    SignupRequestDTO,
-    signupValidator,
-} from "../../validators/auth.validator";
-import { AppError } from "../../errors/app.error.";
-import { email } from "zod";
+    EmailAndRoleDTO,
+    CheckAvailabilityDTO,
+    RequestOtpDTO,
+    ResendOtpDTO,
+    VerifyOtpDTO,
+    ForgotPasswordDTO,
+    ResetPasswordDTO,
+    GoogleLoginDTO,
+    AuthCookiesDTO,
+    CachedUserData,
+} from "../../validators-schemas/auth.schemas";
+import { HTTP_MESSAGES } from "../../constants/http.constants";
 
 export class AuthController implements IAuthController {
     constructor(private _authService: IAuthService, private _cacheService: ICacheService) {}
 
-    //refresh
-
+    // Refresh token
     async refresh(req: Request, res: Response, next: NextFunction) {
         try {
-            const { refreshToken: oldRefreshToken } = req.cookies;
+            const { refreshToken: oldRefreshToken } = req.cookies as AuthCookiesDTO;
 
-            if (!oldRefreshToken) {
-                return ApiResponse.unauthorized(res);
-            }
             const { refreshToken, accessToken, user } = await this._authService.refresh(oldRefreshToken);
+
             res.cookie(refreshTokenCookieName, refreshToken, refreshTokenCookieOptions);
             res.cookie(accessTokenCookieName, accessToken, accessTokenCookieOptions);
-            return ApiResponse.success<{ user: AuthUserResponseDTO }>(res, "Token refresh successfull", { user });
+
+            return ApiResponse.success<AuthUserResponseDTO>(res, HTTP_MESSAGES.TOKEN_REFRESH_SUCCESSFULL, user);
         } catch (error) {
             next(error);
         }
     }
 
-    //login
-
+    // Login
     async login(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
-            const result = loginCredentialsValidator.safeParse(req.body);
+            const { email, password, role } = req.body as LoginRequestDTO;
 
-            if (!result.success) {
-                const formattedErrors = result.error.issues.map((issue) => ({
-                    field: issue.path.join("."),
-                    message: issue.message,
-                }));
-
-                return ApiResponse.validationError(res, "invalid credentials", formattedErrors);
-            }
-
-            const credentials: LoginRequestDTO = result.data;
-
-            const { refreshToken, accessToken, user } = await this._authService.login(
-                credentials.email,
-                credentials.password,
-                credentials.role
-            );
+            const { refreshToken, accessToken, user } = await this._authService.login(email, password, role);
 
             res.cookie(refreshTokenCookieName, refreshToken, refreshTokenCookieOptions);
             res.cookie(accessTokenCookieName, accessToken, accessTokenCookieOptions);
-            return ApiResponse.success(res, "User login successfull", { user });
+
+            return ApiResponse.success<AuthUserResponseDTO>(res, HTTP_MESSAGES.LOGIN_SUCCESSFULL, user);
         } catch (error) {
             next(error);
         }
     }
 
-    // googlelogin
-
+    // Google login
     async google(req: Request, res: Response, next: NextFunction) {
         try {
-            const { credential, role } = req.body;
+            const { credential, role } = req.body as GoogleLoginDTO;
 
-            const { refreshToken, accessToken, user } = await this._authService.loginWithGoogle({ credential, role });
+            const { refreshToken, accessToken, user } = await this._authService.loginWithGoogle(credential, role);
 
             res.cookie(refreshTokenCookieName, refreshToken, refreshTokenCookieOptions);
             res.cookie(accessTokenCookieName, accessToken, accessTokenCookieOptions);
 
-            return ApiResponse.success(res, "google authentication successfull", { user });
+            return ApiResponse.success(res, HTTP_MESSAGES.GOOGLE_AUTH_SUCCESS, { user });
         } catch (error) {
             next(error);
         }
     }
 
+    // Logout
     async logout(req: Request, res: Response, next: NextFunction) {
-        const { refreshToken } = req.cookies;
         try {
-            await this._authService.logout(refreshToken as string);
+            const { refreshToken } = req.cookies as AuthCookiesDTO;
+
+            if (refreshToken) {
+                await this._authService.logout(refreshToken as string);
+            }
+
             res.clearCookie(refreshTokenCookieName, refreshTokenCookieOptions);
             res.clearCookie(accessTokenCookieName, accessTokenCookieOptions);
-            return ApiResponse.success(res, "Logout successfull");
+
+            return ApiResponse.success(res, HTTP_MESSAGES.LOGOUT_SUCCESSFULL);
         } catch (error) {
             next(error);
         }
     }
 
-    //signup controller
+    // Signup
     async signup(req: Request, res: Response, next: NextFunction) {
         try {
-            const result = emailAndRoleValidator.safeParse(req.body);
+            const { email } = req.body as EmailAndRoleDTO;
 
-            if (!result.success) {
-                const formattedErrors = result.error.issues.map((issue) => ({
-                    field: issue.path.join("."),
-                    message: issue.message,
-                }));
-
-                return ApiResponse.validationError(res, "invalid credentials", formattedErrors);
-            }
-
-            const jsonCachedUserData = await this._cacheService.get(result.data?.email);
-
+            const jsonCachedUserData = await this._cacheService.get(email);
             if (!jsonCachedUserData) {
-                return ApiResponse.error(res, "Session expired, please try again later");
+                return ApiResponse.error(res, HTTP_MESSAGES.SESSION_EXPIRED);
             }
 
-            const cachedUserData = JSON.parse(jsonCachedUserData as string);
+            let cachedUserData: CachedUserData;
+            try {
+                cachedUserData = JSON.parse(jsonCachedUserData as string);
+            } catch {
+                return ApiResponse.error(res, HTTP_MESSAGES.INVALID_SESSION_DATA);
+            }
 
             const validatedCache = cachedUserValidator.safeParse(cachedUserData);
-
             if (!validatedCache.success) {
-                const formattedErrors = validatedCache.error.issues.map((issue) => ({
-                    field: issue.path.join("."),
-                    message: issue.message,
-                }));
-
-                return ApiResponse.validationError(res, "invalid credentials", formattedErrors);
+                return ApiResponse.validationError(
+                    res,
+                    HTTP_MESSAGES.TAMPERED_SESSION_DATA,
+                    validatedCache.error.flatten().fieldErrors
+                );
             }
 
-            if (!validatedCache.data?.otpVerified) {
-                throw new AppError("Otp is not verifie.please try again", 400);
+            if (!validatedCache.data.otpVerified) {
+                return ApiResponse.error(res, HTTP_MESSAGES.OTP_VERIFICATION_REQUIRED);
             }
 
-            let entity: IUser | ICompany;
+            const entity =
+                validatedCache.data.role === "user"
+                    ? await this._authService.signupUser(validatedCache.data as userSignupData)
+                    : await this._authService.signupCompany(validatedCache.data as companySignupData);
 
-            if (validatedCache.data?.role == "user") {
-                entity = await this._authService.signupUser(validatedCache.data as userSignupData);
-            } else {
-                entity = await this._authService.signupCompany(validatedCache.data as companySignupData);
-            }
+            await this._cacheService.delete(email);
 
-            if (entity) {
-                return ApiResponse.created(res, "User registration succefull");
-            } else {
-                return ApiResponse.error(res, "User registration unsuccessfull");
-            }
+            return ApiResponse.created(res, HTTP_MESSAGES.REGISTRATION_SUCCESSFULL, {
+                email: entity.email,
+                role: validatedCache.data.role,
+            });
         } catch (error) {
             next(error);
         }
     }
 
-    //check phone or email exists
+    // Check phone or email exists
     async checkUserPhoneOrEmailExists(req: Request, res: Response, next: NextFunction) {
         try {
-            const { phoneOrEmail, role } = req.body;
-            const result = await this._authService.checkPhoneOrEmailExists(phoneOrEmail, role); //returns an object {exists:boolean}
+            const { phoneOrEmail, role } = req.body as CheckAvailabilityDTO;
+
+            const result = await this._authService.checkPhoneOrEmailExists(phoneOrEmail, role);
 
             return ApiResponse.success(res, "", result);
         } catch (error) {
@@ -174,109 +155,78 @@ export class AuthController implements IAuthController {
         }
     }
 
-    //send OTP controller
+    // Request OTP
     async requestOTP(req: Request, res: Response, next: NextFunction) {
         try {
-            const result = signupValidator.safeParse(req.body);
+            const userData = req.body as RequestOtpDTO;
 
-            if (!result.success) {
-                const formattedErrors = result.error.issues.map((issue) => ({
-                    field: issue.path.join("."),
-                    message: issue.message,
-                }));
+            await this._authService.sendOtpCacheUser(userData);
 
-                return ApiResponse.validationError(res, "Validation failed", formattedErrors);
-            }
-
-            const user: SignupRequestDTO = result.data;
-
-            await this._authService.sendOtpAndCacheTheUser({ ...user });
-
-            return ApiResponse.success(res, "Otp send to user email", { email: user.email, role: user.role });
+            return ApiResponse.success(res, HTTP_MESSAGES.OTP_SENT, {
+                email: userData.email,
+                role: userData.role,
+            });
         } catch (error) {
             next(error);
         }
     }
-    // RESEND OTP CONTROLLER
+
+    // Resend OTP
     async resendOTP(req: Request, res: Response, next: NextFunction) {
         try {
-            const result = emailValidator.safeParse(req.body);
-            if (!result.success) {
-                const formattedErrors = result.error.issues.map((issue) => ({
-                    field: issue.path.join("."),
-                    message: issue.message,
-                }));
+            const { email, role } = req.body as ResendOtpDTO;
 
-                return ApiResponse.validationError(res, "email validation failed", formattedErrors);
-            }
+            await this._authService.resendOtp(email);
 
-            await this._authService.resendOtp(result.data?.email as string);
-            return ApiResponse.success(res, "New otp sent successfully", email);
-        } catch (error: unknown) {
+            return ApiResponse.success(res, HTTP_MESSAGES.OTP_SENT, { email, role });
+        } catch (error) {
             next(error);
         }
     }
 
-    // verify OTP
-
-    async verifyOTP(req: Request, res: Response) {
+    // Verify OTP
+    async verifyOTP(req: Request, res: Response, next: NextFunction) {
         try {
-            const { otp, email, role } = req.body;
-            if (!otp || !email) {
-                return res.status(HTTP_STATUS.BAD_REQUEST).json({ success: false, message: "otp or email is not found " });
-            }
-            console.log("verificaiton woked");
+            const { otp, email, role } = req.body as VerifyOtpDTO;
+
             const verificationStatus = await this._authService.verifyOtp(otp, email);
-            console.log("verificaiton status", verificationStatus);
-            //response
+
             if (verificationStatus) {
-                //send success response along with user data
-                res.status(HTTP_STATUS.ACCEPTED).json({
-                    success: true,
-                    message: "otp verification successfull ",
+                return ApiResponse.success(res, HTTP_MESSAGES.OTP_VERIFICATION_SUCCESSFULL, {
                     email,
                     role,
                 });
             } else {
-                res.status(HTTP_STATUS.BAD_REQUEST).json({ success: false, message: "OTP verification failed" });
+                return ApiResponse.error(res, HTTP_MESSAGES.OTP_VERIFICATION_FAILED);
             }
-        } catch (error: unknown) {
-            return res
-                .status(HTTP_STATUS.BAD_REQUEST)
-                .json({ success: false, message: error instanceof Error ? error.message : error });
-        }
-    }
-
-    async forgotPassword(req: Request, res: Response, next: NextFunction) {
-        try {
-            const result = emailAndRoleValidator.safeParse(req.body);
-
-            if (!result.success) {
-                const formattedErrors = result.error.issues.map((issue) => ({
-                    field: issue.path.join("."),
-                    message: issue.message,
-                }));
-
-                return ApiResponse.validationError(res, "invalid credentials", formattedErrors);
-            }
-            await this._authService.sendResetPasswordLink(result.data?.email, result.data?.role);
-            return ApiResponse.success(res, "Password reset link send to user email");
         } catch (error) {
             next(error);
         }
     }
 
-    async resetPassword(req: Request, res: Response): Promise<Response | void> {
+    // Forgot password
+    async forgotPassword(req: Request, res: Response, next: NextFunction) {
         try {
-            const { newPassword, resetPasswordToken } = req.body;
+            const { email, role } = req.body as ForgotPasswordDTO;
+
+            await this._authService.sendResetPasswordLink(email, role);
+
+            return ApiResponse.success(res, HTTP_MESSAGES.PASSWORD_RESET_LINK_SENT);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // Reset password
+    async resetPassword(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const { newPassword, resetPasswordToken } = req.body as ResetPasswordDTO;
 
             await this._authService.resetPassword(resetPasswordToken, newPassword);
-            return ApiResponse.created(res, "Password reset successfull");
-            return res.status(HTTP_STATUS.ACCEPTED).json({ success: true, message: "password reset successfull" });
-        } catch (error: unknown) {
-            return res
-                .status(HTTP_STATUS.BAD_REQUEST)
-                .json({ success: false, message: error instanceof Error ? error.message : error });
+
+            return ApiResponse.created(res, HTTP_MESSAGES.PASSWORD_RESET_SUCCESSFULL);
+        } catch (error) {
+            next(error);
         }
     }
 }
