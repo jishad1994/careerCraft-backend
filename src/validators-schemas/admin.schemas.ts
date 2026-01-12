@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { objectIdSchema } from "./auth.schemas";
 
 // // MongoDB ObjectId validation
 // const objectIdSchema = z
@@ -42,4 +43,14 @@ import { z } from "zod";
 // export type IdParam = z.infer<typeof idParamSchema>;
 // export type BlockActionParam = z.infer<typeof blockActionParamSchema>;
 
+export const idParamSchema = z.object({
+    id: objectIdSchema,
+});
 
+export const rejectVerificationSchema = z.object({
+    comment: z.string().min(10, "Rejection reason must be at least 10 characters").max(500, "Rejection reason too long"),
+});
+
+export const documentKeySchema = z.object({
+    documentKey: z.string().min(1, "Document key is required"),
+});

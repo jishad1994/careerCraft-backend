@@ -1,4 +1,5 @@
-import {  z } from "zod";
+import { z } from "zod";
+import { idParamSchema } from "./admin.schemas";
 
 const roleSchema = z.enum(["user", "company", "admin"]);
 
@@ -23,6 +24,8 @@ export const dbIdLength = parseInt(process.env.DB_OBJECT_ID_LENGTH || "24", 10);
 export const idRegexString = process.env.DB_OBJECT_ID_REGEX || "^[0-9a-fA-F]{24}$";
 export const dbIdRegex = new RegExp(idRegexString);
 
+export const objectIdSchema = z.string().length(dbIdLength, "ID must be exactly 24 characters").regex(dbIdRegex);
+
 //  regex for JWT structure (header.payload.signature)
 const jwtRegex = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/;
 
@@ -38,7 +41,7 @@ export const loginCredentialsSchema = z.object({
 });
 
 export const authUserSchema = z.object({
-    id: z.string().length(dbIdLength, "ID must be exactly 24 characters").regex(dbIdRegex),
+    id: objectIdSchema,
     role: roleSchema,
 });
 
@@ -86,8 +89,6 @@ export const googleLoginSchema = z.object({
     credential: z.string().min(1, "Google Credential is required"),
     role: roleSchema,
 });
-
-
 
 export const emailAndRoleSchema = z.object({
     email: z.email().trim(),
@@ -140,9 +141,6 @@ export const cachedUserValidator = z.object({
     otpExpiry: z.number().optional(),
 });
 
-
-
-
 // Type exports
 
 export type LoginRequestDTO = z.infer<typeof loginCredentialsSchema>;
@@ -158,3 +156,4 @@ export type GoogleLoginDTO = z.infer<typeof googleLoginSchema>;
 export type CachedUserData = z.infer<typeof cachedUserValidator>;
 export type AuthCookiesDTO = z.infer<typeof AuthCookiesSchema>;
 
+export type IdParam = z.infer<typeof idParamSchema>;

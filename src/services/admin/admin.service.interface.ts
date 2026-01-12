@@ -5,8 +5,12 @@ import { IUser } from "../../models/user/user.interface";
 export interface IAdminService {
     getUsers(page: number, limit: number, search?: string): Promise<UsersPaginatedDTO<IUser>>;
     getCompanies(page: number, limit: number, search?: string): Promise<UsersPaginatedDTO<ICompany>>;
+    getCompanyById(companyId: string): Promise<ICompany>;
+    verifyCompany(companyId: string): Promise<ICompany>;
+    rejectCompanyVerification(companyId: string, comment: string): Promise<void>;
     blockUser(id: string): Promise<IUser | null>;
     unblockUser(id: string): Promise<IUser | null>;
     blockCompany(id: string): Promise<ICompany | null>;
     unblockCompany(id: string): Promise<ICompany | null>;
+    getDocumentSignedUrl(documentKey: string): Promise<string>;
 }

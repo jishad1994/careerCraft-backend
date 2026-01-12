@@ -68,16 +68,15 @@ const authController = new AuthController(authService, cacheService);
 
 //company authcontroller
 
-//admin controller
-const adminService = new AdminService(userRepo, companyRepo);
-
-const adminController = new AdminController(adminService);
-
 //file service
 
 const s3Service = new S3Service();
 
 const fileService = new FileService(s3Service);
+//admin controller
+const adminService = new AdminService(userRepo, companyRepo, emailService, fileService);
+
+const adminController = new AdminController(adminService);
 
 // user profile controller
 const userProfileService = new UserProfileService(userRepo, fileService);

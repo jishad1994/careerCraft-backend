@@ -2,6 +2,7 @@ import { AuthUserResponseDTO } from "../../../dtos/auth.dto";
 import { toAuthUserResponseDTO } from "../../../mappers/base-user.mapper";
 import { IAdminService } from "../../../services/admin/admin.service.interface";
 import { ApiResponse } from "../../../utils/apiResponse.utils";
+import { IdParam } from "../../../validators-schemas/auth.schemas";
 import { IAdminController } from "../interfaces/admin.controller.interface";
 import { NextFunction, Request, Response } from "express";
 
@@ -17,6 +18,55 @@ export class AdminController implements IAdminController {
             const { data, paginationMeta } = await this._adminService.getCompanies(page, limit, search);
 
             return ApiResponse.success(res, "Companies fetch successfull", data, 200, paginationMeta);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getCompanyById(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const { id } = req.params as unknown as IdParam;
+
+            const company = await this._adminService.getCompanyById(id);
+
+            return ApiResponse.success(res, "Company fetched successfully", company);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async verifyCompany(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const { id } = req.params as unknown as IdParam;
+
+            const company = await this._adminService.verifyCompany(id);
+
+            return ApiResponse.success(res, "Company verified successfully", company);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async rejectCompanyVerification(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const { id } = req.params as unknown as IdParam;
+            const { comment } = req.body;
+
+            await this._adminService.rejectCompanyVerification(id, comment);
+
+            return ApiResponse.success(res, "Verification rejected and company notified");
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getDocumentSignedUrl(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const { documentKey } = req.body;
+
+            const url = await this._adminService.getDocumentSignedUrl(documentKey);
+
+            return ApiResponse.success(res, "Signed URL generated", { url });
         } catch (error) {
             next(error);
         }
