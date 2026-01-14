@@ -74,7 +74,7 @@ const s3Service = new S3Service();
 
 const fileService = new FileService(s3Service);
 //admin controller
-const adminService = new AdminService(userRepo, companyRepo, emailService, fileService);
+const adminService = new AdminService(userRepo, companyRepo, emailService, fileService,cacheService);
 
 const adminController = new AdminController(adminService);
 
@@ -107,7 +107,7 @@ const publicJobService = new PublicJobService(jobRepository);
 
 const userJobController = new UserJobController(userJobService);
 const adminJobController = new AdminJobController(adminJobService);
-const companyJobController = new CompanyJobController(companyJobService);
+const companyJobController = new CompanyJobController(companyJobService,skillService);
 const publicJobController = new PublicJobController(publicJobService);
 
 export {

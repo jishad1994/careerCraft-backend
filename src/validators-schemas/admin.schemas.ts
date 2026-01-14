@@ -54,3 +54,7 @@ export const rejectVerificationSchema = z.object({
 export const documentKeySchema = z.object({
     documentKey: z.string().min(1, "Document key is required"),
 });
+
+export const blockUserCommentSchema = z.object({
+    comment: z.string().min(10, "Block reason must be at least 10 characters").max(500, "Block reason too long"),
+});

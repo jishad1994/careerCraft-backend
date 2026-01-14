@@ -2,22 +2,25 @@ import { UsersPaginatedDTO } from "../../dtos/admin.dto";
 import { ICompanyRepository } from "../../repositories/company/company.repository.interface";
 import { IUserRepository } from "../../repositories/user/user.repository.interface";
 import { IAdminService } from "./admin.service.interface";
-import { IUser } from "../../models/user/user.interface";
+import { IUser, IUserPopulated } from "../../models/user/user.interface";
 import { ICompany } from "../../models/company/company.interface";
 import { PaginationMeta } from "../../utils/apiResponse.utils";
 import { ValidationError } from "../../errors/validation.error";
 import mongoose from "mongoose";
 import { AppError } from "../../errors/app.error.";
-
 import { IFileService } from "../file-service/interfaces/file.service.interface";
 import { IEmailService } from "../email_service/email.service.interface";
+import { toUserProfileDTO } from "../../mappers/user.mapper";
+import { UserProfileDTO } from "../../dtos/userProfile.dto";
+import { ICacheService } from "../cache/cache.service.interface";
 
 export class AdminService implements IAdminService {
     constructor(
         private _userRepository: IUserRepository,
         private _companyRepository: ICompanyRepository,
         private _emailService: IEmailService,
-        private _fileService: IFileService
+        private _fileService: IFileService,
+        private _cacheService: ICacheService
     ) {}
 
     async getUsers(page: number, limit: number, search?: string): Promise<UsersPaginatedDTO<IUser>> {
@@ -59,6 +62,48 @@ export class AdminService implements IAdminService {
         };
 
         return { data, paginationMeta };
+    }
+
+    async getUserById(userId: string): Promise<UserProfileDTO> {
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            throw new ValidationError("Invalid user ID");
+        }
+
+        const user = await this._userRepository.findByIdWithPopulate<IUserPopulated>(userId, ["skills"]);
+
+        if (!user) {
+            throw new AppError("User not found", 404);
+        }
+
+        return toUserProfileDTO(user);
+    }
+
+    async blockUserWithComment(userId: string, comment: string): Promise<UserProfileDTO> {
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            throw new ValidationError("Invalid user ID");
+        }
+
+        const user = await this._userRepository.findByIdAndUpdate(userId, {
+            isBlocked: true,
+        });
+
+        if (!user) {
+            throw new AppError("User not found", 404);
+        }
+
+        const populatedUser = await this._userRepository.findByIdWithPopulate<IUserPopulated>(userId, ["skills"]);
+
+        if (!populatedUser) {
+            throw new AppError("User not found after population", 404);
+        }
+
+        // Send block notification email with reason
+        await this._emailService.send(user.email, `${user.firstName} ${user.lastName || ""}`.trim(), comment);
+
+        // Invalidate all user sessions
+        // await this._cacheService.delete(`user_sessions:${userId}`);
+
+        return toUserProfileDTO(populatedUser);
     }
 
     async getCompanyById(companyId: string): Promise<ICompany> {
@@ -119,6 +164,10 @@ export class AdminService implements IAdminService {
         }
         const updatedUser = await this._userRepository.blockOrUnblock(id, true);
 
+        if (!updatedUser) {
+            throw new AppError("User not found");
+        }
+
         return updatedUser;
     }
     async unblockUser(id: string) {
@@ -126,6 +175,9 @@ export class AdminService implements IAdminService {
             throw new Error("user credential(id) is missing");
         }
         const updatedUser = await this._userRepository.blockOrUnblock(id, false);
+        if (!updatedUser) {
+            throw new AppError("User not found");
+        }
         return updatedUser;
     }
 
@@ -134,7 +186,9 @@ export class AdminService implements IAdminService {
             throw new Error("user credential(id) is missing");
         }
         const updatedCompany = await this._companyRepository.blockOrUnblock(id, true);
-
+        if (!updatedCompany) {
+            throw new AppError("Company not found");
+        }
         return updatedCompany;
     }
     async unblockCompany(id: string) {
@@ -142,7 +196,9 @@ export class AdminService implements IAdminService {
             throw new Error("user credential(id) is missing");
         }
         const updatedCompany = await this._companyRepository.blockOrUnblock(id, false);
-
+        if (!updatedCompany) {
+            throw new AppError("Company not found");
+        }
         return updatedCompany;
     }
 

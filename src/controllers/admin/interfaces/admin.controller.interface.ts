@@ -11,7 +11,11 @@ export interface IAdminController {
 
     getUsers(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
+    getUserById(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+
     blockUser(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+
+    blockUserWithComment(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
     blockCompany(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 

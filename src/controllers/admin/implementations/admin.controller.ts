@@ -88,6 +88,18 @@ export class AdminController implements IAdminController {
         }
     }
 
+    async getUserById(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const { id } = req.params as unknown as IdParam;
+
+            const user = await this._adminService.getUserById(id);
+
+            return ApiResponse.success(res, "User fetched successfully", user);
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async blockUser(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const id = req.params.id as string;
@@ -99,6 +111,19 @@ export class AdminController implements IAdminController {
             } else {
                 throw new Error("User not found");
             }
+            return ApiResponse.success(res, "User blocked successfully", user);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async blockUserWithComment(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const { id } = req.params as unknown as IdParam;
+            const { comment } = req.body;
+
+            const user = await this._adminService.blockUserWithComment(id, comment);
+
             return ApiResponse.success(res, "User blocked successfully", user);
         } catch (error) {
             next(error);

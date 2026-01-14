@@ -4,9 +4,10 @@ import { AppError } from "../../../errors/app.error.";
 import { ApiResponse } from "../../../utils/apiResponse.utils";
 import { ICompanyJobService } from "../../../services/job/interfaces/company-job.service.interface";
 import { AuthError } from "../../../errors/auth.error";
+import { ISkillServivce } from "../../../services/skills/interfaces/skills.services.interfaces";
 
 export class CompanyJobController implements ICompanyJobController {
-    constructor(private _companyJobService: ICompanyJobService) {}
+    constructor(private _companyJobService: ICompanyJobService, private _skillService: ISkillServivce) {}
 
     async createJob(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
@@ -22,6 +23,20 @@ export class CompanyJobController implements ICompanyJobController {
             const job = await this._companyJobService.createJob(company.id, jobData);
 
             return ApiResponse.created(res, "Job created successfully", job);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async searchSkills(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const page = Number(req.query.page) || 1;
+            const limit = Number(req.query.limit) || 10;
+            const query = String(req.query.query) || "";
+
+            const [skills, paginationMeta] = await this._skillService.getSkillsPaginated(page, limit, query);
+
+            return ApiResponse.success(res, "Skill fetch successfull", skills, 200, paginationMeta);
         } catch (error) {
             next(error);
         }

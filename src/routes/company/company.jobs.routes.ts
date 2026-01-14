@@ -10,6 +10,12 @@ companyJobRoutes.post("/", companyAuthMiddleware, companyJobController.createJob
 // Get all company jobs
 companyJobRoutes.get("/", companyAuthMiddleware, companyJobController.getCompanyJobs.bind(companyJobController));
 
+companyJobRoutes.get(
+    "/search-skills",
+    companyAuthMiddleware,
+    companyJobController.searchSkills.bind(companyJobController)
+);
+
 // Get single job
 companyJobRoutes.get("/:jobId", companyAuthMiddleware, companyJobController.getJobById.bind(companyJobController));
 
