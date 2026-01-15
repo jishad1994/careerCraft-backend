@@ -2,7 +2,7 @@ import { Document, Types } from "mongoose";
 
 export interface IBaseRepository<T extends Document> {
     create(entity: Partial<T>): Promise<T>;
-    findById(id: string): Promise<T | null>;
+    findById(id: string): Promise<T |null>;
     findOne(filter: Partial<T>): Promise<T | null>;
     findByEmail(email: string): Promise<T | null>;
     findByFilter(filter: Partial<T>): Promise<T | null>;

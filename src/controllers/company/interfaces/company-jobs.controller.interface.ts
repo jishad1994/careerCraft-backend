@@ -14,4 +14,6 @@ export interface ICompanyJobController {
     deleteJob(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
     
     searchSkills(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+
+    getJobStatistics(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 }

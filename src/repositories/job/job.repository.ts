@@ -15,19 +15,54 @@ export class JobRepository extends BaseRepository<IJob> implements IJobRepositor
             .lean();
     }
 
-    async findByCompany(companyId: string, page: number, limit: number, search?: string): Promise<[IJob[], number]> {
+    async findByCompany(
+        companyId: string,
+        page: number,
+        limit: number,
+        filters: JobSearchFilters
+    ): Promise<[IJob[], number]> {
         const skip = (page - 1) * limit;
-
-        const escapedSearch = search ? search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") : "";
-        const filter = {
+        const query: FilterQuery<IJob> = {
             company: companyId,
-
-            $or: [{ slug: { $regex: escapedSearch, $options: "i" } }, { title: { $regex: escapedSearch, $options: "i" } }],
         };
 
+        if (filters.keyword) {
+            query.$or = [
+                { title: { $regex: filters.keyword, $options: "i" } },
+                { description: { $regex: filters.keyword, $options: "i" } },
+            ];
+        }
+
+        if (filters.location) {
+            query["location.city"] = { $regex: filters.location, $options: "i" };
+        }
+
+        if (filters.employmentType) {
+            query.employmentType = filters.employmentType;
+        }
+
+        if (filters.workMode) {
+            query.workMode = filters.workMode;
+        }
+
+        if (filters.status) {
+            query.status = filters.status;
+        }
+
+        if (filters.isVerified !== undefined) {
+            query.isVerified = filters.isVerified;
+        }
+
         const [jobs, total] = await Promise.all([
-            await this.model.find(filter).populate("skills", "name").sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
-            this.model.countDocuments(filter),
+            this.model
+                .find(query)
+                .populate("company", "name email location")
+                .populate("skills", "name")
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit)
+                .lean(),
+            this.model.countDocuments(query),
         ]);
 
         return [jobs, total];

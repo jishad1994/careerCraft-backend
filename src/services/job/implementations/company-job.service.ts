@@ -1,6 +1,6 @@
 import slugify from "slugify";
 import { IJob, JobStatus } from "../../../models/job/job.interface";
-import { IJobRepository } from "../../../repositories/job/job.repository.interface";
+import { IJobRepository, JobSearchFilters } from "../../../repositories/job/job.repository.interface";
 import { ICompanyJobService } from "../interfaces/company-job.service.interface";
 import mongoose from "mongoose";
 import { PaginationMeta } from "../../../utils/apiResponse.utils";
@@ -27,9 +27,9 @@ export class CompanyJobService implements ICompanyJobService {
         companyId: string,
         page: number = 1,
         limit: number = 10,
-        search?: string
+        filters: JobSearchFilters
     ): Promise<{ jobs: IJob[]; paginationMeta: PaginationMeta }> {
-        const [jobs, total] = await this._jobRepository.findByCompany(companyId, page, limit, search ? search : "");
+        const [jobs, total] = await this._jobRepository.findByCompany(companyId, page, limit, filters);
 
         const totalPages = Math.ceil(total / limit);
 
@@ -46,7 +46,7 @@ export class CompanyJobService implements ICompanyJobService {
     }
 
     async getJobById(companyId: string, jobId: string): Promise<IJob> {
-        const job = await this._jobRepository.findById(jobId);
+        const job = await this._jobRepository.findByIdWithPopulate<IJob>(jobId, ["skills"]);
 
         if (!job) {
             throw new AppError("Job not found", 404);

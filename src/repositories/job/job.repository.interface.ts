@@ -9,7 +9,7 @@ export interface IJobRepository extends IBaseRepository<IJob> {
 
     // findPaginated(page: number, limit: number, search?: string): Promise<[IJob[], number]>;
 
-    findByCompany(companyId: string, page: number, limit: number, search?: string): Promise<[IJob[], number]>;
+    findByCompany(companyId: string, page: number, limit: number, filters:JobSearchFilters): Promise<[IJob[], number]>;
 
     softDelete(id: string): Promise<boolean>;
 
