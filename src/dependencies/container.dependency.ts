@@ -33,6 +33,8 @@ import { UserJobController } from "../controllers/user/implementations/user-job.
 import { AdminJobController } from "../controllers/admin/implementations/admin-job.controller";
 import { CompanyJobController } from "../controllers/company/implementations/company-jobs.controller";
 import { PublicJobController } from "../controllers/job/implementations/public-job.controller";
+import { UserJobApplicationController } from "../controllers/user/implementations/user-job-application.controller";
+import { UserJobApplicationService } from "../services/application/implementations/user-job-application.service";
 
 //redis cache service instance
 const redisRepo = new RedisCacheRepo(process.env.REDIS_URL || "redis://localhost:6379");
@@ -74,7 +76,7 @@ const s3Service = new S3Service();
 
 const fileService = new FileService(s3Service);
 //admin controller
-const adminService = new AdminService(userRepo, companyRepo, emailService, fileService,cacheService);
+const adminService = new AdminService(userRepo, companyRepo, emailService, fileService, cacheService);
 
 const adminController = new AdminController(adminService);
 
@@ -98,16 +100,22 @@ const skillController = new SkillController(skillService);
 // jobs controller
 
 const jobRepository = new JobRepository(Job);
+
 const jobApplicationRepository = new JobApplicationRepository(JobApplication);
 
-const userJobService = new UserJobService(jobRepository, jobApplicationRepository);
+//application services
+const userJobApplicationService = new UserJobApplicationService(jobApplicationRepository);
+
+const userJobApplicationController = new UserJobApplicationController(userJobApplicationService);
+
+const userJobService = new UserJobService(jobRepository, jobApplicationRepository, fileService);
 const companyJobService = new CompanyJobService(jobRepository);
 const adminJobService = new AdminJobService(jobRepository);
 const publicJobService = new PublicJobService(jobRepository);
 
 const userJobController = new UserJobController(userJobService);
 const adminJobController = new AdminJobController(adminJobService);
-const companyJobController = new CompanyJobController(companyJobService,skillService);
+const companyJobController = new CompanyJobController(companyJobService, skillService);
 const publicJobController = new PublicJobController(publicJobService);
 
 export {
@@ -124,4 +132,5 @@ export {
     adminJobController,
     companyJobController,
     publicJobController,
+    userJobApplicationController,
 };

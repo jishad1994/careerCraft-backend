@@ -2,13 +2,14 @@ import { UserProfileDTO } from "../../../dtos/userProfile.dto";
 import { AppError } from "../../../errors/app.error.";
 import { ValidationError } from "../../../errors/validation.error";
 import { toUserProfileDTO } from "../../../mappers/user.mapper";
-import { IEducation, IExperience, IUser, IUserPopulated } from "../../../models/user/user.interface";
+import { IDocument, IEducation, IExperience, IUser, IUserPopulated } from "../../../models/user/user.interface";
 import { IUserRepository } from "../../../repositories/user/user.repository.interface";
 import { IFileService } from "../../file-service/interfaces/file.service.interface";
 import { IUserProfileService } from "../interfaces/profile.service.interface";
 import mongoose from "mongoose";
 
 export class UserProfileService implements IUserProfileService {
+
     constructor(private _userRepository: IUserRepository, private _fileService: IFileService) {}
 
     async getUserProfile(id: string): Promise<UserProfileDTO> {
@@ -231,7 +232,6 @@ export class UserProfileService implements IUserProfileService {
     }
 
     async updateUserExperience(userId: string, index: number, experience: IExperience): Promise<UserProfileDTO> {
-        
         if (!mongoose.Types.ObjectId.isValid(userId)) {
             throw new ValidationError("Invalid user id");
         }
@@ -271,5 +271,118 @@ export class UserProfileService implements IUserProfileService {
             throw new AppError("User not found after populate");
         }
         return toUserProfileDTO(populatedUser);
+    }
+
+    async uploadCertificate(userId: string, document: Express.Multer.File): Promise<UserProfileDTO> {
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            throw new ValidationError("Invalid user id");
+        }
+
+        const user = await this._userRepository.findById(userId);
+
+        if (!user) throw new AppError("Company not found");
+
+        const key = await this._fileService.uplodaFile(document, "documents", userId);
+
+        const newDoc: IDocument = {
+            originalName: document.originalname,
+            key: key,
+            mimeType: document.mimetype,
+            size: document.size,
+            uploadedAt: new Date(),
+        };
+
+        user.certificates.push(newDoc);
+
+        await user.save();
+
+        const populatedUser = await this._userRepository.findByIdWithPopulate<IUserPopulated>(userId, ["skills"]);
+
+        if (!populatedUser) {
+            throw new AppError("user not found after populate");
+        }
+        return toUserProfileDTO(populatedUser);
+    }
+
+    async deleteCertificate(userId: string, documentKey: string): Promise<UserProfileDTO> {
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            throw new ValidationError("Invalid company id");
+        }
+
+        const user = await this._userRepository.findById(userId);
+        if (!user) throw new AppError("user not found");
+
+        user.certificates = user.certificates.filter((doc) => doc.key !== documentKey);
+
+        await user.save();
+
+        try {
+            await this._fileService.deleteFile(documentKey);
+        } catch (err) {
+            console.error("Failed to delete document:", err);
+        }
+
+        const populated = await this._userRepository.findByIdWithPopulate<IUserPopulated>(userId, ["skills"]);
+        if (!populated) {
+            throw new AppError("company not found after populate");
+        }
+        return toUserProfileDTO(populated);
+    }
+
+      async uploadResume(userId: string, document: Express.Multer.File): Promise<UserProfileDTO> {
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            throw new ValidationError("Invalid user id");
+        }
+
+        const user = await this._userRepository.findById(userId);
+
+        if (!user) throw new AppError("Company not found");
+
+        const key = await this._fileService.uplodaFile(document, "resumes", userId);
+
+        const newDoc: IDocument = {
+            originalName: document.originalname,
+            key: key,
+            mimeType: document.mimetype,
+            size: document.size,
+            uploadedAt: new Date(),
+        };
+
+        user.resumeURL.push(newDoc);
+
+        await user.save();
+
+        const populatedUser = await this._userRepository.findByIdWithPopulate<IUserPopulated>(userId, ["skills"]);
+
+        if (!populatedUser) {
+            throw new AppError("user not found after populate");
+        }
+        return toUserProfileDTO(populatedUser);
+    }
+
+    async deleteResume(userId: string, documentKey: string): Promise<UserProfileDTO> {
+
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            throw new ValidationError("Invalid user id");
+        }
+
+        const user = await this._userRepository.findById(userId);
+        if (!user) throw new AppError("user not found");
+
+        user.resumeURL = user.resumeURL.filter((doc) => doc.key !== documentKey);
+
+        await user.save();
+
+        try {
+            await this._fileService.deleteFile(documentKey);
+        } catch (err) {
+            console.error("Failed to delete resume:", err);
+        }
+
+        const populated = await this._userRepository.findByIdWithPopulate<IUserPopulated>(userId, ["skills"]);
+        if (!populated) {
+            throw new AppError("user not found after populate");
+        }
+        return toUserProfileDTO(populated);
     }
 }

@@ -15,4 +15,10 @@ export interface IUserProfileController {
     addExperience(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
     updateExperience(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
     deleteExperience(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+
+    addResume(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+    deleteResume(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+
+    addCertificate(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+    deleteCertificate(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 }

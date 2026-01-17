@@ -2,8 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { IUserJobService } from "../../../services/job/interfaces/user-job.service.interface";
 import { JobSearchFilters } from "../../../repositories/job/job.repository.interface";
 import { ApiResponse } from "../../../utils/apiResponse.utils";
-import { AuthError } from "../../../errors/auth.error";
 import { IUserJobController } from "../interfaces/user-job.controller.interface";
+import { AppError } from "../../../errors/app.error.";
 
 export class UserJobController implements IUserJobController {
     constructor(private _userJobService: IUserJobService) {}
@@ -60,14 +60,116 @@ export class UserJobController implements IUserJobController {
     async applyForJob(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const user = req.user;
-            if (!user) throw new AuthError("Unauthorized");
+            if (!user) throw new AppError("User not found", 401);
 
-            const { jobId } = req.params;
+            console.log("formdata", req.body);
+            // console.log("cover letter file", req.file);
 
-            const application = await this._userJobService.applyForJob(user.id, jobId);
+            // const {
+            //     job,
+            //     originalName,
+            //     key,
+            //     coverLetterType,
+            //     coverLetterText,
+            //     expectedSalary,
+            //     salaryCurrency,
+            //     salaryPeriod,
+            //     availableFrom,
+            //     noticePeriod,
+            //     portfolioUrl,
+            //     linkedinUrl,
+            //     githubUrl,
+            // } = req.body;
 
-            return ApiResponse.created(res, "Application submitted successfully", application);
+            const jobData = req.body;
+            jobData.applicant = user.id;
+
+            if (jobData.coverLetterType === "document" && req.file) {
+                const { key, signedUrl } = await this._userJobService.saveCoverLetter(req.file, user.id);
+                jobData.coverLetter = {
+                    type: jobData.coverLetterType,
+                    fileName: req.file.filename,
+                    fileUrl: signedUrl,
+                    fileKey: key,
+                    uploadedAt: Date.now(),
+                };
+
+                jobData.resume = {
+                    fileName: jobData.resumeFileName,
+                    fileKey: jobData.resumeFilekey,
+                    uploadedAt: Date.now(),
+                };
+            } else if (jobData.coverLetterType === "text") {
+                jobData.coverLetter = {
+                    content: jobData.coverLetterText,
+                };
+
+                jobData.resume = {
+                    fileName: jobData.resumeFileName,
+                    fileKey: jobData.resumeFilekey,
+                    uploadedAt: Date.now(),
+                };
+            }
+
+            // if (!job || !key) {
+            //     throw new AppError("Job ID and Resume ID are required", 400);
+            // }
+
+            // // Prepare application data
+            // const applicationData: IJobApplication = {
+            //     job,
+            //     applicant: new Types.ObjectId(user.id),
+            //     resume: {
+            //         originalName,
+            //         key,
+            //     },
+            // };
+
+            // // Handle cover letter
+            // if (coverLetterType === "text" && coverLetterText) {
+            //     applicationData.coverLetter = {
+            //         type: "text",
+            //         content: coverLetterText,
+            //     };
+            // } else if (coverLetterType === "document" && req.file) {
+            //     applicationData.coverLetter = {
+            //         type: "document",
+            //         file: req.file,
+            //     };
+            // }
+
+            // // Handle expected salary
+            // if (expectedSalary) {
+            //     applicationData.expectedSalary = {
+            //         amount: parseFloat(expectedSalary),
+            //         currency: salaryCurrency || "INR",
+            //         period: salaryPeriod || "monthly",
+            //     };
+            // }
+
+            // // Handle other fields
+            // if (availableFrom) {
+            //     applicationData.availableFrom = new Date(availableFrom);
+            // }
+            // if (noticePeriod) {
+            //     applicationData.noticePeriod = parseInt(noticePeriod);
+            // }
+            // if (portfolioUrl) {
+            //     applicationData.portfolioUrl = portfolioUrl;
+            // }
+            // if (linkedinUrl) {
+            //     applicationData.linkedinUrl = linkedinUrl;
+            // }
+            // if (githubUrl) {
+            //     applicationData.githubUrl = githubUrl;
+            // }
+
+            const application = await this._userJobService.applyForJob(user.id, jobData);
+
+            return ApiResponse.success(res, "Application submitted successfully", application, 201);
         } catch (error) {
+            console.log(error instanceof Error ? error.message : "");
+
             next(error);
         }
     }

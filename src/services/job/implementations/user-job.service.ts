@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { AppError } from "../../../errors/app.error.";
 import { IJobApplication } from "../../../models/job-application/job-application.interface";
 import { IJob } from "../../../models/job/job.interface";
@@ -5,9 +6,15 @@ import { IJobApplicationRepository } from "../../../repositories/application/job
 import { IJobRepository, JobSearchFilters } from "../../../repositories/job/job.repository.interface";
 import { PaginationMeta } from "../../../utils/apiResponse.utils";
 import { IUserJobService } from "../interfaces/user-job.service.interface";
+import { IFileService } from "../../file-service/interfaces/file.service.interface";
+import { ValidationError } from "../../../errors/validation.error";
 
 export class UserJobService implements IUserJobService {
-    constructor(private _jobRepository: IJobRepository, private _applicationRepository: IJobApplicationRepository) {}
+    constructor(
+        private _jobRepository: IJobRepository,
+        private _applicationRepository: IJobApplicationRepository,
+        private _fileService: IFileService
+    ) {}
 
     async searchJobs(
         filters: JobSearchFilters,
@@ -67,23 +74,30 @@ export class UserJobService implements IUserJobService {
         return job;
     }
 
-    async applyForJob(userId: string, jobId: string): Promise<IJobApplication> {
-        const job = await this.getJobById(jobId);
+    async saveCoverLetter(file: Express.Multer.File, userId: string): Promise<{ key: string; signedUrl: string }> {
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            throw new ValidationError("Invalid user id");
+        }
+        const key = await this._fileService.uplodaFile(file, "coverLetters", userId);
 
-        const existingApplication = await this._applicationRepository.findByUserAndJob(userId, jobId);
+        const signedUrl = await this._fileService.generateSignedUrl(key, 3600 * 24 * 6);
+
+        return{key,signedUrl}
+    }
+
+    async applyForJob(userId: string, applicationData: IJobApplication): Promise<IJobApplication> {
+        const existingApplication = await this._applicationRepository.findByUserAndJob(
+            userId,
+            applicationData.job.toString()
+        );
 
         if (existingApplication) {
             throw new AppError("You have already applied for this job", 400);
         }
 
-        const application = await this._applicationRepository.create({
-            user: userId,
-            job: jobId,
-            company: job.company,
-            status: "pending",
-        });
+        const application = await this._applicationRepository.create(applicationData);
 
-        await this._jobRepository.incrementApplications(jobId);
+        await this._jobRepository.incrementApplications(application.job.toString());
 
         return application;
     }

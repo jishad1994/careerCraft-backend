@@ -211,4 +211,83 @@ export class UserProfileController implements IUserProfileController {
             next(error);
         }
     }
+
+    async addResume(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const user = req.user;
+            if (!user) {
+                throw new AuthError("Unauthorized");
+            }
+
+            const resume = req.file;
+
+            if (!resume) {
+                throw new AppError("Resume file not found");
+            }
+
+            const updatedProfile = await this._userProfileService.uploadResume(user.id, resume);
+
+            return ApiResponse.success(res, "User resume added successfully", updatedProfile);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async deleteResume(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const user = req.user;
+            if (!user) {
+                throw new AuthError("Unauthorized");
+            }
+
+            const { documentKey } = req.query;
+
+            if (!documentKey) throw new AppError("Document key not found");
+
+            const updatedProfile = await this._userProfileService.deleteResume(user.id, documentKey.toString());
+
+            return ApiResponse.success(res, "User resume deleted successfully", updatedProfile);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async addCertificate(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const user = req.user;
+            if (!user) {
+                throw new AuthError("Unauthorized");
+            }
+
+            const certificate = req.file;
+
+            if (!certificate) {
+                throw new AppError("Certificate file not found");
+            }
+
+            const updatedProfile = await this._userProfileService.uploadCertificate(user.id, certificate);
+
+            return ApiResponse.success(res, "User certificate added successfully", updatedProfile);
+        } catch (error) {
+            next(error);
+        }
+    }
+    async deleteCertificate(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const user = req.user;
+            if (!user) {
+                throw new AuthError("Unauthorized");
+            }
+
+            const { documentKey } = req.query;
+
+            if (!documentKey) throw new AppError("Document key not found");
+
+            const updatedProfile = await this._userProfileService.deleteCertificate(user.id, documentKey.toString());
+
+            return ApiResponse.success(res, "User certificate deleted successfully", updatedProfile);
+        } catch (error) {
+            next(error);
+        }
+    }
 }

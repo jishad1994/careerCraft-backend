@@ -18,4 +18,11 @@ export interface IUserProfileService {
     addUserExperience(userId: string, experience: IExperience): Promise<UserProfileDTO>;
     updateUserExperience(userId: string, index: number, experience: IExperience): Promise<UserProfileDTO>;
     deleteUserExperience(userId: string, index: number): Promise<UserProfileDTO>;
+
+    uploadCertificate(userId: string, document: Express.Multer.File): Promise<UserProfileDTO>;
+    deleteCertificate(userId: string, documentKey: string): Promise<UserProfileDTO>;
+    
+    uploadResume(userId: string, document: Express.Multer.File): Promise<UserProfileDTO>;
+    deleteResume(userId: string, documentKey: string): Promise<UserProfileDTO>;
+  
 }
