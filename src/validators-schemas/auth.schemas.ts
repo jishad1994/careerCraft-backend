@@ -131,7 +131,7 @@ export const signupValidatorSchema = z.discriminatedUnion("role", [userSignupSch
 export const cachedUserValidator = z.object({
     email: emailSchema,
     role: roleSchema,
-    firstName: z.string(),
+    firstName: z.string().optional(),
     lastName: z.string().optional(),
     phone: phoneSchema,
     password: z.string(),

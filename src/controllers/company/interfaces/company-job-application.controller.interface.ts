@@ -5,7 +5,7 @@ export interface ICompanyJobApplicationController {
 
     getCompanyApplications(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
-    getJobApplications(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+    getApplicationsByJob(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
     updateApplicationStatus(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 

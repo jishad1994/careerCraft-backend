@@ -35,6 +35,8 @@ import { CompanyJobController } from "../controllers/company/implementations/com
 import { PublicJobController } from "../controllers/job/implementations/public-job.controller";
 import { UserJobApplicationController } from "../controllers/user/implementations/user-job-application.controller";
 import { UserJobApplicationService } from "../services/application/implementations/user-job-application.service";
+import { CompanyJobApplicationController } from "../controllers/company/implementations/company-job-application.controller";
+import { CompanyJobApplicationService } from "../services/application/implementations/company-job-application.service";
 
 //redis cache service instance
 const redisRepo = new RedisCacheRepo(process.env.REDIS_URL || "redis://localhost:6379");
@@ -105,8 +107,10 @@ const jobApplicationRepository = new JobApplicationRepository(JobApplication);
 
 //application services
 const userJobApplicationService = new UserJobApplicationService(jobApplicationRepository);
-
 const userJobApplicationController = new UserJobApplicationController(userJobApplicationService);
+
+const companyJobApplicationService=new CompanyJobApplicationService(jobApplicationRepository)
+const companyJobApplicationController=new CompanyJobApplicationController(companyJobApplicationService)
 
 const userJobService = new UserJobService(jobRepository, jobApplicationRepository, fileService);
 const companyJobService = new CompanyJobService(jobRepository);
@@ -133,4 +137,5 @@ export {
     companyJobController,
     publicJobController,
     userJobApplicationController,
+    companyJobApplicationController
 };

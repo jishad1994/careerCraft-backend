@@ -51,7 +51,7 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
         }
     }
 
-    async getJobApplications(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+    async getApplicationsByJob(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const company = req.user;
             if (!company) throw new AppError("User not found", 401);

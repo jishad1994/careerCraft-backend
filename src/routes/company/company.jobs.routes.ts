@@ -1,5 +1,5 @@
 import express from "express";
-import { companyJobController } from "../../dependencies/container.dependency";
+import { companyJobApplicationController, companyJobController } from "../../dependencies/container.dependency";
 import { companyAuthMiddleware } from "../../middlewares/company.auth.middleware";
 
 const companyJobRoutes = express.Router();
@@ -19,6 +19,9 @@ companyJobRoutes.get("/search-skills", companyAuthMiddleware, companyJobControll
 companyJobRoutes.get("/:jobId", companyAuthMiddleware, companyJobController.getJobById.bind(companyJobController));
 
 companyJobRoutes.put("/:jobId", companyAuthMiddleware, companyJobController.updateJob.bind(companyJobController));
+
+
+companyJobRoutes.get("/:jobId/applications", companyAuthMiddleware, companyJobApplicationController.getApplicationsByJob.bind(companyJobApplicationController));
 
 companyJobRoutes.patch(
     "/:jobId/status",

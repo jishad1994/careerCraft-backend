@@ -71,7 +71,7 @@ export class JobApplicationRepository extends BaseRepository<IJobApplication> im
         const [applications, total] = await Promise.all([
             this.model
                 .find(query)
-                .populate("applicant", "name email phone profilePicture skills education experience")
+                .populate("applicant", "firstName lastName email phone profilePicture skills education experience")
                 .populate("job", "title slug location employmentType workMode")
                 .sort({ appliedAt: -1 })
                 .skip(skip)

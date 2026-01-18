@@ -93,7 +93,11 @@ export class JobRepository extends BaseRepository<IJob> implements IJobRepositor
         }
 
         if (filters.location) {
-            query["location.city"] = { $regex: filters.location, $options: "i" };
+            query.$or = [
+                { "location.city": { $regex: filters.location, $options: "i" } },
+
+                { "location.country": { $regex: filters.location, $options: "i" } },
+            ];
         }
 
         if (filters.employmentType) {

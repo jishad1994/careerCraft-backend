@@ -93,6 +93,7 @@ export class AuthService implements IAuthService {
             firstName: (user as IUser).firstName,
             lastName: (user as IUser).lastName,
             name: (user as ICompany).name,
+            profilePicture: user.profilePicture,
         };
 
         return { accessToken, refreshToken, user: authUserDto };
