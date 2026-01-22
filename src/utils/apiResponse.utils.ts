@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { HTTP_MESSAGES, HTTP_STATUS } from "../constants/http.constants";
+import { HTTP_MESSAGES, HTTP_STATUS } from "../constants/messages/http.messages.constants";
 
 export interface PaginationMeta {
     page: number;

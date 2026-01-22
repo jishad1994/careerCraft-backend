@@ -5,9 +5,10 @@ import { IJobApplicationRepository } from "../../../repositories/application/job
 import { IUserJobApplicationService } from "../interfaces/user-job-application.service.interface";
 import { AppError } from "../../../errors/app.error.";
 import { PaginationMeta } from "../../../utils/apiResponse.utils";
+import { IFileService } from "../../file-service/interfaces/file.service.interface";
 
 export class UserJobApplicationService implements IUserJobApplicationService {
-    constructor(private _jobApplicationRepository: IJobApplicationRepository) {}
+    constructor(private _jobApplicationRepository: IJobApplicationRepository, private _fileService: IFileService) {}
 
     async getApplicationStatus(
         userId: string,
@@ -28,6 +29,10 @@ export class UserJobApplicationService implements IUserJobApplicationService {
         if (!application) {
             throw new AppError("Application not found", 404);
         }
+
+        const resumeSignedURL = await this._fileService.generateSignedUrl(application.resume.fileKey);
+
+        application.resume.signedURL = resumeSignedURL;
 
         return application;
     }

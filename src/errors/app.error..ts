@@ -1,4 +1,4 @@
-import { HTTP_STATUS } from "../constants/http.constants";
+import { HTTP_STATUS } from "../constants/messages/http.messages.constants";
 
 export class AppError extends Error {
     statusCode: number;

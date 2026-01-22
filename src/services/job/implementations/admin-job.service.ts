@@ -4,9 +4,11 @@ import { IJobRepository } from "../../../repositories/job/job.repository.interfa
 import { PaginationMeta } from "../../../utils/apiResponse.utils";
 import { IAdminJobService } from "../interfaces/admin-job.service.interface";
 import { AppError } from "../../../errors/app.error.";
+import { IJobApplicationRepository } from "../../../repositories/application/job-application.repository.interface";
+import { IJobApplication } from "../../../models/job-application/job-application.interface";
 
 export class AdminJobService implements IAdminJobService {
-    constructor(private _jobRepository: IJobRepository, ) {}
+    constructor(private _jobRepository: IJobRepository, private _applicationRepository: IJobApplicationRepository) {}
 
     async getAllJobs(
         page: number,
@@ -25,7 +27,37 @@ export class AdminJobService implements IAdminJobService {
             hasPrevPage: page > 1,
         };
 
-        return { jobs,  paginationMeta };
+        return { jobs, paginationMeta };
+    }
+
+    async getJobById(jobId: string): Promise<IJob> {
+        const job = await this._jobRepository.findById(jobId);
+
+        if (!job) {
+            throw new AppError("Job not found", 404);
+        }
+
+        return job;
+    }
+
+    async getApplicationsByJob(jobId: string, page: number, limit: number): Promise<[IJobApplication[], PaginationMeta]> {
+        const [applications, total] = await this._applicationRepository.findByJob(jobId, page, limit);
+
+        if (!applications) {
+            throw new AppError("Applications not found", 404);
+        }
+
+        const totalPages = Math.ceil(total / limit);
+        const paginationMeta: PaginationMeta = {
+            page,
+            limit,
+            totalItems: total,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1,
+        };
+
+        return [applications, paginationMeta];
     }
 
     async verifyJob(jobId: string): Promise<IJob> {

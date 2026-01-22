@@ -25,7 +25,7 @@ import {
     AuthCookiesDTO,
     CachedUserData,
 } from "../../validators-schemas/auth.schemas";
-import { HTTP_MESSAGES } from "../../constants/http.constants";
+import { HTTP_MESSAGES } from "../../constants/messages/http.messages.constants";
 
 export class AuthController implements IAuthController {
     constructor(private _authService: IAuthService, private _cacheService: ICacheService) {}

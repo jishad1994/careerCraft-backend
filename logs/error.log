@@ -533,3 +533,100 @@ Proj: {}
 [2026-01-19 01:26:19] [31merror[39m:unauthorized request expired request 
 [2026-01-19 01:26:19] [31merror[39m:unauthorized request expired request 
 [2026-01-19 04:22:54] [31merror[39m:User not found
+[2026-01-19 16:04:49] [31merror[39m:unauthorized request expired request 
+[2026-01-19 20:34:17] [31merror[39m:unauthorized request expired request 
+[2026-01-19 22:47:27] [31merror[39m:unauthorized request expired request 
+[2026-01-19 22:53:57] [31merror[39m:GET /api/auth/refresh null - 11ms
+[2026-01-19 22:53:57] [31merror[39m:unauthorized request expired request 
+[2026-01-19 22:54:04] [31merror[39m:GET /api/auth/refresh null - 7ms
+[2026-01-19 22:54:04] [31merror[39m:unauthorized request expired request 
+[2026-01-19 22:55:14] [31merror[39m:GET /api/auth/refresh null - 42ms
+[2026-01-19 22:55:14] [31merror[39m:unauthorized request expired request 
+[2026-01-19 22:56:43] [31merror[39m:GET /api/auth/refresh null - 3ms
+[2026-01-19 22:56:43] [31merror[39m:unauthorized request expired request 
+[2026-01-19 22:56:48] [31merror[39m:GET /api/auth/refresh null - 3ms
+[2026-01-19 22:56:48] [31merror[39m:unauthorized request expired request 
+[2026-01-19 22:57:17] [31merror[39m:GET /api/auth/refresh null - 5ms
+[2026-01-19 22:57:17] [31merror[39m:unauthorized request expired request 
+[2026-01-19 22:57:21] [31merror[39m:GET /api/auth/refresh null - 6ms
+[2026-01-19 22:57:21] [31merror[39m:unauthorized request expired request 
+[2026-01-19 22:57:28] [31merror[39m:GET /api/auth/refresh null - 6ms
+[2026-01-19 22:57:28] [31merror[39m:unauthorized request expired request 
+[2026-01-19 22:57:32] [31merror[39m:GET /api/auth/refresh null - 4ms
+[2026-01-19 22:57:32] [31merror[39m:unauthorized request expired request 
+[2026-01-19 22:57:53] [31merror[39m:GET /api/auth/refresh null - 3ms
+[2026-01-19 22:57:53] [31merror[39m:unauthorized request expired request 
+[2026-01-19 22:58:21] [31merror[39m:GET /api/auth/refresh null - 7ms
+[2026-01-19 22:58:21] [31merror[39m:unauthorized request expired request 
+[2026-01-19 22:58:23] [31merror[39m:GET /api/auth/refresh null - 3ms
+[2026-01-19 22:58:23] [31merror[39m:unauthorized request expired request 
+[2026-01-19 22:58:40] [31merror[39m:GET /api/auth/refresh null - 4ms
+[2026-01-19 22:58:40] [31merror[39m:unauthorized request expired request 
+[2026-01-19 22:58:47] [31merror[39m:GET /api/auth/refresh null - 3ms
+[2026-01-19 22:58:47] [31merror[39m:unauthorized request expired request 
+[2026-01-19 22:58:55] [31merror[39m:GET /api/auth/refresh null - 5ms
+[2026-01-19 22:58:55] [31merror[39m:unauthorized request expired request 
+[2026-01-19 22:58:59] [31merror[39m:GET /api/auth/refresh null - 7ms
+[2026-01-19 22:58:59] [31merror[39m:unauthorized request expired request 
+[2026-01-19 22:59:03] [31merror[39m:GET /api/auth/refresh null - 2ms
+[2026-01-19 22:59:03] [31merror[39m:unauthorized request expired request 
+[2026-01-19 22:59:06] [31merror[39m:GET /api/auth/refresh null - 4ms
+[2026-01-19 22:59:06] [31merror[39m:unauthorized request expired request 
+[2026-01-19 22:59:14] [31merror[39m:GET /api/auth/refresh null - 37ms
+[2026-01-19 22:59:14] [31merror[39m:unauthorized request expired request 
+[2026-01-19 22:59:36] [31merror[39m:GET /api/auth/refresh null - 4ms
+[2026-01-19 22:59:36] [31merror[39m:unauthorized request expired request 
+[2026-01-19 22:59:56] [31merror[39m:GET /api/auth/refresh null - 3ms
+[2026-01-19 22:59:56] [31merror[39m:unauthorized request expired request 
+[2026-01-19 23:04:08] [31merror[39m:GET /api/auth/refresh null - 17ms
+[2026-01-19 23:04:08] [31merror[39m:unauthorized request expired request 
+[2026-01-19 23:09:46] [31merror[39m:GET /api/auth/refresh null - 50ms
+[2026-01-19 23:09:46] [31merror[39m:unauthorized request expired request 
+[2026-01-19 23:10:11] [31merror[39m:GET /api/auth/refresh null - 24ms
+[2026-01-19 23:10:11] [31merror[39m:unauthorized request expired request 
+[2026-01-19 23:10:24] [31merror[39m:GET /api/auth/refresh null - 2ms
+[2026-01-19 23:10:24] [31merror[39m:unauthorized request expired request 
+[2026-01-19 23:11:07] [31merror[39m:GET /api/auth/refresh null - 2ms
+[2026-01-19 23:11:07] [31merror[39m:unauthorized request expired request 
+[2026-01-19 23:12:41] [31merror[39m:GET /api/auth/refresh null - 5ms
+[2026-01-19 23:12:41] [31merror[39m:unauthorized request expired request 
+[2026-01-19 23:24:19] [31merror[39m:GET /api/auth/refresh null - 8ms
+[2026-01-19 23:24:19] [31merror[39m:unauthorized request expired request 
+[2026-01-19 23:24:50] [31merror[39m:GET /api/auth/refresh null - 2ms
+[2026-01-19 23:24:50] [31merror[39m:unauthorized request expired request 
+[2026-01-19 23:25:00] [31merror[39m:GET /api/auth/refresh null - 6ms
+[2026-01-19 23:25:00] [31merror[39m:unauthorized request expired request 
+[2026-01-19 23:36:06] [31merror[39m:GET /api/auth/refresh null - 148ms
+[2026-01-19 23:36:06] [31merror[39m:unauthorized request expired request 
+[2026-01-19 23:39:25] [31merror[39m:GET /api/auth/refresh null - 9ms
+[2026-01-19 23:39:25] [31merror[39m:unauthorized request expired request 
+[2026-01-19 23:50:08] [31merror[39m:Application not found
+[2026-01-19 23:50:17] [31merror[39m:Application not found
+[2026-01-19 23:50:32] [31merror[39m:Application not found
+[2026-01-19 23:50:52] [31merror[39m:Application not found
+[2026-01-19 23:51:54] [31merror[39m:Application not found
+[2026-01-19 23:55:47] [31merror[39m:Application not found
+[2026-01-19 23:55:49] [31merror[39m:Application not found
+[2026-01-19 23:57:38] [31merror[39m:Application not found
+[2026-01-20 00:26:53] [31merror[39m:unauthorized request expired request 
+[2026-01-20 00:26:53] [31merror[39m:unauthorized request expired request 
+[2026-01-20 01:14:21] [31merror[39m:unauthorized request expired request 
+[2026-01-20 01:14:21] [31merror[39m:unauthorized request expired request 
+[2026-01-20 01:25:54] [31merror[39m:Job should be verified by admin first
+[2026-01-20 01:25:54] [31merror[39m:PATCH /api/company/jobs/696e8ad51f2cbed0bfa74080/status null - 51ms
+[2026-01-20 01:54:54] [31merror[39m:unauthorized request expired request 
+[2026-01-20 01:54:54] [31merror[39m:unauthorized request expired request 
+[2026-01-20 02:24:46] [31merror[39m:Application not found
+[2026-01-20 02:25:01] [31merror[39m:Application not found
+[2026-01-20 02:56:28] [31merror[39m:GET /api/company/applications/696e9b35984b3e364bb0c37a null - 284ms
+[2026-01-20 02:56:32] [31merror[39m:GET /api/company/applications/696e9b35984b3e364bb0c37a null - 23ms
+[2026-01-20 02:56:33] [31merror[39m:GET /api/company/applications/696e9b35984b3e364bb0c37a null - 22ms
+[2026-01-20 02:57:07] [31merror[39m:GET /api/company/applications/696e9b35984b3e364bb0c37a null - 41ms
+[2026-01-20 02:57:56] [31merror[39m:GET /api/company/applications/696e9b35984b3e364bb0c37a null - 28ms
+[2026-01-20 14:51:12] [31merror[39m:Skill already exists
+[2026-01-20 15:00:43] [31merror[39m:Application not found
+[2026-01-21 21:24:21] [31merror[39m:Unauthorized access
+[2026-01-21 21:24:42] [31merror[39m:Unauthorized access
+[2026-01-22 03:27:30] [31merror[39m:User is blocked
+[2026-01-22 03:31:50] [31merror[39m:Access denied
+[2026-01-22 04:04:13] [31merror[39m:Access denied

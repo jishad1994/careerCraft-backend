@@ -15,10 +15,12 @@ import cookieParser from "cookie-parser";
 import logger from "./utils/logger";
 
 import skillsRoutes from "./routes/skills/skills.routes";
-import { API_ROUTES } from "./constants/api-routes.constants";
+import { API_ROUTES } from "./constants/route-contstants/api-routes.constants";
 import companyRoutes from "./routes/company/company.routes";
 import publicJobRoutes from "./routes/jobs/jobs.public.routes";
 import userRoutes from "./routes/user/user.routes";
+import requestLogger from "./middlewares/requestLogger.middleware";
+import { isUserBlocked } from "./middlewares/isUserBlocked.middleware";
 
 const app: Application = express();
 
@@ -58,11 +60,9 @@ await cacheService
             logger.error("cache error", err.message);
         }
     });
-// Add this BEFORE your routes in the main app file
-app.use((req, res, next) => {
-    console.log(`${req.method} ${req.path}`);
-    next();
-});
+
+app.use(requestLogger);
+
 //routes
 app.use("/api/auth/user", userAuthRoutes);
 app.use("/api/auth/company", companyAuthRoutes);

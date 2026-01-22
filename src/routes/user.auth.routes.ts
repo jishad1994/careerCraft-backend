@@ -18,7 +18,12 @@ import {
 
 userAuthRoute.post("/signup", validate(emailAndRoleSchema, ["body"]), authController.signup.bind(authController));
 
-userAuthRoute.post("/login", validate(loginCredentialsSchema, ["body"]), authController.login.bind(authController));
+userAuthRoute.post(
+    "/login",
+
+    validate(loginCredentialsSchema, ["body"]),
+    authController.login.bind(authController)
+);
 
 userAuthRoute.post("/googleLogin", validate(googleLoginSchema, ["body"]), authController.google.bind(authController));
 

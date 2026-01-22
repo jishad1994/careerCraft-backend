@@ -9,7 +9,6 @@ import { IUserProfileService } from "../interfaces/profile.service.interface";
 import mongoose from "mongoose";
 
 export class UserProfileService implements IUserProfileService {
-
     constructor(private _userRepository: IUserRepository, private _fileService: IFileService) {}
 
     async getUserProfile(id: string): Promise<UserProfileDTO> {
@@ -20,6 +19,14 @@ export class UserProfileService implements IUserProfileService {
 
         if (!userProfileDataPopulated) {
             throw new AppError("User not found");
+        }
+        if (userProfileDataPopulated.resumeURL && userProfileDataPopulated.resumeURL.length >= 0) {
+            const signedUrlPromise = userProfileDataPopulated.resumeURL.map(async (resume) => {
+                const resumeSignedURL = await this._fileService.generateSignedUrl(resume.key, 3600 * 6);
+                resume.signedURL = resumeSignedURL;
+            });
+
+            await Promise.all(signedUrlPromise);
         }
 
         return toUserProfileDTO(userProfileDataPopulated);
@@ -329,7 +336,7 @@ export class UserProfileService implements IUserProfileService {
         return toUserProfileDTO(populated);
     }
 
-      async uploadResume(userId: string, document: Express.Multer.File): Promise<UserProfileDTO> {
+    async uploadResume(userId: string, document: Express.Multer.File): Promise<UserProfileDTO> {
         if (!mongoose.Types.ObjectId.isValid(userId)) {
             throw new ValidationError("Invalid user id");
         }
@@ -361,7 +368,6 @@ export class UserProfileService implements IUserProfileService {
     }
 
     async deleteResume(userId: string, documentKey: string): Promise<UserProfileDTO> {
-
         if (!mongoose.Types.ObjectId.isValid(userId)) {
             throw new ValidationError("Invalid user id");
         }

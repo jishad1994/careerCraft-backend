@@ -23,8 +23,9 @@ export const companySchema = new Schema<ICompany>(
             unique: true,
             lowercase: true,
             trim: true,
+            index: true,
         },
-        googleId: { type: String, unique: true, sparse: true },
+        googleId: { type: String, unique: true, sparse: true, index: true },
         phone: {
             type: String,
             unique: true,
@@ -83,5 +84,6 @@ export const companySchema = new Schema<ICompany>(
         documents: [documentSchema],
         jobsPosted: [{ type: mongoose.Types.ObjectId, ref: "Job" }],
     },
+
     { timestamps: true }
 );

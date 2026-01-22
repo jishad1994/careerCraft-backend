@@ -2,7 +2,7 @@ import { ZodSchema } from "zod";
 
 import { Request, Response, NextFunction } from "express";
 import { ApiResponse } from "../utils/apiResponse.utils";
-import { HTTP_MESSAGES } from "../constants/http.constants";
+import { HTTP_MESSAGES } from "../constants/messages/http.messages.constants";
 
 export type IRequestObjects = "body" | "params" | "query" | "user" | "cookies";
 export const validate =

@@ -9,11 +9,3 @@ export interface AuthUserResponseDTO {
     role: Role;
     profilePicture?: IProfilePicture;
 }
-
-
-
-
-
-
-
-

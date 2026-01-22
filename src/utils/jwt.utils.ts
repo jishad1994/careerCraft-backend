@@ -20,14 +20,14 @@ export const verifyAccessToken = (token: string) => {
         return jwt.verify(token, process.env.ACCESS_SECRET!) as AccessPayload;
     } catch (error: unknown) {
         if (error instanceof TokenExpiredError) {
-            throw new AppError("Your session has expired. Please login again.", 401);
+            throw new AppError("Your session has expired. Please login again.", 401, true);
         }
 
         if (error instanceof JsonWebTokenError) {
-            throw new AppError("Invalid token signature.", 401);
+            throw new AppError("Invalid token signature.", 401, true);
         }
 
-        throw new AppError("Authentication failed", 401);
+        throw new AppError("Authentication failed", 401, true);
     }
 };
 

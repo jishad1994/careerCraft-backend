@@ -6,8 +6,8 @@ import { companyAuthMiddleware } from "../../middlewares/company.auth.middleware
 
 export const companyRoutes = express.Router();
 
-companyRoutes.use("/me", companyProfileRoutes);
-companyRoutes.use("/jobs", companyJobRoutes);
+companyRoutes.use("/me",companyAuthMiddleware, companyProfileRoutes);
+companyRoutes.use("/jobs", companyAuthMiddleware,companyJobRoutes);
 companyRoutes.use("/applications", companyAuthMiddleware, companyApplicationRoutes);
 
 export default companyRoutes;

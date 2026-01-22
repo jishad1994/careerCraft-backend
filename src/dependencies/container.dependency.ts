@@ -53,7 +53,7 @@ const emailService = new EmailService(
 const otpService = new OTPService(cacheService, emailService);
 
 //user Repo
-const userRepo = new UserRepository(User);
+export const userRepo = new UserRepository(User);
 
 //company repo
 const companyRepo = new CompanyRepository(Company);
@@ -106,15 +106,15 @@ const jobRepository = new JobRepository(Job);
 const jobApplicationRepository = new JobApplicationRepository(JobApplication);
 
 //application services
-const userJobApplicationService = new UserJobApplicationService(jobApplicationRepository);
+const userJobApplicationService = new UserJobApplicationService(jobApplicationRepository,fileService);
 const userJobApplicationController = new UserJobApplicationController(userJobApplicationService);
 
-const companyJobApplicationService=new CompanyJobApplicationService(jobApplicationRepository)
+const companyJobApplicationService=new CompanyJobApplicationService(jobApplicationRepository,fileService)
 const companyJobApplicationController=new CompanyJobApplicationController(companyJobApplicationService)
 
 const userJobService = new UserJobService(jobRepository, jobApplicationRepository, fileService);
 const companyJobService = new CompanyJobService(jobRepository);
-const adminJobService = new AdminJobService(jobRepository);
+const adminJobService = new AdminJobService(jobRepository,jobApplicationRepository);
 const publicJobService = new PublicJobService(jobRepository);
 
 const userJobController = new UserJobController(userJobService);

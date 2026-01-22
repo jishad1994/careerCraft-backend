@@ -9,6 +9,22 @@ adminJobRoutes.get(
 
     adminJobController.getAllJobs.bind(adminJobController)
 );
+// get job by id
+adminJobRoutes.get(
+    "/:id",
+
+    adminJobController.getJobById.bind(adminJobController)
+);
+adminJobRoutes.get(
+    "/:id/applications",
+
+    adminJobController.getApplicationsByJob.bind(adminJobController)
+);
+adminJobRoutes.get(
+    "/:id/applications",
+
+    adminJobController.getApplicationsByJob.bind(adminJobController)
+);
 
 // Verify job
 adminJobRoutes.patch(

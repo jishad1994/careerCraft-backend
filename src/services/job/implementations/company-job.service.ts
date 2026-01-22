@@ -77,7 +77,11 @@ export class CompanyJobService implements ICompanyJobService {
 
     async updateJobStatus(companyId: string, jobId: string, status: string): Promise<IJob> {
         // Verify ownership
-        await this.getJobById(companyId, jobId);
+        const job = await this.getJobById(companyId, jobId);
+
+        if(!job.isVerified){
+            throw new AppError('Job should be verified by admin first')
+        }
 
         const validStatuses = ["draft", "active", "paused", "closed"];
 

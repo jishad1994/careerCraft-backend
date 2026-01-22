@@ -4,18 +4,23 @@ import { ICompanyProfileController } from "../interfaces/company-profile.control
 import { AppError } from "../../../errors/app.error.";
 import { CompanyProfileDTO } from "../../../dtos/companyProfile.dto";
 import { ApiResponse } from "../../../utils/apiResponse.utils";
+import { AuthError } from "../../../errors/auth.error";
+import { HTTP_MESSAGES } from "../../../constants/messages/http.messages.constants";
+import { COMPANY_PROFILE_MESSAGES } from "../../../constants/messages/company.messages.constants";
+import { ValidationError } from "../../../errors/validation.error";
 
 export class CompanyProfileController implements ICompanyProfileController {
     constructor(private _companyProfileService: ICompanyProfileService) {}
 
     async getProfile(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
-            const user = req.user;
-            if (!user) throw new AppError("User not found");
+            const company = req.user;
 
-            const companyProfileData: CompanyProfileDTO = await this._companyProfileService.getProfile(user.id);
+            if (!company) throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
 
-            return ApiResponse.success(res, "Company profile fetching successfull", companyProfileData);
+            const companyProfileData: CompanyProfileDTO = await this._companyProfileService.getProfile(company.id);
+
+            return ApiResponse.success(res, COMPANY_PROFILE_MESSAGES.PROFILE_FETCH_SUCCESSFULL, companyProfileData);
         } catch (error) {
             next(error);
         }
@@ -24,11 +29,12 @@ export class CompanyProfileController implements ICompanyProfileController {
     async updateBasicProfile(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const company = req.user;
-            if (!company) throw new AppError("User not found");
+
+            if (!company) throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
 
             const updatedProfile = await this._companyProfileService.updateBasicProfile(company.id, req.body);
 
-            return ApiResponse.success(res, "Company profile updated successfully", updatedProfile);
+            return ApiResponse.success(res, COMPANY_PROFILE_MESSAGES.PRFILE_UPDATED, updatedProfile);
         } catch (error) {
             next(error);
         }
@@ -37,14 +43,15 @@ export class CompanyProfileController implements ICompanyProfileController {
     async updateProfilePicture(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const company = req.user;
-            if (!company) throw new AppError("User not found");
+
+            if (!company) throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
 
             const profilePicture = req.file;
             if (!profilePicture) throw new AppError("File not found");
             console.log("reached here");
             const updatedProfile = await this._companyProfileService.updateProfilePicture(company.id, profilePicture);
 
-            return ApiResponse.success(res, "Company profile picture updated successfully", updatedProfile);
+            return ApiResponse.success(res, COMPANY_PROFILE_MESSAGES.PRFILE_PICTURE_UPDATED, updatedProfile);
         } catch (error) {
             next(error);
         }
@@ -53,11 +60,12 @@ export class CompanyProfileController implements ICompanyProfileController {
     async deleteProfilePicture(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const company = req.user;
-            if (!company) throw new AppError("User not found");
+
+            if (!company) throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
 
             const updatedProfile = await this._companyProfileService.deleteProfilePicture(company.id);
 
-            return ApiResponse.success(res, "Company profile picture deleted successfully", updatedProfile);
+            return ApiResponse.success(res, COMPANY_PROFILE_MESSAGES.PRFILE_PICTURE_DELETED, updatedProfile);
         } catch (error) {
             next(error);
         }
@@ -66,12 +74,13 @@ export class CompanyProfileController implements ICompanyProfileController {
     async updateBannerImage(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const company = req.user;
-            if (!company) throw new AppError("User not found");
+
+            if (!company) throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
 
             const bannerImage = req.file;
-            if (!bannerImage) throw new AppError("Banner image not found");
+            if (!bannerImage) throw new ValidationError("Banner image not found");
             const profile = await this._companyProfileService.updateBannerImage(company.id, bannerImage);
-            return ApiResponse.success(res, "Company banner image updated successfully", profile);
+            return ApiResponse.success(res, COMPANY_PROFILE_MESSAGES.BANNER_IMAGE_UPDATED, profile);
         } catch (error) {
             next(error);
         }
@@ -80,9 +89,9 @@ export class CompanyProfileController implements ICompanyProfileController {
     async deleteBannerImage(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const company = req.user;
-            if (!company) throw new AppError("User not found");
+            if (!company) throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
             const profile = await this._companyProfileService.deleteBannerImage(company.id);
-            return ApiResponse.success(res, "Company banner image deleted successfully", profile);
+            return ApiResponse.success(res, COMPANY_PROFILE_MESSAGES.BANNER_IMAGE_DELETED, profile);
         } catch (error) {
             next(error);
         }
@@ -91,11 +100,12 @@ export class CompanyProfileController implements ICompanyProfileController {
     async uploadDocument(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const company = req.user;
-            if (!company) throw new AppError("User not found");
+
+            if (!company) throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
             const document = req.file;
             if (!document) throw new AppError("Document not found");
             const profile = await this._companyProfileService.uploadDocument(company.id, document);
-            return ApiResponse.success(res, "Document uploded successfully", profile);
+            return ApiResponse.success(res, COMPANY_PROFILE_MESSAGES.DOCUMENT_UPLOADED, profile);
         } catch (error) {
             next(error);
         }
@@ -104,7 +114,8 @@ export class CompanyProfileController implements ICompanyProfileController {
     async deleteDocument(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const company = req.user;
-            if (!company) throw new AppError("User not found");
+
+            if (!company) throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
 
             const documentKey = req.query.key;
 
@@ -114,7 +125,7 @@ export class CompanyProfileController implements ICompanyProfileController {
 
             if (!documentKey) throw new AppError("Document key if not found");
             const profile = await this._companyProfileService.deleteDocument(company.id, documentKey);
-            return ApiResponse.success(res, "Document deleted successfully", profile);
+            return ApiResponse.success(res, COMPANY_PROFILE_MESSAGES.DOCUMENT_DELETED, profile);
         } catch (error) {
             next(error);
         }

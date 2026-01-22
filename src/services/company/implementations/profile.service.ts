@@ -22,6 +22,14 @@ export class CompanyProfileService implements ICompanyProfileService {
 
         if (companyPopulated.isBlocked) throw new AppError("Company is blocked");
 
+        if (companyPopulated.documents && companyPopulated.documents.length > 0) {
+            const signedUrlPromises = companyPopulated.documents.map(async (document) => {
+                document.signedURL = await this._fileService.generateSignedUrl(document.key);
+            });
+
+            await Promise.all(signedUrlPromises);
+        }
+
         return toCompanyProfileDTO(companyPopulated);
     }
 
@@ -82,7 +90,6 @@ export class CompanyProfileService implements ICompanyProfileService {
     }
 
     async deleteProfilePicture(companyId: string): Promise<CompanyProfileDTO> {
-
         if (!mongoose.Types.ObjectId.isValid(companyId)) {
             throw new ValidationError("Invalid company id");
         }

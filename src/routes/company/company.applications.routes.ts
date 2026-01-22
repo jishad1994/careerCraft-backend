@@ -11,7 +11,7 @@ companyApplicationRoutes.get(
     "/:id",
     companyJobApplicationController.getApplicationById.bind(companyJobApplicationController)
 );
-companyApplicationRoutes.get(
+companyApplicationRoutes.post(
     "/:id/update-status",
     companyJobApplicationController.updateApplicationStatus.bind(companyJobApplicationController)
 );

@@ -4,11 +4,9 @@ import logger from "../utils/logger";
 import { ApiResponse } from "../utils/apiResponse.utils";
 
 export function userAuthMiddleware(req: Request, res: Response, next: NextFunction) {
-    // const token = req.headers.authorization?.split(" ")[1];
     const token = req.cookies.accessToken;
     logger.info("auth token", token);
 
-    console.log("token", token);
     if (!token) return ApiResponse.unauthorized(res, "Unauthorized user");
 
     try {

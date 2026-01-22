@@ -39,6 +39,7 @@ export interface IDocument {
     originalName: string;
     key: string;
     mimeType: string;
+    signedURL?:string
     size: number;
     uploadedAt: Date;
 }

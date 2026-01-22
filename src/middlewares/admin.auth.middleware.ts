@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { AccessPayload, verifyAccessToken } from "../utils/jwt.utils";
 import logger from "../utils/logger";
 import { ApiResponse } from "../utils/apiResponse.utils";
-import { HTTP_MESSAGES } from "../constants/http.constants";
+import { HTTP_MESSAGES } from "../constants/messages/http.messages.constants";
 import { AuthCookiesSchema } from "../validators-schemas/auth.schemas";
 import { AppError } from "../errors/app.error.";
 

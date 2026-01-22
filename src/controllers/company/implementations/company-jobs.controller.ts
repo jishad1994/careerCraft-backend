@@ -6,6 +6,8 @@ import { ICompanyJobService } from "../../../services/job/interfaces/company-job
 import { AuthError } from "../../../errors/auth.error";
 import { ISkillServivce } from "../../../services/skills/interfaces/skills.services.interfaces";
 import { JobSearchFilters } from "../../../repositories/job/job.repository.interface";
+import { HTTP_MESSAGES } from "../../../constants/messages/http.messages.constants";
+import { COMPANY_JOB_MESSAGES, COMPANY_SKILL_MESSAGES } from "../../../constants/messages/company.messages.constants";
 
 export class CompanyJobController implements ICompanyJobController {
     constructor(private _companyJobService: ICompanyJobService, private _skillService: ISkillServivce) {}
@@ -13,17 +15,13 @@ export class CompanyJobController implements ICompanyJobController {
     async createJob(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const company = req.user;
-            if (!company) throw new AuthError("Unauthorized");
+            if (!company) throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
 
             const jobData = req.body;
 
-            if (!jobData.title || !jobData.description || !jobData.location) {
-                throw new AppError("Missing required fields");
-            }
-
             const job = await this._companyJobService.createJob(company.id, jobData);
 
-            return ApiResponse.created(res, "Job created successfully", job);
+            return ApiResponse.created(res, COMPANY_JOB_MESSAGES.CREATED, job);
         } catch (error) {
             next(error);
         }
@@ -37,7 +35,7 @@ export class CompanyJobController implements ICompanyJobController {
 
             const [skills, paginationMeta] = await this._skillService.getSkillsPaginated(page, limit, query);
 
-            return ApiResponse.success(res, "Skill fetch successfull", skills, 200, paginationMeta);
+            return ApiResponse.success(res, COMPANY_SKILL_MESSAGES.FETCH_SUCCESSFULL, skills, 200, paginationMeta);
         } catch (error) {
             next(error);
         }
@@ -47,7 +45,7 @@ export class CompanyJobController implements ICompanyJobController {
         try {
             const company = req.user;
 
-            if (!company) throw new AuthError("Unauthorized");
+            if (!company) throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
 
             const page = Number(req.query.page) || 1;
             const limit = Number(req.query.limit) || 10;
@@ -66,7 +64,7 @@ export class CompanyJobController implements ICompanyJobController {
 
             const { jobs, paginationMeta } = await this._companyJobService.getCompanyJobs(company.id, page, limit, filters);
 
-            return ApiResponse.success(res, "Jobs fetched successfully", jobs, 200, paginationMeta);
+            return ApiResponse.success(res, COMPANY_JOB_MESSAGES.FETCH_SUCCESSFULL, jobs, 200, paginationMeta);
         } catch (error) {
             next(error);
         }
@@ -75,13 +73,13 @@ export class CompanyJobController implements ICompanyJobController {
     async getJobById(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const company = req.user;
-            if (!company) throw new AuthError("Unauthorized");
+            if (!company) throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
 
             const { jobId } = req.params;
 
             const job = await this._companyJobService.getJobById(company.id, jobId);
 
-            return ApiResponse.success(res, "Job fetched successfully", job);
+            return ApiResponse.success(res, COMPANY_JOB_MESSAGES.FETCH_SUCCESSFULL, job);
         } catch (error) {
             next(error);
         }
@@ -90,7 +88,7 @@ export class CompanyJobController implements ICompanyJobController {
     async updateJob(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const company = req.user;
-            if (!company) throw new AuthError("Unauthorized");
+            if (!company) throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
 
             const { jobId } = req.params;
 
@@ -98,7 +96,7 @@ export class CompanyJobController implements ICompanyJobController {
 
             const job = await this._companyJobService.updateJob(company.id, jobId, updates);
 
-            return ApiResponse.success(res, "Job updated successfully", job);
+            return ApiResponse.success(res, COMPANY_JOB_MESSAGES.UPDATED, job);
         } catch (error) {
             next(error);
         }
@@ -107,7 +105,7 @@ export class CompanyJobController implements ICompanyJobController {
     async updateJobStatus(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const company = req.user;
-            if (!company) throw new AuthError("Unauthorized");
+            if (!company) throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
 
             const { jobId } = req.params;
             const { status } = req.body;
@@ -118,7 +116,7 @@ export class CompanyJobController implements ICompanyJobController {
 
             const job = await this._companyJobService.updateJobStatus(company.id, jobId, status);
 
-            return ApiResponse.success(res, "Job status updated successfully", job);
+            return ApiResponse.success(res, COMPANY_JOB_MESSAGES.STATUS_UPDATED, job);
         } catch (error) {
             next(error);
         }
@@ -127,13 +125,13 @@ export class CompanyJobController implements ICompanyJobController {
     async deleteJob(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const company = req.user;
-            if (!company) throw new AuthError("Unauthorized");
+            if (!company) throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
 
             const { jobId } = req.params;
 
             await this._companyJobService.deleteJob(company.id, jobId);
 
-            return ApiResponse.success(res, "Job deleted successfully", null);
+            return ApiResponse.success(res, COMPANY_JOB_MESSAGES.DELETED, null);
         } catch (error) {
             next(error);
         }
@@ -142,7 +140,7 @@ export class CompanyJobController implements ICompanyJobController {
     async getJobStatistics(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const company = req.user;
-            if (!company) throw new AppError("User not found", 401);
+            if (!company) throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
 
             const { jobs } = await this._companyJobService.getCompanyJobs(company.id, 1, 1000, {});
 
@@ -157,7 +155,7 @@ export class CompanyJobController implements ICompanyJobController {
                 verified: jobs.filter((j) => j.isVerified).length,
             };
 
-            return ApiResponse.success(res, "Job statistics fetched successfully", statistics);
+            return ApiResponse.success(res, COMPANY_JOB_MESSAGES.STATISTIC_FETCH_SUCCESSFULL, statistics);
         } catch (error) {
             next(error);
         }

@@ -9,9 +9,10 @@ import { IJobApplicationRepository } from "../../../repositories/application/job
 import { ICompanyJobApplicationServiceInterface } from "../interfaces/company-job-application.service.interface";
 import { AppError } from "../../../errors/app.error.";
 import { PaginationMeta } from "../../../utils/apiResponse.utils";
+import { IFileService } from "../../file-service/interfaces/file.service.interface";
 
 export class CompanyJobApplicationService implements ICompanyJobApplicationServiceInterface {
-    constructor(private _applicationRepository: IJobApplicationRepository) {}
+    constructor(private _applicationRepository: IJobApplicationRepository, private _fileService: IFileService) {}
 
     async getApplicationById(applicationId: string): Promise<IJobApplication> {
         if (!mongoose.Types.ObjectId.isValid(applicationId)) {
@@ -22,6 +23,10 @@ export class CompanyJobApplicationService implements ICompanyJobApplicationServi
         if (!application) {
             throw new AppError("Application not found", 404);
         }
+
+        const resumeSignedURL = await this._fileService.generateSignedUrl(application.resume.fileKey);
+
+        application.resume.signedURL = resumeSignedURL;
 
         return application;
     }

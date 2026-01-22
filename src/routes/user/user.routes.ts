@@ -6,7 +6,7 @@ import { userAuthMiddleware } from "../../middlewares/user.auth.middleware";
 
 const userRoutes = express.Router();
 
-userRoutes.use("/me", userProfileRoutes);
+userRoutes.use("/me",userAuthMiddleware, userProfileRoutes);
 userRoutes.use("/jobs",userAuthMiddleware, userJobRoutes);
 userRoutes.use("/applications", userAuthMiddleware,userJobApplicationRoutes);
 

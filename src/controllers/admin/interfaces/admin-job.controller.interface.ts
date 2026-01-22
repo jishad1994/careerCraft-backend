@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express";
 
 export interface IAdminJobController {
     getAllJobs(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+    getJobById(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+    getApplicationsByJob(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
     verifyJob(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
     blockJob(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
     unblockJob(req: Request, res: Response, next: NextFunction): Promise<Response | void>;

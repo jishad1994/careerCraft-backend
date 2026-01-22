@@ -102,6 +102,8 @@ export class UserJobController implements IUserJobController {
             } else if (jobData.coverLetterType === "text") {
                 jobData.coverLetter = {
                     content: jobData.coverLetterText,
+                    type: "text",
+                    uploadedAt: Date.now(),
                 };
 
                 jobData.resume = {

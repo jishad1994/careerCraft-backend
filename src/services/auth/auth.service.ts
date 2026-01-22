@@ -18,6 +18,7 @@ import { AppError } from "../../errors/app.error.";
 import { AuthError } from "../../errors/auth.error";
 import logger from "../../utils/logger";
 import { RequestOtpDTO } from "../../validators-schemas/auth.schemas";
+import { HTTP_MESSAGES, HTTP_STATUS } from "../../constants/messages/http.messages.constants";
 
 export class AuthService implements IAuthService {
     constructor(
@@ -28,6 +29,39 @@ export class AuthService implements IAuthService {
         private _otpService: IOtpService,
         private _emailService: IEmailService
     ) {}
+
+    //issue new refreshtoken
+
+    async refresh(
+        oldRefreshToken: string
+    ): Promise<{ accessToken: string; refreshToken: string; user: AuthUserResponseDTO }> {
+
+        const payload = verifyRefreshToken(oldRefreshToken);
+
+        
+        const record = await this._refreshTokenRepository.find(payload.jti);
+        if (!record || record.role !== payload.role || record.userId !== payload.sub) {
+            throw new AuthError("invalid refresh token");
+        }
+
+        await this._refreshTokenRepository.delete(payload.jti);
+
+        const accessToken = createAccessToken(payload.sub, payload.role);
+
+        const userDoc =
+            payload.role == "user"
+                ? await this._userRepository.findById(payload.sub as string)
+                : await this._companyRepository.findById(payload.sub);
+
+        const user = userDoc as AuthUserResponseDTO;
+
+        const { jti, token: newRefreshToken } = createRefreshToken(payload.sub, payload.role);
+        const exp = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+        await this._refreshTokenRepository.save(jti, record.userId, record.role, record.email, exp);
+
+        return { accessToken, refreshToken: newRefreshToken, user };
+    }
 
     //signup user
     async signupUser(userData: userSignupData): Promise<IUser> {
@@ -71,12 +105,13 @@ export class AuthService implements IAuthService {
                 ? await this._userRepository.findOne({ email })
                 : await this._companyRepository.findByEmail(email as string);
 
-        console.log(user, "user");
-
         if (!user) throw new AppError("No User Found");
 
+        if (user.isBlocked) throw new AuthError(HTTP_MESSAGES.FORBIDDEN,HTTP_STATUS.FORBIDDEN);
+
         const ok = await bcrypt.compare(password, user.password as string);
-        if (!ok) throw new AuthError("invalid credentilas");
+
+        if (!ok) throw new AuthError("Password invalid");
 
         const accessToken = createAccessToken(String(user._id), user.role as Role);
 
@@ -141,36 +176,6 @@ export class AuthService implements IAuthService {
         const user: AuthUserResponseDTO = toAuthUserResponseDTO(entity);
 
         return { accessToken, refreshToken, user };
-    }
-
-    //issue new refreshtoken
-
-    async refresh(
-        oldRefreshToken: string
-    ): Promise<{ accessToken: string; refreshToken: string; user: AuthUserResponseDTO }> {
-        const payload = verifyRefreshToken(oldRefreshToken);
-        const record = await this._refreshTokenRepository.find(payload.jti);
-        if (!record || record.role !== payload.role || record.userId !== payload.sub) {
-            throw new Error("invalid refresh token");
-        }
-
-        await this._refreshTokenRepository.delete(payload.jti);
-
-        const accessToken = createAccessToken(payload.sub, payload.role);
-
-        const userDoc =
-            payload.role == "user"
-                ? await this._userRepository.findById(payload.sub as string)
-                : await this._companyRepository.findById(payload.sub);
-
-        const user = userDoc as AuthUserResponseDTO;
-
-        const { jti, token: newRefreshToken } = createRefreshToken(payload.sub, payload.role);
-        const exp = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-
-        await this._refreshTokenRepository.save(jti, record.userId, record.role, record.email, exp);
-
-        return { accessToken, refreshToken: newRefreshToken, user };
     }
 
     //Logout

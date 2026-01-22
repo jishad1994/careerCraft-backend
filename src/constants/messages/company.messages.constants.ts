@@ -1,0 +1,22 @@
+export const COMPANY_JOB_MESSAGES = {
+    CREATED: "Job posted successfully",
+    UPDATED: "Job updated successfully",
+    STATUS_UPDATED: "Job status updated successfully",
+    DELETED: "Job deleted successfully",
+    FETCH_SUCCESSFULL: "Jobs fetch successfull",
+    STATISTIC_FETCH_SUCCESSFULL: "Jobs statistics fetch successfull",
+} as const;
+
+export const COMPANY_SKILL_MESSAGES = {
+    FETCH_SUCCESSFULL: "Skill fetch successfull",
+} as const;
+export const COMPANY_PROFILE_MESSAGES = {
+    PROFILE_FETCH_SUCCESSFULL: "Profile fetch successfull",
+    PRFILE_UPDATED: "Profile updated successfull",
+    PRFILE_PICTURE_UPDATED: "Profile picture updated successfull",
+    PRFILE_PICTURE_DELETED: "Profile picture deletion successfull",
+    BANNER_IMAGE_UPDATED: "Banner image updation successfull",
+    BANNER_IMAGE_DELETED: "Banner image deletion successfull",
+    DOCUMENT_UPLOADED: "Document uploading successfull",
+    DOCUMENT_DELETED: "Document deletion successfull",
+} as const;
