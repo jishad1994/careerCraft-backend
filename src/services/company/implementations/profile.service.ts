@@ -10,15 +10,23 @@ import { IFileService } from "../../file-service/interfaces/file.service.interfa
 import { IDocument } from "../../../models/user/user.interface";
 
 export class CompanyProfileService implements ICompanyProfileService {
-    constructor(private _companyRepository: ICompanyRepository, private _fileService: IFileService) {}
+    constructor(
+        private _companyRepository: ICompanyRepository,
+        private _fileService: IFileService,
+    ) {}
 
     async getProfile(companyId: string): Promise<CompanyProfileDTO> {
         if (!mongoose.Types.ObjectId.isValid(companyId)) {
             throw new ValidationError("Invalid object id");
         }
-        const companyPopulated = await this._companyRepository.findByIdWithPopulate<ICompanyPopulated>(companyId, [""]);
 
-        if (!companyPopulated) throw new AppError("Company not found");
+        const companyPopulated = await this._companyRepository.findByIdWithPopulate<ICompanyPopulated>(companyId, [
+            { path: "jobsPosted", select: "title" },
+        ]);
+
+        if (!companyPopulated) {
+            throw new AppError("Company not found");
+        }
 
         if (companyPopulated.isBlocked) throw new AppError("Company is blocked");
 

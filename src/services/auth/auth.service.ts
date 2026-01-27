@@ -19,6 +19,7 @@ import { AuthError } from "../../errors/auth.error";
 import logger from "../../utils/logger";
 import { RequestOtpDTO } from "../../validators-schemas/auth.schemas";
 import { HTTP_MESSAGES, HTTP_STATUS } from "../../constants/messages/http.messages.constants";
+import { AuthMapper } from "../../mappers/auth.mapper";
 
 export class AuthService implements IAuthService {
     constructor(
@@ -27,19 +28,18 @@ export class AuthService implements IAuthService {
         private _refreshTokenRepository: IRefreshTokenRepository,
         private _cacheService: ICacheService,
         private _otpService: IOtpService,
-        private _emailService: IEmailService
+        private _emailService: IEmailService,
     ) {}
 
     //issue new refreshtoken
 
     async refresh(
-        oldRefreshToken: string
+        oldRefreshToken: string,
     ): Promise<{ accessToken: string; refreshToken: string; user: AuthUserResponseDTO }> {
-
         const payload = verifyRefreshToken(oldRefreshToken);
 
-        
         const record = await this._refreshTokenRepository.find(payload.jti);
+
         if (!record || record.role !== payload.role || record.userId !== payload.sub) {
             throw new AuthError("invalid refresh token");
         }
@@ -50,12 +50,15 @@ export class AuthService implements IAuthService {
 
         const userDoc =
             payload.role == "user"
-                ? await this._userRepository.findById(payload.sub as string)
+                ? await this._userRepository.findById(payload.sub)
                 : await this._companyRepository.findById(payload.sub);
 
-        const user = userDoc as AuthUserResponseDTO;
+        if (!userDoc) throw new AppError("User not found");
+
+        const user = AuthMapper.toAuthUserDto(userDoc);
 
         const { jti, token: newRefreshToken } = createRefreshToken(payload.sub, payload.role);
+
         const exp = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
         await this._refreshTokenRepository.save(jti, record.userId, record.role, record.email, exp);
@@ -100,38 +103,35 @@ export class AuthService implements IAuthService {
 
     //Login
     async login(email: string, password: string, role: string) {
-        const user =
+        const userDoc =
             role == "user"
                 ? await this._userRepository.findOne({ email })
                 : await this._companyRepository.findByEmail(email as string);
 
-        if (!user) throw new AppError("No User Found");
+        if (!userDoc) throw new AppError("No User Found");
 
-        if (user.isBlocked) throw new AuthError(HTTP_MESSAGES.FORBIDDEN,HTTP_STATUS.FORBIDDEN);
+        if (userDoc.isBlocked) throw new AuthError(HTTP_MESSAGES.FORBIDDEN, HTTP_STATUS.FORBIDDEN);
 
-        const ok = await bcrypt.compare(password, user.password as string);
+        const ok = await bcrypt.compare(password, userDoc.password as string);
 
         if (!ok) throw new AuthError("Password invalid");
 
-        const accessToken = createAccessToken(String(user._id), user.role as Role);
+        const accessToken = createAccessToken(String(userDoc._id), userDoc.role as Role);
 
-        const { token: refreshToken, jti } = createRefreshToken(String(user._id), user.role as Role);
+        const { token: refreshToken, jti } = createRefreshToken(String(userDoc._id), userDoc.role as Role);
 
         const exp = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
-        await this._refreshTokenRepository.save(jti, String(user._id), user.role as Role, user.email as string, exp);
+        await this._refreshTokenRepository.save(
+            jti,
+            String(userDoc._id),
+            userDoc.role as Role,
+            userDoc.email as string,
+            exp,
+        );
 
-        const authUserDto: AuthUserResponseDTO = {
-            id: String(user._id),
-            role: user.role as "user" | "company" | "admin",
-            email: user.email as string,
-            firstName: (user as IUser).firstName,
-            lastName: (user as IUser).lastName,
-            name: (user as ICompany).name,
-            profilePicture: user.profilePicture,
-        };
-
-        return { accessToken, refreshToken, user: authUserDto };
+        const user: AuthUserResponseDTO = AuthMapper.toAuthUserDto(userDoc);
+        return { accessToken, refreshToken, user };
     }
 
     async loginWithGoogle(credential: string, role: Role) {
@@ -208,7 +208,7 @@ export class AuthService implements IAuthService {
             await this._cacheService.set(
                 user.email,
                 JSON.stringify({ ...user, otpHashed, otpVerified: false }),
-                Number(process.env.OTP_VALIDATION_TIME) || 500
+                Number(process.env.OTP_VALIDATION_TIME) || 500,
             );
 
             this._otpService.sendOTP(user.email, "Your Verification Code", otp);
@@ -290,7 +290,7 @@ export class AuthService implements IAuthService {
         await this._emailService.send(
             email as string,
             "password reset link",
-            "click this link to reset your password " + resetPasswordLink(role, resetPasswordToken)
+            "click this link to reset your password " + resetPasswordLink(role, resetPasswordToken),
         );
         console.log("reset password link", resetPasswordLink(role, resetPasswordToken));
     }

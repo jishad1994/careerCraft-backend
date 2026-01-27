@@ -59,6 +59,7 @@ export class UserProfileDTO {
 
     certificates?: IDocument[];
     resumeURL?: IDocument[];
+    profileCompletion!: number;
 
     // jobsApplied?: IJobsApplied[];
     createdAt!: string;

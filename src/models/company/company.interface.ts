@@ -1,4 +1,4 @@
-import { Document, ObjectId } from "mongoose";
+import mongoose, { Document, ObjectId } from "mongoose";
 import { IBannerImage, IDocument, IProfilePicture, Role } from "../user/user.interface";
 import { AddressDTO } from "../../dtos/userProfile.dto";
 
@@ -7,8 +7,7 @@ export interface IPublicFileAsset {
     location: string;
 }
 
-export interface ICompany extends Document {
-    _id: ObjectId;
+export interface ICompany extends Document<mongoose.Types.ObjectId> {
     name: string;
 
     email: string;
@@ -44,13 +43,7 @@ export interface ICompany extends Document {
 
     description?: string;
 
-    subscriptionPackage?: ObjectId;
-
-    subscriptionStatus?: "active" | "expired" | "pending";
-
-    subscriptionStart?: Date;
-
-    subscriptionEnd?: Date;
+    activeSubscriptionId: ObjectId;
 
     numberOfEmployees?: number;
 
@@ -80,6 +73,7 @@ export interface ICompanyPopulated {
     industry?: string;
     GSTIN?: string;
     address?: AddressDTO[];
+    profileCompletion: number;
     logo?: string;
     bannerImage?: IBannerImage;
     description?: string;

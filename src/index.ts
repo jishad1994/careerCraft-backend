@@ -20,11 +20,9 @@ import companyRoutes from "./routes/company/company.routes";
 import publicJobRoutes from "./routes/jobs/jobs.public.routes";
 import userRoutes from "./routes/user/user.routes";
 import requestLogger from "./middlewares/requestLogger.middleware";
-import { isUserBlocked } from "./middlewares/isUserBlocked.middleware";
 
 const app: Application = express();
 
-const port = process.env.PORT || 3000;
 
 app.use(
     cors({
@@ -33,7 +31,7 @@ app.use(
         allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
         credentials: true,
         optionsSuccessStatus: 200,
-    })
+    }),
 ); //cors
 app.use(cookieParser());
 
@@ -76,6 +74,4 @@ app.use(API_ROUTES.JOBS, publicJobRoutes);
 //errro handler middleware
 app.use(errorHandler);
 
-app.listen(port, () => {
-    logger.info(`server running on ${port} `);
-});
+export default app;

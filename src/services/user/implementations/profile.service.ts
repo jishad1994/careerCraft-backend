@@ -9,7 +9,10 @@ import { IUserProfileService } from "../interfaces/profile.service.interface";
 import mongoose from "mongoose";
 
 export class UserProfileService implements IUserProfileService {
-    constructor(private _userRepository: IUserRepository, private _fileService: IFileService) {}
+    constructor(
+        private _userRepository: IUserRepository,
+        private _fileService: IFileService,
+    ) {}
 
     async getUserProfile(id: string): Promise<UserProfileDTO> {
         if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -20,7 +23,7 @@ export class UserProfileService implements IUserProfileService {
         if (!userProfileDataPopulated) {
             throw new AppError("User not found");
         }
-        if (userProfileDataPopulated.resumeURL && userProfileDataPopulated.resumeURL.length >= 0) {
+        if (userProfileDataPopulated.resumeURL && userProfileDataPopulated.resumeURL.length > 0) {
             const signedUrlPromise = userProfileDataPopulated.resumeURL.map(async (resume) => {
                 const resumeSignedURL = await this._fileService.generateSignedUrl(resume.key, 3600 * 6);
                 resume.signedURL = resumeSignedURL;
@@ -28,6 +31,7 @@ export class UserProfileService implements IUserProfileService {
 
             await Promise.all(signedUrlPromise);
         }
+
 
         return toUserProfileDTO(userProfileDataPopulated);
     }

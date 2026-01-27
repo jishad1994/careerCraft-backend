@@ -13,6 +13,7 @@ import { IEmailService } from "../email_service/email.service.interface";
 import { toUserProfileDTO } from "../../mappers/user.mapper";
 import { UserProfileDTO } from "../../dtos/userProfile.dto";
 import { ICacheService } from "../cache/cache.service.interface";
+import { CompanyVerificationHelper } from "../../service-helpers/company-verification.helper";
 
 export class AdminService implements IAdminService {
     constructor(
@@ -20,7 +21,7 @@ export class AdminService implements IAdminService {
         private _companyRepository: ICompanyRepository,
         private _emailService: IEmailService,
         private _fileService: IFileService,
-        private _cacheService: ICacheService
+        private _cacheService: ICacheService,
     ) {}
 
     async getUsers(page: number, limit: number, search?: string): Promise<UsersPaginatedDTO<IUser>> {
@@ -125,19 +126,26 @@ export class AdminService implements IAdminService {
             throw new ValidationError("Invalid company ID");
         }
 
-        const company = await this._companyRepository.findByIdAndUpdate(companyId, {
-            isVerified: true,
-        });
+        const company = await this._companyRepository.findById(companyId);
 
         if (!company) {
             throw new AppError("Company not found", 404);
         }
 
-        // Send verification success email
+        const result = CompanyVerificationHelper.evaluate(company);
+
+        if (result.missingFields.length > 0) {
+            throw new ValidationError(`Company profile incomplete. Missing: ${result.missingFields.join(", ")}`);
+        }
+
+        company.isVerified = true;
+        await company.save();
+
+        // Send verification email
         await this._emailService.send(
             company.email,
-            "Company verification successfull",
-            `CarerCraft has verified ${company.name} successfully`
+            "Company verification successful",
+            `CareerCraft has verified ${company.name} successfully`,
         );
 
         return company;

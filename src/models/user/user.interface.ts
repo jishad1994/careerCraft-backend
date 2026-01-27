@@ -1,4 +1,4 @@
-import { Document, ObjectId, Types } from "mongoose";
+import mongoose, { Document, ObjectId, Types } from "mongoose";
 import { ISkill } from "../skill/skill.interface";
 import { IPublicFileAsset } from "../company/company.interface";
 
@@ -38,9 +38,9 @@ export interface IBannerImage {
 export interface IDocument {
     originalName: string;
     key: string;
-    mimeType: string;
-    signedURL?:string
     size: number;
+    mimeType: string;
+    signedURL?: string;
     uploadedAt: Date;
 }
 
@@ -64,8 +64,7 @@ export interface IExperience {
     description?: string;
 }
 
-export interface IUser extends Document {
-    _id: ObjectId;
+export interface IUser extends Document <mongoose.Types.ObjectId>{
     firstName: string;
     lastName: string;
     phone: string;
@@ -105,6 +104,7 @@ export interface IUserPopulated {
     resumeURL: IDocument[];
     certificates: IDocument[];
     about: string;
+    profileCompletion: number;
     skills: ISkill[];
     education: IEducation[];
     experience: IExperience[];
@@ -114,23 +114,22 @@ export interface IUserPopulated {
 }
 
 export interface IUserListItem {
-  _id: string;
+    _id: string;
 
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone?: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone?: string;
 
-  provider: 'local' | 'google';
-  role: 'user' | 'company';
+    provider: "local" | "google";
+    role: "user" | "company";
 
-  isBlocked: boolean;
+    isBlocked: boolean;
 
-  profilePicture?: IPublicFileAsset;
+    profilePicture?: IPublicFileAsset;
 
-  location?: string;
+    location?: string;
 
-  createdAt: string; // ISO string
-  updatedAt: string;
+    createdAt: string; // ISO string
+    updatedAt: string;
 }
-

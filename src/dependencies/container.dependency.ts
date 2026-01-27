@@ -37,6 +37,10 @@ import { UserJobApplicationController } from "../controllers/user/implementation
 import { UserJobApplicationService } from "../services/application/implementations/user-job-application.service";
 import { CompanyJobApplicationController } from "../controllers/company/implementations/company-job-application.controller";
 import { CompanyJobApplicationService } from "../services/application/implementations/company-job-application.service";
+import { SubscriptionPlanController } from "../controllers/admin/implementations/subscription-plan.controller";
+import { SubscriptionPlanService } from "../services/subscription-plan/implementation/subscription-plan.service";
+import { SubscriptionPlanRepository } from "../repositories/subscription-plan/subscription-plan.repository";
+import { SubscriptionPlan } from "../models/subscription-plan/subscription.schema";
 
 //redis cache service instance
 const redisRepo = new RedisCacheRepo(process.env.REDIS_URL || "redis://localhost:6379");
@@ -47,7 +51,7 @@ const cacheService = new CacheService(redisRepo);
 const emailService = new EmailService(
     "gmail",
     process.env.HOST_EMAIL || "jishadkolapurath@gmail.com",
-    process.env.EMAIL_PASS || "rcpd qabt rtbs xqtv"
+    process.env.EMAIL_PASS || "rcpd qabt rtbs xqtv",
 );
 //OTP service
 const otpService = new OTPService(cacheService, emailService);
@@ -106,21 +110,25 @@ const jobRepository = new JobRepository(Job);
 const jobApplicationRepository = new JobApplicationRepository(JobApplication);
 
 //application services
-const userJobApplicationService = new UserJobApplicationService(jobApplicationRepository,fileService);
+const userJobApplicationService = new UserJobApplicationService(jobApplicationRepository, fileService);
 const userJobApplicationController = new UserJobApplicationController(userJobApplicationService);
 
-const companyJobApplicationService=new CompanyJobApplicationService(jobApplicationRepository,fileService)
-const companyJobApplicationController=new CompanyJobApplicationController(companyJobApplicationService)
+const companyJobApplicationService = new CompanyJobApplicationService(jobApplicationRepository, fileService);
+const companyJobApplicationController = new CompanyJobApplicationController(companyJobApplicationService);
 
 const userJobService = new UserJobService(jobRepository, jobApplicationRepository, fileService);
 const companyJobService = new CompanyJobService(jobRepository);
-const adminJobService = new AdminJobService(jobRepository,jobApplicationRepository);
+const adminJobService = new AdminJobService(jobRepository, jobApplicationRepository);
 const publicJobService = new PublicJobService(jobRepository);
 
 const userJobController = new UserJobController(userJobService);
 const adminJobController = new AdminJobController(adminJobService);
 const companyJobController = new CompanyJobController(companyJobService, skillService);
 const publicJobController = new PublicJobController(publicJobService);
+
+const subscriptionPlanRepository = new SubscriptionPlanRepository(SubscriptionPlan);
+const subscriptionPlanService = new SubscriptionPlanService(subscriptionPlanRepository);
+const subscriptionPlanController = new SubscriptionPlanController(subscriptionPlanService);
 
 export {
     cacheService,
@@ -137,5 +145,6 @@ export {
     companyJobController,
     publicJobController,
     userJobApplicationController,
-    companyJobApplicationController
+    companyJobApplicationController,
+    subscriptionPlanController
 };

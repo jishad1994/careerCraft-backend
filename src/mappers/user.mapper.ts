@@ -10,13 +10,14 @@ export function toUserProfileDTO(user: IUserPopulated): UserProfileDTO {
         phone: user.phone || "",
         role: user.role,
         profilePicture: user.profilePicture,
-        about: user.about,  
+        about: user.about,
         provider: user.provider,
         isBlocked: user.isBlocked,
         location: user.location,
         address: user.address,
         resumeURL: user.resumeURL,
-        certificates:user.certificates,
+        profileCompletion: user.profileCompletion,
+        certificates: user.certificates,
         skills: user.skills?.map((skill) => ({ id: skill._id.toString(), name: skill.name })),
 
         education: user.education?.map((edu) => ({

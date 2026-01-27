@@ -52,13 +52,7 @@ export class UserRepository extends BaseRepository<IUser> implements IUserReposi
         }
     }
 
-    async findByIdAndUpdate(id: string, update: Partial<IUser>): Promise<IUser | null> {
-        try {
-            return super.findByIdAndUpdate(id, update);
-        } catch {
-            throw new DataBaseError("db error while user findByIDandUpdate");
-        }
-    }
+   
 
     async findPaginated(page: number, limit: number, search?: string): Promise<[IUser[], number]> {
         page = Math.max(page, 1);

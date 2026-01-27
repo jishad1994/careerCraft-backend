@@ -2,13 +2,15 @@ import mongoose, { Schema } from "mongoose";
 import { ICompany } from "./company.interface";
 import { addressSchema, documentSchema, profilePictureSchema } from "../user/user.schema";
 import { IBannerImage } from "../user/user.interface";
+import { CompanyVerificationHelper } from "../../service-helpers/company-verification.helper";
+import mongooseLeanVirtuals from "mongoose-lean-virtuals";
 
 export const bannerImageSchema = new Schema<IBannerImage>(
     {
         key: { type: String, required: true },
         location: { type: String, required: true },
     },
-    { _id: false }
+    { _id: false },
 );
 
 export const companySchema = new Schema<ICompany>(
@@ -30,13 +32,13 @@ export const companySchema = new Schema<ICompany>(
             type: String,
             unique: true,
             sparse: true,
-            required: function () {
+            required: function (this:ICompany) {
                 return !this.googleId;
             },
         },
         password: {
             type: String,
-            required: function () {
+            required: function (this:ICompany) {
                 return !this.googleId;
             },
         },
@@ -68,22 +70,24 @@ export const companySchema = new Schema<ICompany>(
         address: [addressSchema],
         logo: String,
         description: String,
-        subscriptionPackage: {
+        activeSubscriptionId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Package",
+            ref: "CompanySubscription",
+            default: null,
         },
-        subscriptionStatus: {
-            type: String,
-            enum: ["active", "expired", "pending"],
-            default: "pending",
-        },
-        subscriptionStart: Date,
-        subscriptionEnd: Date,
         numberOfEmployees: Number,
-        staffs: [{ type: mongoose.Types.ObjectId, ref: "Staff" }],
+        staffs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Staff" }],
         documents: [documentSchema],
-        jobsPosted: [{ type: mongoose.Types.ObjectId, ref: "Job" }],
+        jobsPosted: [{ type: mongoose.Schema.Types.ObjectId, ref: "Job" }],
     },
 
-    { timestamps: true }
+    { timestamps: true },
 );
+
+companySchema.plugin(mongooseLeanVirtuals);
+companySchema.set("toJSON", { virtuals: true });
+companySchema.set("toObject", { virtuals: true });
+
+companySchema.virtual("profileCompletion").get(function () {
+    return CompanyVerificationHelper.evaluate(this).completionPercentage;
+});

@@ -11,9 +11,11 @@ export type JobStatus = "draft" | "active" | "paused" | "closed" | "expired";
 
 export interface IJob extends Document<mongoose.Types.ObjectId> {
     title: string;
+
     slug: string;
 
     // recruiter: mongoose.Types.ObjectId;
+    
     company: mongoose.Types.ObjectId;
 
     description: string;
@@ -77,6 +79,7 @@ export interface IJobListItem {
     };
 
     employmentType: EmploymentType;
+
     workMode: WorkMode;
 
     experience: {

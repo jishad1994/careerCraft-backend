@@ -14,6 +14,7 @@ export class CompanyProfileDTO {
     GSTIN?: string;
     location?: string;
     industry?: string;
+    profileCompletion!: number;
     address?: AddressDTO[];
     documents!: IDocument[];
     logo?: string;

@@ -6,7 +6,6 @@ export interface ICompanyRepository extends IBaseRepository<ICompany> {
     createCompany(company: Partial<ICompany>): Promise<ICompany>;
     findByEmailOrPhone(emailOrPhone: string): Promise<ICompany | null>;
     findByEmail(email: string): Promise<ICompany | null>;
-    findById(id: string): Promise<ICompany | null>;
     findOne(filter: Partial<ICompany>): Promise<ICompany | null>;
     updatePassword(userId: string | Types.ObjectId, hashedPassword: string): Promise<void>;
     findByGoogleId(googleId: string): Promise<ICompany | null>;

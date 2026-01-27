@@ -22,6 +22,7 @@ export function toCompanyProfileDTO(company: ICompanyPopulated): CompanyProfileD
             postalCode: address.postalCode,
         })),
         logo: company.logo,
+        profileCompletion: company.profileCompletion,
         documents: company.documents,
         bannerImage: company.bannerImage,
         description: company.description,

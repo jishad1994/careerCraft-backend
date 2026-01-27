@@ -1,6 +1,7 @@
 import { Model, Document, Types, FilterQuery } from "mongoose";
 import { IBaseRepository } from "./base.repository.inteface";
 import { DataBaseError } from "../../errors/database.error";
+import { AppError } from "../../errors/app.error.";
 
 export class BaseRepository<T extends Document> implements IBaseRepository<T> {
     constructor(protected readonly model: Model<T>) {}
@@ -12,23 +13,15 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
 
     async findByIdWithPopulate<T>(
         id: string,
-        populateFields: Array<string | { path: string; select?: string }>
+        populateFields: Array<string | { path: string; select?: string }>,
     ): Promise<T | null> {
-        const query = this.model.findById(id);
+        const query = this.model.findById(id).populate(populateFields);
 
-        populateFields.forEach((field) => {
-            if (typeof field == "string") {
-                query.populate(field);
-            } else {
-                query.populate(field);
-            }
-        });
-
-        return await query.lean<T>().exec();
+        return await query.lean<T>({ virtuals:true }).exec();
     }
 
     //find by ID
-    async findById(id: string): Promise<T | null> {
+    async findById<P = T>(id: string): Promise<P | null> {
         try {
             return await this.model.findById(id);
         } catch {
@@ -37,9 +30,9 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
     }
 
     //find all
-    async findAll(filter?:Partial<T>): Promise<T[]> {
+    async findAll(filter?: Partial<T>): Promise<T[]> {
         try {
-            return await this.model.find(filter as FilterQuery<T>);
+            return await this.model.find(filter as FilterQuery<T>).exec();
         } catch {
             throw new DataBaseError("db error while find all");
         }
@@ -74,12 +67,14 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
     }
 
     //update
-    async findByIdAndUpdate(id: string, update: Partial<T>): Promise<T | null> {
-        try {
-            return await this.model.findByIdAndUpdate(id, update, { new: true });
-        } catch {
-            throw new DataBaseError("db error while findByIdand Update");
+    async findByIdAndUpdate(id: string, update: Partial<T>): Promise<T> {
+        const updatedDocument = await this.model.findByIdAndUpdate(id, update, { new: true });
+
+        if (!updatedDocument) {
+            throw new AppError("No document found to update");
         }
+
+        return updatedDocument;
     }
 
     //update by email

@@ -630,3 +630,51 @@ Proj: {}
 [2026-01-22 03:27:30] [31merror[39m:User is blocked
 [2026-01-22 03:31:50] [31merror[39m:Access denied
 [2026-01-22 04:04:13] [31merror[39m:Access denied
+[2026-01-25 02:53:55] [31merror[39m:POST /api/admin/subscription-plans null - 74ms
+[2026-01-25 02:55:48] [31merror[39m:POST /api/admin/subscription-plans null - 80ms
+[2026-01-25 02:55:52] [31merror[39m:POST /api/admin/subscription-plans null - 18ms
+[2026-01-25 02:55:56] [31merror[39m:POST /api/admin/subscription-plans null - 22ms
+[2026-01-25 02:58:52] [31merror[39m:POST /api/admin/subscription-plans null - 88ms
+[2026-01-25 02:59:43] [31merror[39m:POST /api/admin/subscription-plans null - 38ms
+[2026-01-25 03:01:20] [31merror[39m:POST /api/admin/subscription-plans null - 107ms
+[2026-01-25 03:02:58] [31merror[39m:POST /api/admin/subscription-plans null - 73ms
+[2026-01-25 03:07:25] [31merror[39m:POST /api/admin/subscription-plans null - 65ms
+[2026-01-25 03:07:52] [31merror[39m:POST /api/admin/subscription-plans null - 69ms
+[2026-01-25 03:10:50] [31merror[39m:POST /api/admin/subscription-plans null - 34ms
+[2026-01-25 03:21:24] [31merror[39m:POST /api/admin/subscription-plans null - 80ms
+[2026-01-25 15:34:33] [31merror[39m:POST /api/admin/subscription-plans null - 46ms
+[2026-01-25 15:34:54] [31merror[39m:POST /api/admin/subscription-plans null - 76ms
+[2026-01-25 15:36:36] [31merror[39m:POST /api/admin/subscription-plans null - 97ms
+[2026-01-25 15:40:59] [31merror[39m:POST /api/admin/subscription-plans null - 81ms
+[2026-01-25 15:41:10] [31merror[39m:POST /api/admin/subscription-plans null - 17ms
+[2026-01-25 15:41:23] [31merror[39m:POST /api/admin/subscription-plans null - 18ms
+[2026-01-25 15:42:00] [31merror[39m:POST /api/admin/subscription-plans null - 92ms
+[2026-01-25 15:42:27] [31merror[39m:POST /api/admin/subscription-plans null - 30ms
+[2026-01-25 15:42:47] [31merror[39m:POST /api/admin/subscription-plans null - 48ms
+[2026-01-25 15:43:21] [31merror[39m:POST /api/admin/subscription-plans null - 55ms
+[2026-01-25 15:43:47] [31merror[39m:POST /api/admin/subscription-plans null - 38ms
+[2026-01-25 15:44:15] [31merror[39m:POST /api/admin/subscription-plans null - 63ms
+[2026-01-25 15:46:01] [31merror[39m:POST /api/admin/subscription-plans null - 83ms
+[2026-01-25 15:52:58] [31merror[39m:Free plan must have name free
+[2026-01-25 15:52:58] [31merror[39m:POST /api/admin/subscription-plans null - 24ms
+[2026-01-26 15:55:40] [31merror[39m:GET /api/company/me null - 63ms
+[2026-01-26 15:55:59] [31merror[39m:GET /api/company/me null - 22ms
+[2026-01-26 15:58:39] [31merror[39m:GET /api/company/me null - 140ms
+[2026-01-26 16:00:54] [31merror[39m:GET /api/company/me null - 9ms
+[2026-01-26 16:03:52] [31merror[39m:GET /api/company/me null - 44ms
+[2026-01-26 16:04:12] [31merror[39m:GET /api/company/me null - 11ms
+[2026-01-26 16:04:24] [31merror[39m:GET /api/company/me null - 15ms
+[2026-01-26 16:04:38] [31merror[39m:GET /api/company/me null - 66ms
+[2026-01-26 16:05:47] [31merror[39m:GET /api/company/me null - 64ms
+[2026-01-26 16:06:13] [31merror[39m:GET /api/company/me null - 53ms
+[2026-01-26 16:07:04] [31merror[39m:GET /api/company/me null - 89ms
+[2026-01-26 16:09:07] [31merror[39m:GET /api/company/me null - 93ms
+[2026-01-26 16:10:42] [31merror[39m:GET /api/company/me null - 90ms
+[2026-01-26 16:13:26] [31merror[39m:GET /api/company/me null - 118ms
+[2026-01-26 16:14:45] [31merror[39m:GET /api/company/me null - 187ms
+[2026-01-26 16:15:25] [31merror[39m:GET /api/company/me null - 242ms
+[2026-01-26 17:45:17] [31merror[39m:unauthorized request expired request 
+[2026-01-26 20:10:52] [31merror[39m:unauthorized request expired request 
+[2026-01-27 01:22:17] [31merror[39m:unauthorized request expired request 
+[2026-01-27 01:22:17] [31merror[39m:unauthorized request expired request 
+[2026-01-27 20:41:19] [31merror[39m:unauthorized request expired request 

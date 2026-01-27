@@ -5,9 +5,7 @@ export interface IUserRepository extends IBaseRepository<IUser> {
     createUser(user: Partial<IUser>): Promise<IUser>;
     findByEmail(email: string): Promise<IUser | null>;
     findByEmailOrPhone(emailOrPhone: string): Promise<IUser | null>;
-    findById(id: string): Promise<IUser | null>;
-    findByIdAndUpdate(id: string, update: Partial<IUser>): Promise<IUser | null>;
-    findAll(filter: Partial<IUser>): Promise<IUser[] | null>;
+    
     updateOneByFilter(filter: Partial<IUser>, update: Partial<IUser>): Promise<IUser | null>;
     findOne(filter: Partial<IUser>): Promise<IUser | null>;
     updatePassword(userId: string | Types.ObjectId, hashedPassword: string): Promise<void>;

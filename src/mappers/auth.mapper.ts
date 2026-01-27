@@ -11,7 +11,8 @@ export class AuthMapper {
             lastName: "lastName" in user ? user.lastName : undefined,
             email: user.email,
             role: user.role as Role,
-            profilePicture: user.profilePicture,
+            profilePicture: user.profilePicture ? user.profilePicture : undefined,
         };
     }
+   
 }

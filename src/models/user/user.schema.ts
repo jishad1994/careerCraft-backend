@@ -1,5 +1,7 @@
+import { UserProfileCompletionHelper } from "../../service-helpers/user-profile-completion.helper";
 import { IAddress, IDocument, IEducation, IExperience, IProfilePicture, IUser } from "./user.interface";
 import mongoose, { Schema } from "mongoose";
+import mongooseLeanVirtuals from "mongoose-lean-virtuals";
 
 export const educationSchema = new Schema<IEducation>({
     type: {
@@ -75,7 +77,7 @@ export const profilePictureSchema = new Schema<IProfilePicture>(
         key: { type: String, required: true },
         location: { type: String, required: true },
     },
-    { _id: false }
+    { _id: false },
 );
 
 export const documentSchema = new Schema<IDocument>(
@@ -84,8 +86,9 @@ export const documentSchema = new Schema<IDocument>(
         key: { type: String, required: true },
         size: { type: Number, required: true },
         mimeType: { type: String, required: true },
+        signedURL: String,
     },
-    { _id: false, timestamps: true }
+    { _id: false, timestamps: true },
 );
 
 export const userSchema = new Schema<IUser>(
@@ -116,7 +119,7 @@ export const userSchema = new Schema<IUser>(
         },
         password: {
             type: String,
-            required: function () {
+            required: function (this:IUser) {
                 return !this.googleId;
             },
         },
@@ -146,5 +149,13 @@ export const userSchema = new Schema<IUser>(
         jobsApplied: [{ type: mongoose.Schema.Types.ObjectId, ref: "Job" }],
         address: addressSchema,
     },
-    { timestamps: true }
+    { timestamps: true },
 );
+// Register the plugin
+userSchema.plugin(mongooseLeanVirtuals);
+userSchema.set("toJSON", { virtuals: true });
+userSchema.set("toObject", { virtuals: true });
+
+userSchema.virtual("profileCompletion").get(function () {
+    return UserProfileCompletionHelper.getCompletionPercentage(this);
+});
