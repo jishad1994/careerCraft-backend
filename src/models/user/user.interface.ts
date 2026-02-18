@@ -1,19 +1,20 @@
 import mongoose, { Document, ObjectId, Types } from "mongoose";
 import { ISkill } from "../skill/skill.interface";
-import { IPublicFileAsset } from "../company/company.interface";
 
 export type Role = "user" | "admin" | "company";
 export type Provider = "local" | "google";
 export type JobAppliedStatus = "success" | "pending" | "processing" | "rejected";
 //ecuation enum
 
-export enum EducationType {
-    Degree = "Degree",
-    Diploma = "Diploma",
-    HighSchool = "High School",
-    PhD = "PhD",
-    Certification = "Certification",
-}
+export const EDUCATION_TYPE = {
+    DEGREE: "Degree",
+    DIPLOMA: "Diploma",
+    HIGH_SCHOOL: "High School",
+    PHD: "PhD",
+    CERTIFICATION: "Certification",
+} as const;
+
+export type EducationType = (typeof EDUCATION_TYPE)[keyof typeof EDUCATION_TYPE];
 
 //education
 export interface IEducation {
@@ -30,6 +31,7 @@ export interface IProfilePicture {
     key: string;
     location: string;
 }
+
 export interface IBannerImage {
     key: string;
     location: string;
@@ -64,7 +66,7 @@ export interface IExperience {
     description?: string;
 }
 
-export interface IUser extends Document <mongoose.Types.ObjectId>{
+export interface IUser extends Document<mongoose.Types.ObjectId> {
     firstName: string;
     lastName: string;
     phone: string;
@@ -74,14 +76,17 @@ export interface IUser extends Document <mongoose.Types.ObjectId>{
     provider: Provider;
     role: Role;
     profilePicture?: IProfilePicture;
+    bannerImage?: IBannerImage;
     isBlocked: boolean;
     address: IAddress;
+    profileCompletion: number;
     about: string;
     skills: Types.ObjectId[];
     resumeURL: IDocument[];
     certificates: IDocument[];
     education: IEducation[];
     experience: IExperience[];
+    totalExperienceYears: number;
     location: string;
     jobsApplied: Types.ObjectId[]; //_ids of jobs
     createdAt: Date;
@@ -99,6 +104,7 @@ export interface IUserPopulated {
     provider: Provider;
     role: Role;
     profilePicture?: IProfilePicture;
+    bannerImage?: IBannerImage;
     isBlocked: boolean;
     address?: IAddress;
     resumeURL: IDocument[];
@@ -108,6 +114,7 @@ export interface IUserPopulated {
     skills: ISkill[];
     education: IEducation[];
     experience: IExperience[];
+    totalExperienceYears: number;
     location: string;
     createdAt: Date;
     updatedAt: Date;
@@ -126,7 +133,8 @@ export interface IUserListItem {
 
     isBlocked: boolean;
 
-    profilePicture?: IPublicFileAsset;
+    profilePicture?: IProfilePicture;
+    bannerImage?: IBannerImage;
 
     location?: string;
 

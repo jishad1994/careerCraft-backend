@@ -1,9 +1,11 @@
+import { GetObjectCommandOutput } from "@aws-sdk/client-s3";
 import { UserProfileDTO } from "../../../dtos/userProfile.dto";
 import { AppError } from "../../../errors/app.error.";
 import { ValidationError } from "../../../errors/validation.error";
 import { toUserProfileDTO } from "../../../mappers/user.mapper";
 import { IDocument, IEducation, IExperience, IUser, IUserPopulated } from "../../../models/user/user.interface";
 import { IUserRepository } from "../../../repositories/user/user.repository.interface";
+import { calculateTotalExperience } from "../../../service-helpers/user.experience.helper";
 import { IFileService } from "../../file-service/interfaces/file.service.interface";
 import { IUserProfileService } from "../interfaces/profile.service.interface";
 import mongoose from "mongoose";
@@ -31,7 +33,6 @@ export class UserProfileService implements IUserProfileService {
 
             await Promise.all(signedUrlPromise);
         }
-
 
         return toUserProfileDTO(userProfileDataPopulated);
     }
@@ -233,6 +234,9 @@ export class UserProfileService implements IUserProfileService {
             throw new AppError("User not found");
         }
         user?.experience.push(experience);
+
+        const { years: totalExperienceYears } = calculateTotalExperience(user.experience);
+        user.totalExperienceYears = totalExperienceYears;
         await user?.save();
         const populatedUser = await this._userRepository.findByIdWithPopulate<IUserPopulated>(userId, ["skills"]);
         if (!populatedUser) {
@@ -255,7 +259,11 @@ export class UserProfileService implements IUserProfileService {
 
         user.experience[index] = experience;
 
-        user.save();
+        const { years: totalExperienceYears } = calculateTotalExperience(user.experience);
+
+        user.totalExperienceYears = totalExperienceYears;
+
+        await user.save();
 
         const populatedUser = await this._userRepository.findByIdWithPopulate<IUserPopulated>(userId, ["skills"]);
         if (!populatedUser) {
@@ -276,6 +284,10 @@ export class UserProfileService implements IUserProfileService {
         }
 
         user.experience.splice(index, 1);
+
+        const { years: totalExperienceYears } = calculateTotalExperience(user.experience);
+
+        user.totalExperienceYears = totalExperienceYears;
         await user.save();
         const populatedUser = await this._userRepository.findByIdWithPopulate<IUserPopulated>(userId, ["skills"]);
         if (!populatedUser) {
@@ -349,6 +361,12 @@ export class UserProfileService implements IUserProfileService {
 
         if (!user) throw new AppError("Company not found");
 
+        const sameNameExists = user.resumeURL.some((doc) => doc.originalName === document.originalname);
+
+        if (sameNameExists) {
+            throw new ValidationError("A resume with the same name already exists. Please rename your file and try again.");
+        }
+
         const key = await this._fileService.uplodaFile(document, "resumes", userId);
 
         const newDoc: IDocument = {
@@ -394,5 +412,91 @@ export class UserProfileService implements IUserProfileService {
             throw new AppError("user not found after populate");
         }
         return toUserProfileDTO(populated);
+    }
+
+    async updateUserBannerImage(userId: string, bannerImage: Express.Multer.File): Promise<UserProfileDTO> {
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            throw new ValidationError("Invalid user id");
+        }
+
+        const { key, location } = await this._fileService.uploadBannerImage(bannerImage, userId);
+
+        const user = await this._userRepository.findById(userId);
+        if (!user) {
+            throw new AppError("User not found");
+        }
+
+        const oldBannerImageKey = user.bannerImage?.key;
+
+        user.bannerImage = { key, location };
+        await user.save();
+
+        if (oldBannerImageKey) {
+            try {
+                await this._fileService.deleteFile(oldBannerImageKey);
+
+                console.log("old one deleted");
+            } catch (err) {
+                console.error("Failed to delete old banner image:", err);
+            }
+        }
+
+        const populatedUser = await this._userRepository.findByIdWithPopulate<IUserPopulated>(userId, ["skills"]);
+        if (!populatedUser) {
+            throw new AppError("User not found after populate");
+        }
+
+        return toUserProfileDTO(populatedUser);
+    }
+
+    async deleteUserBannerImage(userId: string): Promise<UserProfileDTO> {
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            throw new ValidationError("Invalid user id");
+        }
+
+        const user = await this._userRepository.findById(userId);
+        if (!user) {
+            throw new AppError("User not found");
+        }
+
+        const oldBannerImageKey = user.bannerImage?.key;
+
+        if (oldBannerImageKey) {
+            try {
+                user.bannerImage = undefined;
+                await user.save();
+                await this._fileService.deleteFile(oldBannerImageKey);
+
+                console.log("old banner image deleted");
+            } catch (err) {
+                console.error("Failed to delete old banner image   :", err);
+            }
+        }
+
+        const populatedUser = await this._userRepository.findByIdWithPopulate<IUserPopulated>(userId, ["skills"]);
+        if (!populatedUser) {
+            throw new AppError("User not found after populate");
+        }
+
+        return toUserProfileDTO(populatedUser);
+    }
+
+    async getResume(userId: string, resumeName: string): Promise<GetObjectCommandOutput> {
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            throw new ValidationError("Invalid user id");
+        }
+
+        const user = await this._userRepository.findById(userId);
+        if (!user) {
+            throw new AppError("User not found");
+        }
+
+        const resume = user.resumeURL.find((doc) => doc.originalName === resumeName);
+
+        if (!resume) {
+            throw new AppError("Resume not found");
+        }
+
+        return await this._fileService.getFile(resume.key);
     }
 }

@@ -3,25 +3,32 @@ import { companyJobApplicationController } from "../../dependencies/container.de
 
 export const companyApplicationRoutes = express.Router();
 
-companyApplicationRoutes.get(
-    "/",
-    companyJobApplicationController.getCompanyApplications.bind(companyJobApplicationController)
-);
+companyApplicationRoutes.get("/", companyJobApplicationController.getApplicantsList.bind(companyJobApplicationController));
 companyApplicationRoutes.get(
     "/:id",
-    companyJobApplicationController.getApplicationById.bind(companyJobApplicationController)
+    companyJobApplicationController.getApplicationById.bind(companyJobApplicationController),
 );
 companyApplicationRoutes.post(
     "/:id/update-status",
-    companyJobApplicationController.updateApplicationStatus.bind(companyJobApplicationController)
+    companyJobApplicationController.updateApplicationStatus.bind(companyJobApplicationController),
+);
+
+companyApplicationRoutes.patch(
+    "/:applicationId/toggle-flag",
+    companyJobApplicationController.toggleFlag.bind(companyJobApplicationController),
 );
 companyApplicationRoutes.get(
     "/:id/mark-viewed",
-    companyJobApplicationController.markAsViewed.bind(companyJobApplicationController)
+    companyJobApplicationController.markAsViewed.bind(companyJobApplicationController),
 );
-companyApplicationRoutes.get(
+companyApplicationRoutes.post(
     "/:id/add-notes",
-    companyJobApplicationController.markAsViewed.bind(companyJobApplicationController)
+    companyJobApplicationController.markAsViewed.bind(companyJobApplicationController),
+);
+
+companyApplicationRoutes.get(
+    "/:id/resume",
+    companyJobApplicationController.getApplicationResume.bind(companyJobApplicationController),
 );
 
 export default companyApplicationRoutes;

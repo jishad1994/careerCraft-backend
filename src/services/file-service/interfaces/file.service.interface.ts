@@ -1,3 +1,5 @@
+import { GetObjectCommandOutput } from "@aws-sdk/client-s3";
+
 export interface IFileService {
     uplodaFile(file: Express.Multer.File, folder: string, userId: string, isPublic?: boolean): Promise<string>;
 
@@ -5,14 +7,10 @@ export interface IFileService {
 
     generateSignedUrl(key: string, expiresIn?: number): Promise<string>;
 
-    uploadProfilePicture(
-        file: Express.Multer.File,
-        userId: string,
-    ): Promise<{ key: string; location: string }>;
-    uploadBannerImage(
-        file: Express.Multer.File,
-        userId: string,
-    ): Promise<{ key: string; location: string }>;
+    getFile(key: string): Promise<GetObjectCommandOutput>;
+
+    uploadProfilePicture(file: Express.Multer.File, userId: string): Promise<{ key: string; location: string }>;
+    uploadBannerImage(file: Express.Multer.File, userId: string): Promise<{ key: string; location: string }>;
 
     uploadResume(file: Express.Multer.File, userId: string): Promise<string>;
 

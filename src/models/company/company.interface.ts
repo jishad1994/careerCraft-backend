@@ -2,9 +2,33 @@ import mongoose, { Document, ObjectId } from "mongoose";
 import { IBannerImage, IDocument, IProfilePicture, Role } from "../user/user.interface";
 import { AddressDTO } from "../../dtos/userProfile.dto";
 
+export const COMPANY_REJECTION_CODES = {
+    INVALID_DOCUMENT: "INVALID_DOCUMENT",
+    MISMATCHED_GST: "MISMATCHED_GST",
+    INCOMPLETE_PROFILE: "INCOMPLETE_PROFILE",
+    DUPLICATE_COMPANY: "DUPLICATE_COMPANY",
+    OTHER: "OTHER",
+} as const;
+
+export type CompanyRejectionCodes = (typeof COMPANY_REJECTION_CODES)[keyof typeof COMPANY_REJECTION_CODES];
+
+export const COMPANY_VERIFICATION_STATUS = {
+    PENDING: "pending",
+    APPROVED: "verified",
+    REJECTED: "rejected",
+} as const;
+
+export type CompanyVerificationStatus = (typeof COMPANY_VERIFICATION_STATUS)[keyof typeof COMPANY_VERIFICATION_STATUS];
+
 export interface IPublicFileAsset {
     key: string;
     location: string;
+}
+
+export interface IRejectionReason {
+    code: CompanyRejectionCodes;
+    description?: string;
+    rejectedAt: Date;
 }
 
 export interface ICompany extends Document<mongoose.Types.ObjectId> {
@@ -27,9 +51,11 @@ export interface ICompany extends Document<mongoose.Types.ObjectId> {
 
     isBlocked: boolean;
 
-    isVerified: boolean;
+    verificationStatus: CompanyVerificationStatus;
 
-    industry?: string;
+    rejectionReasons: IRejectionReason[];
+
+    industry: string;
 
     location?: string;
 
@@ -40,6 +66,8 @@ export interface ICompany extends Document<mongoose.Types.ObjectId> {
     logo?: string;
 
     bannerImage?: IBannerImage;
+
+    profileCompletion: number;
 
     description?: string;
 
@@ -66,7 +94,8 @@ export interface ICompanyPopulated {
     phone?: string;
     profilePicture?: IProfilePicture;
     isBlocked: boolean;
-    isVerified: boolean;
+    verificationStatus: CompanyVerificationStatus;
+    rejectionReasons?: IRejectionReason[];
     website?: string;
     documents: IDocument[];
     location?: string;
@@ -92,8 +121,8 @@ export interface ICompanyListItem {
     role: "company";
 
     isBlocked: boolean;
-    isVerified: boolean;
 
+    verificationStatus: CompanyVerificationStatus;
     industry?: string;
     location?: string;
 

@@ -1,7 +1,7 @@
 import s3 from "../../config/aws";
 import { S3_BUCKET } from "../../config/aws";
 import dotenv from "dotenv";
-import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, GetObjectCommand, GetObjectCommandOutput, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { IFileService } from "../../services/file-service/interfaces/file.service.interface";
 dotenv.config();
@@ -17,7 +17,7 @@ export class S3Service implements IFileService {
                 Body: file.buffer,
                 ContentType: file.mimetype,
                 // ACL: isPublic ? "public-read" : undefined,
-            })
+            }),
         );
 
         return key; //since the bucket is private by default only the key returns
@@ -30,11 +30,11 @@ export class S3Service implements IFileService {
             new PutObjectCommand({
                 Bucket: S3_BUCKET,
                 Key: key,
-                
+
                 Body: file.buffer,
                 ContentType: file.mimetype,
                 // ACL: "private",
-            })
+            }),
         );
 
         return key; //since the bucket is private by default only the key returns
@@ -50,7 +50,7 @@ export class S3Service implements IFileService {
                 Body: file.buffer,
                 ContentType: file.mimetype,
                 // ACL: "private",
-            })
+            }),
         );
 
         return key; //since the bucket is private by default only the key returns
@@ -74,7 +74,7 @@ export class S3Service implements IFileService {
                 Body: file.buffer,
                 ContentType: file.mimetype,
                 // ACL: "public-read",
-            })
+            }),
         );
 
         const location = `https://${S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
@@ -82,8 +82,8 @@ export class S3Service implements IFileService {
         return { key, location };
     }
 
-    async uploadBannerImage(file: Express.Multer.File, userId: string): Promise<{ key: string; location: string; }> {
-         const key = `bannerImages/${userId}/${Date.now()}-${file.originalname}`;
+    async uploadBannerImage(file: Express.Multer.File, userId: string): Promise<{ key: string; location: string }> {
+        const key = `bannerImages/${userId}/${Date.now()}-${file.originalname}`;
 
         await s3.send(
             new PutObjectCommand({
@@ -92,11 +92,17 @@ export class S3Service implements IFileService {
                 Body: file.buffer,
                 ContentType: file.mimetype,
                 // ACL: "public-read",
-            })
+            }),
         );
 
         const location = `https://${S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
 
         return { key, location };
+    }
+
+    async getFile(key: string): Promise<GetObjectCommandOutput> {
+        const command = new GetObjectCommand({ Bucket: S3_BUCKET, Key: key });
+
+        return await s3.send(command);
     }
 }

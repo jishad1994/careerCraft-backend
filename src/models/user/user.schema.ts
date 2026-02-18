@@ -1,5 +1,7 @@
 import { UserProfileCompletionHelper } from "../../service-helpers/user-profile-completion.helper";
-import { IAddress, IDocument, IEducation, IExperience, IProfilePicture, IUser } from "./user.interface";
+import { addressSchema } from "../common/address.schema";
+import { bannerImageSchema, profilePictureSchema } from "../common/common.profile.schema";
+import { IDocument, IEducation, IExperience, IUser } from "./user.interface";
 import mongoose, { Schema } from "mongoose";
 import mongooseLeanVirtuals from "mongoose-lean-virtuals";
 
@@ -43,42 +45,19 @@ export const experienceSchema = new Schema<IExperience>({
         type: Date,
         required: true,
     },
-    endDate: Date,
+    endDate: {
+        type: Date,
+        required: function (this: IExperience) {
+            return !this.isCurrent;
+        },
+    },
+
     isCurrent: {
         type: Boolean,
         default: false,
     },
     description: String,
 });
-
-//adrress schema
-
-export const addressSchema = new Schema<IAddress>({
-    city: {
-        type: String,
-        required: true,
-    },
-    state: {
-        type: String,
-        required: true,
-    },
-    country: {
-        type: String,
-        required: true,
-    },
-    postalCode: {
-        type: String,
-        required: true,
-    },
-});
-
-export const profilePictureSchema = new Schema<IProfilePicture>(
-    {
-        key: { type: String, required: true },
-        location: { type: String, required: true },
-    },
-    { _id: false },
-);
 
 export const documentSchema = new Schema<IDocument>(
     {
@@ -87,6 +66,7 @@ export const documentSchema = new Schema<IDocument>(
         size: { type: Number, required: true },
         mimeType: { type: String, required: true },
         signedURL: String,
+        uploadedAt: Date,
     },
     { _id: false, timestamps: true },
 );
@@ -119,7 +99,7 @@ export const userSchema = new Schema<IUser>(
         },
         password: {
             type: String,
-            required: function (this:IUser) {
+            required: function (this: IUser) {
                 return !this.googleId;
             },
         },
@@ -139,12 +119,17 @@ export const userSchema = new Schema<IUser>(
             default: false,
         },
         profilePicture: profilePictureSchema,
+        bannerImage: bannerImageSchema,
         certificates: [documentSchema],
         resumeURL: [documentSchema],
         about: String,
         skills: [{ type: mongoose.Schema.Types.ObjectId, ref: "Skill" }],
         education: [educationSchema],
         experience: [experienceSchema],
+        totalExperienceYears: {
+            type: Number,
+            default: 0,
+        },
         location: String,
         jobsApplied: [{ type: mongoose.Schema.Types.ObjectId, ref: "Job" }],
         address: addressSchema,
@@ -159,3 +144,4 @@ userSchema.set("toObject", { virtuals: true });
 userSchema.virtual("profileCompletion").get(function () {
     return UserProfileCompletionHelper.getCompletionPercentage(this);
 });
+export { addressSchema };

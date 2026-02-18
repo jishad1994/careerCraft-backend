@@ -3,7 +3,7 @@ import { ICompanyRepository } from "../../repositories/company/company.repositor
 import { IUserRepository } from "../../repositories/user/user.repository.interface";
 import { IAdminService } from "./admin.service.interface";
 import { IUser, IUserPopulated } from "../../models/user/user.interface";
-import { ICompany } from "../../models/company/company.interface";
+import { CompanyRejectionCodes, ICompany, ICompanyListItem } from "../../models/company/company.interface";
 import { PaginationMeta } from "../../utils/apiResponse.utils";
 import { ValidationError } from "../../errors/validation.error";
 import mongoose from "mongoose";
@@ -14,6 +14,8 @@ import { toUserProfileDTO } from "../../mappers/user.mapper";
 import { UserProfileDTO } from "../../dtos/userProfile.dto";
 import { ICacheService } from "../cache/cache.service.interface";
 import { CompanyVerificationHelper } from "../../service-helpers/company-verification.helper";
+import { CompanyProfileDTO } from "../../dtos/companyProfile.dto";
+import { CompanyMapper } from "../../mappers/company.mapper";
 
 export class AdminService implements IAdminService {
     constructor(
@@ -44,13 +46,19 @@ export class AdminService implements IAdminService {
         return { data, paginationMeta };
     }
 
-    async getCompanies(page: number, limit: number, search?: string): Promise<UsersPaginatedDTO<ICompany>> {
+    async getCompanies(
+        page: number,
+        limit: number,
+        search?: string,
+        verificationStatus?: string,
+    ): Promise<UsersPaginatedDTO<ICompanyListItem>> {
         if (!page || !limit) {
             throw new Error("page/limit constraints not provided");
         }
 
-        const [data, total] = await this._companyRepository.findPaginated(page, limit, search);
+        const [companies, total] = await this._companyRepository.findPaginated(page, limit, search, verificationStatus);
 
+        console.log("companies", companies);
         const totalPages = Math.ceil(total / limit);
 
         const paginationMeta: PaginationMeta = {
@@ -62,6 +70,7 @@ export class AdminService implements IAdminService {
             hasPrevPage: page > 1,
         };
 
+        const data: ICompanyListItem[] = CompanyMapper.mapCompaniesToList(companies);
         return { data, paginationMeta };
     }
 
@@ -107,21 +116,29 @@ export class AdminService implements IAdminService {
         return toUserProfileDTO(populatedUser);
     }
 
-    async getCompanyById(companyId: string): Promise<ICompany> {
+    async getCompanyById(companyId: string): Promise<CompanyProfileDTO> {
         if (!mongoose.Types.ObjectId.isValid(companyId)) {
             throw new ValidationError("Invalid company ID");
         }
 
-        const company = await this._companyRepository.findById(companyId);
+        const company = await this._companyRepository.findByIdWithPopulate<ICompany>(companyId, ["address"]);
 
         if (!company) {
             throw new AppError("Company not found", 404);
         }
 
-        return company;
+        if (company?.documents && company.documents.length > 0) {
+            const signedUrlPromise = company.documents.map(async (document) => {
+                const documentSignedUrl = await this._fileService.generateSignedUrl(document.key, 3600 * 6);
+                document.signedURL = documentSignedUrl;
+            });
+            await Promise.all(signedUrlPromise);
+        }
+
+        return CompanyMapper.toCompanyProfileDTO(company);
     }
 
-    async verifyCompany(companyId: string): Promise<ICompany> {
+    async verifyCompany(companyId: string): Promise<CompanyProfileDTO> {
         if (!mongoose.Types.ObjectId.isValid(companyId)) {
             throw new ValidationError("Invalid company ID");
         }
@@ -138,7 +155,7 @@ export class AdminService implements IAdminService {
             throw new ValidationError(`Company profile incomplete. Missing: ${result.missingFields.join(", ")}`);
         }
 
-        company.isVerified = true;
+        company.verificationStatus = "verified";
         await company.save();
 
         // Send verification email
@@ -148,10 +165,10 @@ export class AdminService implements IAdminService {
             `CareerCraft has verified ${company.name} successfully`,
         );
 
-        return company;
+        return CompanyMapper.toCompanyProfileDTO(company);
     }
 
-    async rejectCompanyVerification(companyId: string, comment: string): Promise<void> {
+    async rejectCompanyVerification(companyId: string, code: CompanyRejectionCodes, description: string): Promise<void> {
         if (!mongoose.Types.ObjectId.isValid(companyId)) {
             throw new ValidationError("Invalid company ID");
         }
@@ -161,9 +178,14 @@ export class AdminService implements IAdminService {
         if (!company) {
             throw new AppError("Company not found", 404);
         }
+        company.verificationStatus = "rejected";
+
+        company.rejectionReasons.push({ code, description, rejectedAt: new Date() });
+
+        await company.save();
 
         // Send rejection email with comment
-        await this._emailService.send(company.email, company.name, comment);
+        // await this._emailService.send(company.email, company.name, comment);
     }
 
     async blockUser(id: string) {

@@ -1,91 +1,103 @@
 import express from "express";
-import { userAuthMiddleware } from "../../middlewares/user.auth.middleware";
 import { userProfileController } from "../../dependencies/container.dependency";
 import { upload } from "../../middlewares/multer.middleware";
 
 const userProfileRoutes = express.Router();
 
-userProfileRoutes.get("/", userAuthMiddleware, userProfileController.getUserProfile.bind(userProfileController));
+userProfileRoutes.get("/", userProfileController.getUserProfile.bind(userProfileController));
 
-userProfileRoutes.patch("/", userAuthMiddleware, userProfileController.updateUserProfile.bind(userProfileController));
+userProfileRoutes.patch("/", userProfileController.updateUserProfile.bind(userProfileController));
 
-userProfileRoutes.post("/user-skills", userAuthMiddleware, userProfileController.addUserSkill.bind(userProfileController));
+userProfileRoutes.post("/user-skills", userProfileController.addUserSkill.bind(userProfileController));
 
 userProfileRoutes.delete(
     "/user-skills/:id",
-    userAuthMiddleware,
-    userProfileController.removeUserSkill.bind(userProfileController)
+
+    userProfileController.removeUserSkill.bind(userProfileController),
 );
 
 userProfileRoutes.delete(
     "/profile-picture",
-    userAuthMiddleware,
-    userProfileController.deleteProfilePicture.bind(userProfileController)
+
+    userProfileController.deleteProfilePicture.bind(userProfileController),
 );
 
 userProfileRoutes.post(
     "/profile-picture",
-    userAuthMiddleware,
+
     upload.single("profilePicture"),
-    userProfileController.updateProfilePicture.bind(userProfileController)
+    userProfileController.updateProfilePicture.bind(userProfileController),
 );
 
 userProfileRoutes.post(
+    "/banner-image",
+
+    upload.single("bannerImage"),
+    userProfileController.updateBannerImage.bind(userProfileController),
+);
+
+userProfileRoutes.delete("/banner-image", userProfileController.deleteBannerImage.bind(userProfileController));
+
+userProfileRoutes.post(
     "/user-education",
-    userAuthMiddleware,
-    userProfileController.addEducation.bind(userProfileController)
+
+    userProfileController.addEducation.bind(userProfileController),
 );
 
 userProfileRoutes.put(
     "/user-education",
-    userAuthMiddleware,
-    userProfileController.updateEducation.bind(userProfileController)
+
+    userProfileController.updateEducation.bind(userProfileController),
 );
 
 userProfileRoutes.delete(
     "/user-education/:index",
-    userAuthMiddleware,
-    userProfileController.deleteEducation.bind(userProfileController)
+
+    userProfileController.deleteEducation.bind(userProfileController),
 );
 
 userProfileRoutes.post(
     "/user-experience",
-    userAuthMiddleware,
-    userProfileController.addExperience.bind(userProfileController)
+
+    userProfileController.addExperience.bind(userProfileController),
 );
 userProfileRoutes.put(
     "/user-experience",
-    userAuthMiddleware,
-    userProfileController.updateExperience.bind(userProfileController)
+
+    userProfileController.updateExperience.bind(userProfileController),
 );
 userProfileRoutes.delete(
     "/user-experience/:index",
-    userAuthMiddleware,
-    userProfileController.deleteExperience.bind(userProfileController)
+
+    userProfileController.deleteExperience.bind(userProfileController),
 );
 
 userProfileRoutes.post(
     "/resumes",
     upload.single("resume"),
-    userAuthMiddleware,
-    userProfileController.addResume.bind(userProfileController)
+
+    userProfileController.addResume.bind(userProfileController),
 );
 
 userProfileRoutes.post(
     "/certificates",
     upload.single("certificate"),
-    userAuthMiddleware,
-    userProfileController.addCertificate.bind(userProfileController)
+    userProfileController.addCertificate.bind(userProfileController),
 );
 userProfileRoutes.delete(
     "/resumes",
-    userAuthMiddleware,
-    userProfileController.deleteResume.bind(userProfileController)
+
+    userProfileController.deleteResume.bind(userProfileController),
 );
 userProfileRoutes.delete(
     "/certificates",
-    userAuthMiddleware,
-    userProfileController.deleteCertificate.bind(userProfileController)
+
+    userProfileController.deleteCertificate.bind(userProfileController),
+);
+userProfileRoutes.get(
+    "/resume/:resumeName",
+
+    userProfileController.getResume.bind(userProfileController),
 );
 
 export default userProfileRoutes;

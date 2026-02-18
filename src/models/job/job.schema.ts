@@ -109,7 +109,7 @@ export const jobSchema = new Schema<IJob>(
 
         isVerified: {
             type: Boolean,
-            default: false,
+            default: true,
         },
 
         isFeatured: {
@@ -133,7 +133,7 @@ export const jobSchema = new Schema<IJob>(
             index: true,
         },
     },
-    { timestamps: true }
+    { timestamps: true },
 );
 
 jobSchema.index({

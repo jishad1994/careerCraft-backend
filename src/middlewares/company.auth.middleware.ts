@@ -25,9 +25,7 @@ export function companyAuthMiddleware(req: Request, res: Response, next: NextFun
         next();
     } catch (error) {
         return ApiResponse.unauthorized(res, error instanceof Error ? error.message : HTTP_MESSAGES.SESSION_EXPIRED);
-        // return res
-        //     .status(401)
-        //     .json({ success: false, message: error instanceof Error ? error.message : HTTP_MESSAGES.SESSION_EXPIRED });
+     
     }
     
 }

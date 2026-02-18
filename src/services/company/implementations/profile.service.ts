@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
 import { CompanyProfileDTO } from "../../../dtos/companyProfile.dto";
 import { AppError } from "../../../errors/app.error.";
-import { toCompanyProfileDTO } from "../../../mappers/company.mapper";
-import { ICompany, ICompanyPopulated } from "../../../models/company/company.interface";
+import { COMPANY_VERIFICATION_STATUS, ICompany } from "../../../models/company/company.interface";
 import { ICompanyRepository } from "../../../repositories/company/company.repository.interface";
 import { ICompanyProfileService } from "../interfaces/profile.service.interface";
 import { ValidationError } from "../../../errors/validation.error";
 import { IFileService } from "../../file-service/interfaces/file.service.interface";
 import { IDocument } from "../../../models/user/user.interface";
+import { CompanyMapper } from "../../../mappers/company.mapper";
 
 export class CompanyProfileService implements ICompanyProfileService {
     constructor(
@@ -15,30 +15,81 @@ export class CompanyProfileService implements ICompanyProfileService {
         private _fileService: IFileService,
     ) {}
 
+    async reapplyForVerification(companyId: string): Promise<CompanyProfileDTO> {
+        if (!mongoose.Types.ObjectId.isValid(companyId)) {
+            throw new ValidationError("Invalid company id");
+        }
+
+        const company = await this._companyRepository.findById(companyId);
+
+        if (!company) {
+            throw new AppError("Company profile not found");
+        }
+
+        if (company.verificationStatus === COMPANY_VERIFICATION_STATUS.APPROVED) {
+            throw new AppError("Company is already verified");
+        }
+
+        if (company.verificationStatus === COMPANY_VERIFICATION_STATUS.PENDING) {
+            throw new AppError("Verification request is already pending review");
+        }
+
+        // Validate profile completion (optional - you can add custom logic)
+        if (company.profileCompletion < 80) {
+            throw new AppError("Please complete at least 90% of your profile before applying for verification");
+        }
+
+        if (!company.documents || company.documents.length === 0) {
+            throw new AppError("Please upload required documents before applying for verification");
+        }
+
+        company.verificationStatus = COMPANY_VERIFICATION_STATUS.PENDING;
+
+        await company.save();
+
+        return CompanyMapper.toCompanyProfileDTO(company);
+    }
+
+    async updateAddress(companyId: string, addressData: Partial<ICompany>): Promise<CompanyProfileDTO> {
+        if (!mongoose.Types.ObjectId.isValid(companyId)) {
+            throw new ValidationError("Invalid company id");
+        }
+
+        const company = await this._companyRepository.findByIdAndUpdate(companyId, addressData);
+
+        if (!company) {
+            throw new AppError("Company not found");
+        }
+
+        if (company.isBlocked) throw new AppError("Company is blocked");
+
+        return CompanyMapper.toCompanyProfileDTO(company);
+    }
+
     async getProfile(companyId: string): Promise<CompanyProfileDTO> {
         if (!mongoose.Types.ObjectId.isValid(companyId)) {
             throw new ValidationError("Invalid object id");
         }
 
-        const companyPopulated = await this._companyRepository.findByIdWithPopulate<ICompanyPopulated>(companyId, [
+        const company = await this._companyRepository.findByIdWithPopulate<ICompany>(companyId, [
             { path: "jobsPosted", select: "title" },
         ]);
 
-        if (!companyPopulated) {
+        if (!company) {
             throw new AppError("Company not found");
         }
 
-        if (companyPopulated.isBlocked) throw new AppError("Company is blocked");
+        if (company.isBlocked) throw new AppError("Company is blocked");
 
-        if (companyPopulated.documents && companyPopulated.documents.length > 0) {
-            const signedUrlPromises = companyPopulated.documents.map(async (document) => {
+        if (company.documents && company.documents.length > 0) {
+            const signedUrlPromises = company.documents.map(async (document) => {
                 document.signedURL = await this._fileService.generateSignedUrl(document.key);
             });
 
             await Promise.all(signedUrlPromises);
         }
 
-        return toCompanyProfileDTO(companyPopulated);
+        return CompanyMapper.toCompanyProfileDTO(company);
     }
 
     async updateBasicProfile(companyId: string, profileData: Partial<ICompany>): Promise<CompanyProfileDTO> {
@@ -51,13 +102,10 @@ export class CompanyProfileService implements ICompanyProfileService {
         if (!company) {
             throw new AppError("Company not found");
         }
-        const companyPopulated = await this._companyRepository.findByIdWithPopulate<ICompanyPopulated>(companyId, []);
 
-        if (!companyPopulated) throw new AppError("Company not found");
+        if (company.isBlocked) throw new AppError("Company is blocked");
 
-        if (companyPopulated.isBlocked) throw new AppError("Company is blocked");
-
-        return toCompanyProfileDTO(companyPopulated);
+        return CompanyMapper.toCompanyProfileDTO(company);
     }
 
     async updateProfilePicture(companyId: string, profilePicture: Express.Multer.File): Promise<CompanyProfileDTO> {
@@ -89,12 +137,7 @@ export class CompanyProfileService implements ICompanyProfileService {
             }
         }
 
-        const populatedCompany = await this._companyRepository.findByIdWithPopulate<ICompanyPopulated>(companyId, []);
-        if (!populatedCompany) {
-            throw new AppError("Company not found after populate");
-        }
-
-        return toCompanyProfileDTO(populatedCompany);
+        return CompanyMapper.toCompanyProfileDTO(company);
     }
 
     async deleteProfilePicture(companyId: string): Promise<CompanyProfileDTO> {
@@ -121,12 +164,7 @@ export class CompanyProfileService implements ICompanyProfileService {
             }
         }
 
-        const populatedCompany = await this._companyRepository.findByIdWithPopulate<ICompanyPopulated>(companyId, []);
-        if (!populatedCompany) {
-            throw new AppError("company not found after populate");
-        }
-
-        return toCompanyProfileDTO(populatedCompany);
+        return CompanyMapper.toCompanyProfileDTO(company);
     }
 
     async updateBannerImage(companyId: string, bannerImage: Express.Multer.File): Promise<CompanyProfileDTO> {
@@ -157,12 +195,7 @@ export class CompanyProfileService implements ICompanyProfileService {
             }
         }
 
-        const populatedCompany = await this._companyRepository.findByIdWithPopulate<ICompanyPopulated>(companyId, []);
-        if (!populatedCompany) {
-            throw new AppError("Company not found after populate");
-        }
-
-        return toCompanyProfileDTO(populatedCompany);
+        return CompanyMapper.toCompanyProfileDTO(company);
     }
 
     async deleteBannerImage(companyId: string): Promise<CompanyProfileDTO> {
@@ -189,12 +222,7 @@ export class CompanyProfileService implements ICompanyProfileService {
             }
         }
 
-        const populatedCompany = await this._companyRepository.findByIdWithPopulate<ICompanyPopulated>(companyId, []);
-        if (!populatedCompany) {
-            throw new AppError("company not found after populate");
-        }
-
-        return toCompanyProfileDTO(populatedCompany);
+        return CompanyMapper.toCompanyProfileDTO(company);
     }
 
     async uploadDocument(companyId: string, document: Express.Multer.File): Promise<CompanyProfileDTO> {
@@ -202,8 +230,7 @@ export class CompanyProfileService implements ICompanyProfileService {
             throw new ValidationError("Invalid company id");
         }
 
-        const company = await this._companyRepository.findById(companyId);
-
+        const company = await this._companyRepository.findById<ICompany>(companyId);
         if (!company) throw new AppError("Company not found");
 
         const key = await this._fileService.uplodaFile(document, "documents", companyId);
@@ -220,12 +247,7 @@ export class CompanyProfileService implements ICompanyProfileService {
 
         await company.save();
 
-        const populatedCompany = await this._companyRepository.findByIdWithPopulate<ICompanyPopulated>(companyId, []);
-
-        if (!populatedCompany) {
-            throw new AppError("company not found after populate");
-        }
-        return toCompanyProfileDTO(populatedCompany);
+        return CompanyMapper.toCompanyProfileDTO(company);
     }
 
     async deleteDocument(companyId: string, documentKey: string): Promise<CompanyProfileDTO> {
@@ -246,10 +268,6 @@ export class CompanyProfileService implements ICompanyProfileService {
             console.error("Failed to delete document:", err);
         }
 
-        const populated = await this._companyRepository.findByIdWithPopulate<ICompanyPopulated>(companyId, []);
-        if (!populated) {
-            throw new AppError("company not found after populate");
-        }
-        return toCompanyProfileDTO(populated);
+        return CompanyMapper.toCompanyProfileDTO(company);
     }
 }

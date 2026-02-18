@@ -678,3 +678,100 @@ Proj: {}
 [2026-01-27 01:22:17] [31merror[39m:unauthorized request expired request 
 [2026-01-27 01:22:17] [31merror[39m:unauthorized request expired request 
 [2026-01-27 20:41:19] [31merror[39m:unauthorized request expired request 
+[2026-01-28 09:15:51] [31merror[39m:Job should be verified by admin first
+[2026-01-28 09:15:51] [31merror[39m:PATCH /api/company/jobs/6979863891da1d15e702ad95/status null - 69ms
+[2026-01-28 09:37:06] [31merror[39m:Application not found
+[2026-01-28 09:37:11] [31merror[39m:Application not found
+[2026-01-28 09:38:03] [31merror[39m:Application not found
+[2026-01-28 09:38:12] [31merror[39m:Application not found
+[2026-01-28 09:38:41] [31merror[39m:Application not found
+[2026-01-28 09:39:09] [31merror[39m:Application not found
+[2026-01-28 09:39:45] [31merror[39m:Application not found
+[2026-01-28 09:39:49] [31merror[39m:Application not found
+[2026-01-28 20:29:24] [31merror[39m:unauthorized request expired request 
+[2026-01-28 23:54:02] [31merror[39m:unauthorized request expired request 
+[2026-01-29 01:07:10] [31merror[39m:unauthorized request expired request 
+[2026-01-29 01:42:06] [31merror[39m:POST /api/company/me/documents null - 1377ms
+[2026-01-29 01:45:01] [31merror[39m:POST /api/company/me/documents null - 2607ms
+[2026-01-29 01:45:11] [31merror[39m:POST /api/company/me/documents null - 1612ms
+[2026-01-29 01:46:15] [31merror[39m:POST /api/company/me/documents null - 1812ms
+[2026-01-29 01:47:09] [31merror[39m:POST /api/company/me/documents null - 2357ms
+[2026-01-29 01:47:26] [31merror[39m:POST /api/company/me/documents null - 3943ms
+[2026-01-29 01:49:14] [31merror[39m:POST /api/company/me/documents null - 1952ms
+[2026-01-29 01:55:27] [31merror[39m:unauthorized request expired request 
+[2026-01-29 01:55:37] [31merror[39m:unauthorized request expired request 
+[2026-01-29 02:39:41] [31merror[39m:unauthorized request expired request 
+[2026-01-29 13:48:28] [31merror[39m:unauthorized request expired request 
+[2026-02-01 13:49:49] [31merror[39m:GET /api/admin/getCompanies?page=1&limit=10&search=&verificationStatus= null - 161ms
+[2026-02-01 13:50:13] [31merror[39m:GET /api/admin/getCompanies?page=1&limit=10&search=&verificationStatus= null - 18ms
+[2026-02-01 14:08:34] [31merror[39m:GET /api/admin/getCompanies?page=1&limit=10&search=&verificationStatus= null - 127ms
+[2026-02-01 14:09:12] [31merror[39m:GET /api/admin/getCompanies?page=1&limit=10&search=&verificationStatus= null - 57ms
+[2026-02-01 14:11:42] [31merror[39m:GET /api/admin/getCompanies?page=1&limit=10&search=&verificationStatus= null - 113ms
+[2026-02-01 22:44:30] [31merror[39m:unauthorized request expired request 
+[2026-02-02 00:31:14] [31merror[39m:unauthorized request expired request 
+[2026-02-02 02:13:04] [31merror[39m:unauthorized request expired request 
+[2026-02-02 02:55:46] [31merror[39m:Application not found
+[2026-02-02 02:57:07] [31merror[39m:Application not found
+[2026-02-02 12:13:24] [31merror[39m:unauthorized request expired request 
+[2026-02-02 15:22:46] [31merror[39m:unauthorized request expired request 
+[2026-02-02 19:24:22] [31merror[39m:unauthorized request expired request 
+[2026-02-02 19:24:23] [31merror[39m:unauthorized request expired request 
+[2026-02-02 19:24:24] [31merror[39m:unauthorized request expired request 
+[2026-02-03 11:27:18] [31merror[39m:unauthorized request expired request 
+[2026-02-03 11:27:18] [31merror[39m:unauthorized request expired request 
+[2026-02-03 15:42:34] [31merror[39m:unauthorized request expired request 
+[2026-02-03 15:42:34] [31merror[39m:unauthorized request expired request 
+[2026-02-03 23:31:09] [31merror[39m:Server error: Error: listen EADDRINUSE: address already in use :::3000
+[2026-02-03 23:31:16] [31merror[39m:Server error: Error: listen EADDRINUSE: address already in use :::3000
+[2026-02-03 23:31:22] [31merror[39m:Server error: Error: listen EADDRINUSE: address already in use :::3000
+[2026-02-03 23:31:42] [31merror[39m:Server error: listen EADDRINUSE: address already in use :::3000
+[2026-02-03 23:31:50] [31merror[39m:Server error: Error: listen EADDRINUSE: address already in use :::3000
+[2026-02-03 23:33:18] [31merror[39m:Server error: Error: listen EADDRINUSE: address already in use :::3000
+[2026-02-04 01:46:33] [31merror[39m:Server error: Error: listen EADDRINUSE: address already in use :::3000
+[2026-02-04 01:51:54] [31merror[39m:unauthorized request expired request 
+[2026-02-04 01:51:54] [31merror[39m:unauthorized request expired request 
+[2026-02-04 01:56:04] [31merror[39m:User not found
+[2026-02-04 01:56:04] [31merror[39m:GET /api/user/me null - 160ms
+[2026-02-04 01:56:04] [31merror[39m:User not found
+[2026-02-04 01:56:04] [31merror[39m:GET /api/auth/refresh null - 467ms
+[2026-02-04 01:58:41] [31merror[39m:PATCH /api/user/me null - 30ms
+[2026-02-04 01:59:06] [31merror[39m:PATCH /api/user/me null - 10ms
+[2026-02-04 01:59:33] [31merror[39m:PATCH /api/user/me null - 20ms
+[2026-02-04 02:01:23] [31merror[39m:PATCH /api/user/me null - 46ms
+[2026-02-04 02:01:33] [31merror[39m:PATCH /api/user/me null - 27ms
+[2026-02-04 02:03:28] [31merror[39m:Server error: Error: listen EADDRINUSE: address already in use :::3000
+[2026-02-04 02:03:36] [31merror[39m:Server error: Error: listen EADDRINUSE: address already in use :::3000
+[2026-02-04 02:03:58] [31merror[39m:PATCH /api/user/me null - 65ms
+[2026-02-04 02:04:01] [31merror[39m:Server error: Error: listen EADDRINUSE: address already in use :::3000
+[2026-02-04 02:06:39] [31merror[39m:PATCH /api/user/me null - 33ms
+[2026-02-04 02:07:19] [31merror[39m:PATCH /api/user/me null - 14ms
+[2026-02-04 02:07:29] [31merror[39m:PATCH /api/user/me null - 12ms
+[2026-02-04 02:08:31] [31merror[39m:POST /api/user/me/user-education null - 166ms
+[2026-02-04 14:54:44] [31merror[39m:unauthorized request expired request 
+[2026-02-12 00:19:23] [31merror[39m:unauthorized request expired request 
+[2026-02-13 00:46:21] [31merror[39m:GET /api/auth/refresh null - 44ms
+[2026-02-13 22:57:18] [31merror[39m:unauthorized request expired request 
+[2026-02-13 22:57:58] [31merror[39m:unauthorized request expired request 
+[2026-02-13 22:58:52] [31merror[39m:unauthorized request expired request 
+[2026-02-13 22:59:36] [31merror[39m:unauthorized request expired request 
+[2026-02-13 23:03:26] [31merror[39m:unauthorized request expired request 
+[2026-02-14 00:08:15] [31merror[39m:unauthorized request expired request 
+[2026-02-14 15:44:30] [31merror[39m:unauthorized request expired request 
+[2026-02-14 16:15:10] [31merror[39m:unauthorized request expired request 
+[2026-02-14 16:15:25] [31merror[39m:unauthorized request expired request 
+[2026-02-14 16:41:23] [31merror[39m:unauthorized request expired request 
+[2026-02-16 12:14:15] [31merror[39m:unauthorized request expired request 
+[2026-02-16 12:14:21] [31merror[39m:unauthorized request expired request 
+[2026-02-16 13:08:37] [31merror[39m:unauthorized request expired request 
+[2026-02-16 13:37:09] [31merror[39m:unauthorized request expired request 
+[2026-02-16 14:36:44] [31merror[39m:unauthorized request expired request 
+[2026-02-16 18:53:03] [31merror[39m:unauthorized request expired request 
+[2026-02-16 20:23:14] [31merror[39m:unauthorized request expired request 
+[2026-02-16 20:41:26] [31merror[39m:unauthorized request expired request 
+[2026-02-16 20:41:26] [31merror[39m:invalid refresh token
+[2026-02-16 21:05:39] [31merror[39m:A resume with the same name already exists. Please rename your file and try again.
+[2026-02-16 21:07:29] [31merror[39m:A resume with the same name already exists. Please rename your file and try again.
+[2026-02-16 21:08:31] [31merror[39m:A resume with the same name already exists. Please rename your file and try again.
+[2026-02-17 22:36:19] [31merror[39m:invalid refresh token
+[2026-02-18 00:53:12] [31merror[39m:unauthorized request expired request 
+[2026-02-18 00:53:12] [31merror[39m:invalid refresh token

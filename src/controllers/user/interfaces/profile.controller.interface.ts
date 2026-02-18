@@ -5,8 +5,12 @@ export interface IUserProfileController {
     updateUserProfile(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
     addUserSkill(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
     removeUserSkill(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+
     updateProfilePicture(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
     deleteProfilePicture(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+
+    updateBannerImage(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+    deleteBannerImage(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
     addEducation(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
     updateEducation(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
@@ -21,4 +25,8 @@ export interface IUserProfileController {
 
     addCertificate(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
     deleteCertificate(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+
+    deleteCertificate(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+
+    getResume(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

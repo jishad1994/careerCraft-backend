@@ -1,5 +1,5 @@
 import http from "http";
-import app from "../src/index";
+import app from "./app";
 
 import logger from "./utils/logger";
 import { initSocket } from "./shared/services/socket";
@@ -12,4 +12,8 @@ initSocket(server);
 
 server.listen(port, () => {
     logger.info(`Server running on port ${port}`);
+});
+
+server.on("error", (error) => {
+    logger.error(`Server error: ${error}`);
 });

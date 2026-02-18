@@ -11,7 +11,15 @@ export interface ICompanyJobApplicationController {
 
     markAsViewed(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
+    getStatistics(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+
+    getApplicantsList(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+
+    toggleFlag(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+
     addNotes(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
-    getStatistics(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+    rejectApplication(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+
+    getApplicationResume(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

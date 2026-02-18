@@ -1,6 +1,6 @@
 import { ICompany } from "../../models/company/company.interface";
 import { BaseRepository } from "../base-repository/base.repository";
-import { Model } from "mongoose";
+import { FilterQuery, Model } from "mongoose";
 import { MongoServerError } from "mongodb";
 import { ICompanyRepository } from "./company.repository.interface";
 import { DataBaseError } from "../../errors/database.error";
@@ -35,25 +35,40 @@ export class CompanyRepository extends BaseRepository<ICompany> implements IComp
         }
     }
 
-
-    async findPaginated(page: number, limit: number, search?: string): Promise<[ICompany[], number]> {
+    async findPaginated(
+        page: number,
+        limit: number,
+        search?: string,
+        verificationStatus?: string,
+    ): Promise<[ICompany[], number]> {
         page = Math.max(page, 1);
         limit = Math.min(Math.max(limit, 1), 50);
 
         const skip = (page - 1) * limit;
 
         const escapedSearch = search ? search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") : "";
-        const filter = {
-            role: "company",
-            $or: [{ email: { $regex: escapedSearch, $options: "i" } }, { name: { $regex: escapedSearch, $options: "i" } }],
-        };
 
-        const [data, total] = await Promise.all([
-            this.model.find(filter, { name: 1, email: 1, role: 1, isBlocked: 1 }).lean().skip(skip).limit(limit),
+        const filter: FilterQuery<ICompany> = {
+            role: "company",
+        };
+        if (escapedSearch) {
+            filter.$or = [
+                { email: { $regex: escapedSearch, $options: "i" } },
+                { name: { $regex: escapedSearch, $options: "i" } },
+            ];
+        }
+
+        if (verificationStatus) {
+            console.log("verificationStatus in the repo", verificationStatus);
+            filter.verificationStatus = verificationStatus;
+        }
+
+        const [companies, total] = await Promise.all([
+            this.model.find(filter).lean().skip(skip).limit(limit),
             this.model.countDocuments(filter),
         ]);
 
-        return [data, total];
+        return [companies, total];
     }
 
     async blockOrUnblock(id: string, flag: boolean): Promise<ICompany | null> {

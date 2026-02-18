@@ -6,6 +6,8 @@ import { ApiResponse } from "../../../utils/apiResponse.utils";
 import { IUserProfileController } from "../interfaces/profile.controller.interface";
 import { NextFunction, Request, Response } from "express";
 
+import { Readable } from "stream";
+
 export class UserProfileController implements IUserProfileController {
     constructor(private _userProfileService: IUserProfileService) {}
     async getUserProfile(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
@@ -38,6 +40,7 @@ export class UserProfileController implements IUserProfileController {
 
             ApiResponse.success<UserProfileDTO>(res, "User profile updated successfully", updatedUserData);
         } catch (error) {
+            console.log(error);
             next(error);
         }
     }
@@ -107,6 +110,40 @@ export class UserProfileController implements IUserProfileController {
             const updatedUser = await this._userProfileService.deleteUserProfilePicture(user.id);
 
             return ApiResponse.success(res, "User profile picture deleted successfully", updatedUser);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async deleteBannerImage(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const user = req.user;
+            if (!user) {
+                throw new AuthError("Unauthorized");
+            }
+
+            const updatedUser = await this._userProfileService.deleteUserBannerImage(user.id);
+
+            return ApiResponse.success(res, "User banner image deleted successfully", updatedUser);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async updateBannerImage(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const user = req.user;
+            if (!user) {
+                throw new AuthError("Unauthorized");
+            }
+            const file = req.file;
+            if (!file) {
+                throw new AppError("File not found");
+            }
+
+            const updatedUser = await this._userProfileService.updateUserBannerImage(user.id, file);
+
+            return ApiResponse.success(res, "User banner image updated successfully", updatedUser);
         } catch (error) {
             next(error);
         }
@@ -286,6 +323,26 @@ export class UserProfileController implements IUserProfileController {
             const updatedProfile = await this._userProfileService.deleteCertificate(user.id, documentKey.toString());
 
             return ApiResponse.success(res, "User certificate deleted successfully", updatedProfile);
+        } catch (error) {
+            next(error);
+        }
+    }
+    async getResume(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const user = req.user;
+            if (!user) {
+                throw new AuthError("Unauthorized");
+            }
+            const { resumeName } = req.params;
+            const mode = (req.query.mode as string) || "view";
+
+            const fileStream = await this._userProfileService.getResume(user.id, resumeName);
+            if (mode === "download") {
+                res.setHeader("Content-Disposition", `attachment; filename="resume-${fileStream}.pdf"`);
+            } else {
+                res.setHeader("Content-Disposition", `inline; filename="resume-${resumeName}.pdf"`);
+            }
+            (fileStream.Body as Readable).pipe(res);
         } catch (error) {
             next(error);
         }

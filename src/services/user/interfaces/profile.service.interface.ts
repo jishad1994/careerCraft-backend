@@ -1,3 +1,4 @@
+import { GetObjectCommandOutput } from "@aws-sdk/client-s3";
 import { UserProfileDTO } from "../../../dtos/userProfile.dto";
 import { IEducation, IExperience, IUser } from "../../../models/user/user.interface";
 
@@ -21,8 +22,12 @@ export interface IUserProfileService {
 
     uploadCertificate(userId: string, document: Express.Multer.File): Promise<UserProfileDTO>;
     deleteCertificate(userId: string, documentKey: string): Promise<UserProfileDTO>;
-    
+
     uploadResume(userId: string, document: Express.Multer.File): Promise<UserProfileDTO>;
     deleteResume(userId: string, documentKey: string): Promise<UserProfileDTO>;
-  
+
+    updateUserBannerImage(userId: string, bannerImage: Express.Multer.File): Promise<UserProfileDTO>;
+    deleteUserBannerImage(userId: string): Promise<UserProfileDTO>;
+
+    getResume(userId: string, resumeName: string): Promise<GetObjectCommandOutput>;
 }

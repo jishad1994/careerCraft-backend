@@ -5,14 +5,50 @@ import {
     JobApplicationStatistics,
     JobApplicationStatus,
 } from "../../../models/job-application/job-application.interface";
-import { IJobApplicationRepository } from "../../../repositories/application/job-application.repository.interface";
+import {
+    CandidatesFilters,
+    IJobApplicationRepository,
+} from "../../../repositories/application/job-application.repository.interface";
 import { ICompanyJobApplicationServiceInterface } from "../interfaces/company-job-application.service.interface";
 import { AppError } from "../../../errors/app.error.";
 import { PaginationMeta } from "../../../utils/apiResponse.utils";
 import { IFileService } from "../../file-service/interfaces/file.service.interface";
+import { GetObjectCommandOutput } from "@aws-sdk/client-s3";
 
 export class CompanyJobApplicationService implements ICompanyJobApplicationServiceInterface {
-    constructor(private _applicationRepository: IJobApplicationRepository, private _fileService: IFileService) {}
+    constructor(
+        private _applicationRepository: IJobApplicationRepository,
+        private _fileService: IFileService,
+    ) {}
+
+    async getApplicantsList(
+        companyId: string,
+        page: number,
+        limit: number,
+        search: string,
+        filters: CandidatesFilters,
+    ): Promise<{ applications: IJobApplication[]; paginationMeta: PaginationMeta }> {
+        console.log("filters in service:", filters);
+        const [applications, total] = await this._applicationRepository.getApplicantsList(
+            companyId,
+            page,
+            limit,
+            search,
+            filters,
+        );
+
+        const totalPages = Math.ceil(total / limit);
+        const paginationMeta: PaginationMeta = {
+            page,
+            limit,
+            totalItems: total,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1,
+        };
+
+        return { applications, paginationMeta };
+    }
 
     async getApplicationById(applicationId: string): Promise<IJobApplication> {
         if (!mongoose.Types.ObjectId.isValid(applicationId)) {
@@ -35,7 +71,7 @@ export class CompanyJobApplicationService implements ICompanyJobApplicationServi
         companyId: string,
         page: number = 1,
         limit: number = 10,
-        filters?: { status?: string; jobId?: string }
+        filters?: { status?: string; jobId?: string },
     ): Promise<{ applications: IJobApplication[]; paginationMeta: PaginationMeta }> {
         if (!mongoose.Types.ObjectId.isValid(companyId)) {
             throw new ValidationError("Invalid company ID");
@@ -59,7 +95,7 @@ export class CompanyJobApplicationService implements ICompanyJobApplicationServi
         jobId: string,
         page: number = 1,
         limit: number = 10,
-        status?: string
+        status?: string,
     ): Promise<{ applications: IJobApplication[]; paginationMeta: PaginationMeta }> {
         if (!mongoose.Types.ObjectId.isValid(jobId)) {
             throw new ValidationError("Invalid job ID");
@@ -84,7 +120,7 @@ export class CompanyJobApplicationService implements ICompanyJobApplicationServi
         applicationId: string,
         status: string,
         changedBy?: string,
-        notes?: string
+        notes?: string,
     ): Promise<IJobApplication> {
         if (!mongoose.Types.ObjectId.isValid(applicationId)) {
             throw new ValidationError("Invalid application ID");
@@ -152,26 +188,22 @@ export class CompanyJobApplicationService implements ICompanyJobApplicationServi
 
         return updatedApplication;
     }
-    async toggleStarApplication(applicationId: string): Promise<IJobApplication> {
+    async toggleStarApplication(applicationId: string, isStarred: boolean): Promise<IJobApplication> {
         if (!mongoose.Types.ObjectId.isValid(applicationId)) {
             throw new ValidationError("Invalid application ID");
         }
 
-        const application = await this._applicationRepository.findById(applicationId);
+        const application = await this._applicationRepository.findById<IJobApplication>(applicationId);
+
         if (!application) {
             throw new AppError("Application not found", 404);
         }
 
-        const updates: Partial<IJobApplication> = {
-            isStarred: !application.isStarred,
-        };
+        application.isStarred = isStarred;
 
-        const updatedApplication = await this._applicationRepository.updateById(applicationId, updates);
-        if (!updatedApplication) {
-            throw new AppError("Failed to update application", 500);
-        }
+        await application.save();
 
-        return updatedApplication;
+        return application;
     }
 
     async addNotes(applicationId: string, notes: string): Promise<IJobApplication> {
@@ -212,5 +244,19 @@ export class CompanyJobApplicationService implements ICompanyJobApplicationServi
         };
 
         return stats;
+    }
+
+    async getApplicationResume(applicationId: string, companyId: string): Promise<GetObjectCommandOutput> {
+        const application = await this._applicationRepository.findById<IJobApplication>(applicationId);
+        if (!application) throw new AppError("Application not found", 404);
+
+        if (application.company.toString() !== companyId) {
+            throw new AppError("Unauthorized", 403);
+        }
+
+        const resume = application.resume;
+        if (!resume) throw new AppError("Application does not have a resume", 404);
+
+        return this._fileService.getFile(resume.fileKey);
     }
 }

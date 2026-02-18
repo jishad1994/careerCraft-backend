@@ -7,6 +7,8 @@ export interface ICompanyProfileController {
 
     updateProfilePicture(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
+    updateAddress(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+
     deleteProfilePicture(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
     updateBannerImage(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
@@ -14,7 +16,8 @@ export interface ICompanyProfileController {
     deleteBannerImage(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
     uploadDocument(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-    
-    deleteDocument(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
+    deleteDocument(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+    
+    reapplyForVerification(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 }

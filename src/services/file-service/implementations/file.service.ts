@@ -2,12 +2,20 @@ import dotenv from "dotenv";
 dotenv.config();
 import { IFileService } from "../interfaces/file.service.interface";
 import { S3_BUCKET } from "../../../config/aws";
+import { AppError } from "../../../errors/app.error.";
+import logger from "../../../utils/logger";
+import { GetObjectCommandOutput } from "@aws-sdk/client-s3";
 
 export class FileService implements IFileService {
     constructor(private readonly provider: IFileService) {}
 
     async uplodaFile(file: Express.Multer.File, folder: string, userId: string, isPublic?: boolean): Promise<string> {
-        return this.provider.uplodaFile(file, folder, userId, isPublic);
+        try {
+            return this.provider.uplodaFile(file, folder, userId, isPublic);
+        } catch (error) {
+            logger.error(error);
+            throw new AppError("Error while uploading file");
+        }
     }
 
     async deleteFile(key: string): Promise<void> {
@@ -42,5 +50,10 @@ export class FileService implements IFileService {
 
     async uploadResume(file: Express.Multer.File, userId: string): Promise<string> {
         return this.provider.uplodaFile(file, "resumes", userId);
+    }
+
+    async getFile(key: string): Promise<GetObjectCommandOutput> {
+        
+        return await this.provider.getFile(key);
     }
 }

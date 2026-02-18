@@ -7,34 +7,32 @@ companyProfileRoutes.get("/", companyProfileController.getProfile.bind(companyPr
 companyProfileRoutes.put(
     "/",
 
-    companyProfileController.updateBasicProfile.bind(companyProfileController)
+    companyProfileController.updateBasicProfile.bind(companyProfileController),
 );
 companyProfileRoutes.post(
     "/profile-picture",
     upload.single("profilePicture"),
-    companyProfileController.updateProfilePicture.bind(companyProfileController)
+    companyProfileController.updateProfilePicture.bind(companyProfileController),
 );
+companyProfileRoutes.put("/addresses", companyProfileController.updateAddress.bind(companyProfileController));
+
 companyProfileRoutes.delete(
     "/profile-picture",
-    companyProfileController.deleteProfilePicture.bind(companyProfileController)
+    companyProfileController.deleteProfilePicture.bind(companyProfileController),
 );
 companyProfileRoutes.post(
     "/banner-image",
     upload.single("bannerImage"),
-    companyProfileController.updateBannerImage.bind(companyProfileController)
+    companyProfileController.updateBannerImage.bind(companyProfileController),
 );
-companyProfileRoutes.delete(
-    "/banner-image",
-    companyProfileController.deleteBannerImage.bind(companyProfileController)
-);
+companyProfileRoutes.delete("/banner-image", companyProfileController.deleteBannerImage.bind(companyProfileController));
 companyProfileRoutes.post(
     "/documents",
     upload.single("document"),
-    companyProfileController.uploadDocument.bind(companyProfileController)
+    companyProfileController.uploadDocument.bind(companyProfileController),
 );
-companyProfileRoutes.delete(
-    "/documents",
-    companyProfileController.deleteDocument.bind(companyProfileController)
-);
+companyProfileRoutes.delete("/documents", companyProfileController.deleteDocument.bind(companyProfileController));
+
+companyProfileRoutes.patch("/reapply-verification", companyProfileController.reapplyForVerification.bind(companyProfileController));
 
 export default companyProfileRoutes;

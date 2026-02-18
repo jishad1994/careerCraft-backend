@@ -1,14 +1,17 @@
 import mongoose, { Document } from "mongoose";
 
-export type JobApplicationStatus =
-    | "pending"
-    | "reviewing"
-    | "shortlisted"
-    | "interviewed"
-    | "offered"
-    | "rejected"
-    | "withdrawn"
-    | "hired";
+export const JOB_APPLICATION_STATUSES = {
+    PENDING: "pending",
+    REVIEWING: "reviewing",
+    SHORTLISTED: "shortlisted",
+    INTERVIEWED: "interviewed",
+    OFFERED: "offered",
+    REJECTED: "rejected",
+    WITHDRAWN: "withdrawn",
+    HIRED: "hired",
+} as const;
+
+export type JobApplicationStatus = (typeof JOB_APPLICATION_STATUSES)[keyof typeof JOB_APPLICATION_STATUSES];
 
 export interface JobApplicationStatistics {
     total: number;

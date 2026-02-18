@@ -1,4 +1,4 @@
-import { EducationType, IDocument, IProfilePicture, Role } from "../models/user/user.interface";
+import { EducationType, IBannerImage, IDocument, IProfilePicture, Role } from "../models/user/user.interface";
 
 export class EducationDTO {
     type!: EducationType;
@@ -46,6 +46,7 @@ export class UserProfileDTO {
     phone?: string;
     role!: Role;
     profilePicture?: IProfilePicture;
+    bannerImage?: IBannerImage;
     about?: string;
     isBlocked!: boolean;
 
@@ -55,6 +56,7 @@ export class UserProfileDTO {
     skills?: SkillDTO[];
     education?: EducationDTO[];
     experience?: ExperienceDTO[];
+    totalExperienceYears!: number;
     address?: AddressDTO;
 
     certificates?: IDocument[];

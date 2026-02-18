@@ -8,9 +8,26 @@ import { AuthError } from "../../../errors/auth.error";
 import { HTTP_MESSAGES } from "../../../constants/messages/http.messages.constants";
 import { COMPANY_PROFILE_MESSAGES } from "../../../constants/messages/company.messages.constants";
 import { ValidationError } from "../../../errors/validation.error";
+import { IAddress } from "../../../models/user/user.interface";
 
 export class CompanyProfileController implements ICompanyProfileController {
     constructor(private _companyProfileService: ICompanyProfileService) {}
+
+
+
+    async reapplyForVerification(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const company = req.user;
+
+            if (!company) throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
+
+            const updatedProfile = await this._companyProfileService.reapplyForVerification(company.id);
+
+            return ApiResponse.success(res, COMPANY_PROFILE_MESSAGES.VERIFICATION_REAPPLIED, updatedProfile);
+        } catch (error) {
+            next(error);
+        }
+    }
 
     async getProfile(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
@@ -34,7 +51,22 @@ export class CompanyProfileController implements ICompanyProfileController {
 
             const updatedProfile = await this._companyProfileService.updateBasicProfile(company.id, req.body);
 
-            return ApiResponse.success(res, COMPANY_PROFILE_MESSAGES.PRFILE_UPDATED, updatedProfile);
+            return ApiResponse.success(res, COMPANY_PROFILE_MESSAGES.PROFILE_UPDATED, updatedProfile);
+        } catch (error) {
+            next(error);
+        }
+    }
+    async updateAddress(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const company = req.user;
+
+            if (!company) throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
+
+            const address: IAddress[] = req.body;
+
+            const updatedProfile = await this._companyProfileService.updateAddress(company.id, { address });
+
+            return ApiResponse.success(res, COMPANY_PROFILE_MESSAGES.ADDRESS_UPDATED, updatedProfile);
         } catch (error) {
             next(error);
         }

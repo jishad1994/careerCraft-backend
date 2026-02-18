@@ -1,6 +1,7 @@
 import { UsersPaginatedDTO } from "../../dtos/admin.dto";
+import { CompanyProfileDTO } from "../../dtos/companyProfile.dto";
 import { UserProfileDTO } from "../../dtos/userProfile.dto";
-import { ICompany } from "../../models/company/company.interface";
+import { CompanyRejectionCodes, ICompany, ICompanyListItem } from "../../models/company/company.interface";
 import { IUser } from "../../models/user/user.interface";
 
 export interface IAdminService {
@@ -8,13 +9,18 @@ export interface IAdminService {
 
     getUserById(userId: string): Promise<UserProfileDTO>;
 
-    getCompanies(page: number, limit: number, search?: string): Promise<UsersPaginatedDTO<ICompany>>;
+    getCompanies(
+        page: number,
+        limit: number,
+        search?: string,
+        verificationStatus?: string,
+    ): Promise<UsersPaginatedDTO<ICompanyListItem>>;
 
-    getCompanyById(companyId: string): Promise<ICompany>;
+    getCompanyById(companyId: string): Promise<CompanyProfileDTO>;
 
-    verifyCompany(companyId: string): Promise<ICompany>;
+    verifyCompany(companyId: string): Promise<CompanyProfileDTO>;
 
-    rejectCompanyVerification(companyId: string, comment: string): Promise<void>;
+    rejectCompanyVerification(companyId: string, code: CompanyRejectionCodes, description: string): Promise<void>;
 
     blockUser(id: string): Promise<IUser>;
 

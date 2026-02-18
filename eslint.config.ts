@@ -11,8 +11,7 @@ export default defineConfig([
         languageOptions: { globals: globals.node },
     },
     tseslint.configs.recommended,
-
     {
-        rules: {},
+        rules: { "no-unused-vars": [2, { vars: "all", args: "none" }] },
     },
 ]);

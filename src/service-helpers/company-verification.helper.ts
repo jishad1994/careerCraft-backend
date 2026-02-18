@@ -13,7 +13,7 @@ export interface ICompanyVerificationResult {
 export interface ICompanyVerificationRule {
     key: string;
     label: string;
-    weight: number;
+    weight: number;  
     validate: (company: ICompany) => boolean;
 }
 

@@ -43,12 +43,24 @@ import { objectIdSchema } from "./auth.schemas";
 // export type IdParam = z.infer<typeof idParamSchema>;
 // export type BlockActionParam = z.infer<typeof blockActionParamSchema>;
 
+export const companyVerificationCodeEnum = z.enum([
+    "INVALID_DOCUMENT",
+    "MISMATCHED_GST",
+    "INCOMPLETE_PROFILE",
+    "DUPLICATE_COMPANY",
+    "OTHER",
+]);
+
 export const idParamSchema = z.object({
     id: objectIdSchema,
 });
 
 export const rejectVerificationSchema = z.object({
-    comment: z.string().min(10, "Rejection reason must be at least 10 characters").max(500, "Rejection reason too long"),
+    description: z
+        .string()
+
+        .optional(),
+    code: companyVerificationCodeEnum,
 });
 
 export const documentKeySchema = z.object({

@@ -14,11 +14,16 @@ export class AdminController implements IAdminController {
             const page = Number(req.query.page as string) || 1;
             const limit = Number(req.query.limit as string) || 10;
             const search = (req.query.search as string) || "";
+            const verificationStatus = String(req.query.verificationStatus) || "";
 
-            const { data, paginationMeta } = await this._adminService.getCompanies(page, limit, search);
+            console.log("verificationStatus", verificationStatus);
+
+            const { data, paginationMeta } = await this._adminService.getCompanies(page, limit, search, verificationStatus);
 
             return ApiResponse.success(res, "Companies fetch successfull", data, 200, paginationMeta);
         } catch (error) {
+
+            
             next(error);
         }
     }
@@ -50,10 +55,8 @@ export class AdminController implements IAdminController {
     async rejectCompanyVerification(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const { id } = req.params as unknown as IdParam;
-            const { comment } = req.body;
-
-            await this._adminService.rejectCompanyVerification(id, comment);
-
+            const { code, description } = req.body;
+            await this._adminService.rejectCompanyVerification(id, code, description);
             return ApiResponse.success(res, "Verification rejected and company notified");
         } catch (error) {
             next(error);

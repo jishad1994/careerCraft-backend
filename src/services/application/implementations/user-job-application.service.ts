@@ -8,11 +8,14 @@ import { PaginationMeta } from "../../../utils/apiResponse.utils";
 import { IFileService } from "../../file-service/interfaces/file.service.interface";
 
 export class UserJobApplicationService implements IUserJobApplicationService {
-    constructor(private _jobApplicationRepository: IJobApplicationRepository, private _fileService: IFileService) {}
+    constructor(
+        private _jobApplicationRepository: IJobApplicationRepository,
+        private _fileService: IFileService,
+    ) {}
 
     async getApplicationStatus(
         userId: string,
-        jobId: string
+        jobId: string,
     ): Promise<{ appliedStatus: boolean; applicationStatus: string | null }> {
         const existingApplication = await this._jobApplicationRepository.findByUserAndJob(userId, jobId);
         console.log(existingApplication);
@@ -41,7 +44,7 @@ export class UserJobApplicationService implements IUserJobApplicationService {
         userId: string,
         page: number = 1,
         limit: number = 10,
-        status?: string
+        status?: string,
     ): Promise<{ applications: IJobApplication[]; paginationMeta: PaginationMeta }> {
         if (!mongoose.Types.ObjectId.isValid(userId)) {
             throw new ValidationError("Invalid user ID");
@@ -66,7 +69,7 @@ export class UserJobApplicationService implements IUserJobApplicationService {
         applicationId: string,
         status: string,
         changedBy?: string,
-        notes?: string
+        notes?: string,
     ): Promise<IJobApplication> {
         if (!mongoose.Types.ObjectId.isValid(applicationId)) {
             throw new ValidationError("Invalid application ID");
@@ -140,7 +143,7 @@ export class UserJobApplicationService implements IUserJobApplicationService {
 
     async checkApplicationStatus(
         jobId: string,
-        userId: string
+        userId: string,
     ): Promise<{ hasApplied: boolean; application?: IJobApplication }> {
         if (!mongoose.Types.ObjectId.isValid(jobId) || !mongoose.Types.ObjectId.isValid(userId)) {
             throw new ValidationError("Invalid ID");

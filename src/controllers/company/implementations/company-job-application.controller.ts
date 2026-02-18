@@ -1,7 +1,10 @@
+import { COMPANY_JOB_APPLICATION_MESSAGES } from "../../../constants/messages/company.messages.constants";
 import { AppError } from "../../../errors/app.error.";
+import { JOB_APPLICATION_STATUSES } from "../../../models/job-application/job-application.interface";
 import { ICompanyJobApplicationServiceInterface } from "../../../services/application/interfaces/company-job-application.service.interface";
 import { ApiResponse } from "../../../utils/apiResponse.utils";
 import { ICompanyJobApplicationController } from "../interfaces/company-job-application.controller.interface";
+import { Readable } from "stream";
 
 import { Request, Response, NextFunction } from "express";
 
@@ -15,7 +18,60 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
 
             const application = await this._applicationService.getApplicationById(applicationId);
 
-            return ApiResponse.success(res, "Application fetched successfully", application);
+            return ApiResponse.success(res, COMPANY_JOB_APPLICATION_MESSAGES.FETCH_SUCCESSFULL, application);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getApplicantsList(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const companyId = req.user?.id;
+
+            if (!companyId) throw new AppError("User not found", 401);
+
+            const {
+                page = 1,
+                limit = 10,
+                search = "",
+                status,
+                skills,
+                experience,
+                education,
+                availability,
+                dateRange,
+                startDate,
+                endDate,
+                jobId,
+            } = req.query;
+
+            const filters = {
+                status: status ? (status as string).split(",") : undefined,
+                skills: skills ? (skills as string).split(",") : undefined,
+                experience: experience ? (experience as string).split(",") : undefined,
+                education: education ? (education as string).split(",") : undefined,
+                availability: availability ? (availability as string).split(",") : undefined,
+                dateRange: dateRange as string,
+                startDate: startDate as string,
+                endDate: endDate as string,
+                jobId: jobId as string,
+            };
+
+            const { applications: candidates, paginationMeta } = await this._applicationService.getApplicantsList(
+                companyId!,
+                Number(page),
+                Number(limit),
+                search as string,
+                filters,
+            );
+
+            return ApiResponse.success(
+                res,
+                COMPANY_JOB_APPLICATION_MESSAGES.FETCH_SUCCESSFULL,
+                candidates,
+                200,
+                paginationMeta,
+            );
         } catch (error) {
             next(error);
         }
@@ -42,10 +98,16 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
                 company.id,
                 page,
                 limit,
-                filters
+                filters,
             );
 
-            return ApiResponse.success(res, "Applications fetched successfully", applications, 200, paginationMeta);
+            return ApiResponse.success(
+                res,
+                COMPANY_JOB_APPLICATION_MESSAGES.FETCH_SUCCESSFULL,
+                applications,
+                200,
+                paginationMeta,
+            );
         } catch (error) {
             next(error);
         }
@@ -67,16 +129,22 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
                 jobId,
                 page,
                 limit,
-                status
+                status,
             );
 
-            return ApiResponse.success(res, "Applications fetched successfully", applications, 200, paginationMeta);
+            return ApiResponse.success(
+                res,
+                COMPANY_JOB_APPLICATION_MESSAGES.FETCH_SUCCESSFULL,
+                applications,
+                200,
+                paginationMeta,
+            );
         } catch (error) {
             next(error);
         }
     }
 
-     async updateApplicationStatus(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+    async updateApplicationStatus(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const company = req.user;
             if (!company) throw new AppError("User not found", 401);
@@ -91,10 +159,10 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
                 applicationId,
                 status,
                 company.id,
-                notes
+                notes,
             );
 
-            return ApiResponse.success(res, "Application status updated successfully", updatedApplication);
+            return ApiResponse.success(res, COMPANY_JOB_APPLICATION_MESSAGES.STATUS_UPDATED, updatedApplication);
         } catch (error) {
             next(error);
         }
@@ -110,7 +178,7 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
 
             const updatedApplication = await this._applicationService.markApplicationAsViewed(applicationId, company.id);
 
-            return ApiResponse.success(res, "Application marked as viewed", updatedApplication);
+            return ApiResponse.success(res, COMPANY_JOB_APPLICATION_MESSAGES.MARKED_AS_VIEWED, updatedApplication);
         } catch (error) {
             next(error);
         }
@@ -129,7 +197,7 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
 
             const updatedApplication = await this._applicationService.addNotes(applicationId, notes);
 
-            return ApiResponse.success(res, "Notes added successfully", updatedApplication);
+            return ApiResponse.success(res, COMPANY_JOB_APPLICATION_MESSAGES.ADD_NOTES_SUCCESSFULL, updatedApplication);
         } catch (error) {
             next(error);
         }
@@ -142,7 +210,69 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
 
             const statistics = await this._applicationService.getApplicationStatistics(company.id);
 
-            return ApiResponse.success(res, "Statistics fetched successfully", statistics);
+            return ApiResponse.success(res, COMPANY_JOB_APPLICATION_MESSAGES.STATISTIC_FETCH_SUCCESSFULL, statistics);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async rejectApplication(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const { applicationId } = req.params;
+            const { feedback } = req.body;
+
+            const updatedApplication = await this._applicationService.updateApplicationStatus(
+                applicationId,
+                JOB_APPLICATION_STATUSES.REJECTED,
+                undefined,
+                feedback,
+            );
+
+            return ApiResponse.success(res, COMPANY_JOB_APPLICATION_MESSAGES.REJECTED, updatedApplication);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async toggleFlag(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const { applicationId } = req.params;
+            const { isStarred } = req.body;
+
+            const updatedApplication = await this._applicationService.toggleStarApplication(applicationId, isStarred);
+
+            const flaggedStatus = isStarred ? "flagged" : "unflagged";
+            return ApiResponse.success(
+                res,
+                COMPANY_JOB_APPLICATION_MESSAGES.TOGGLE_FLAG_SUCCESSFULL(flaggedStatus),
+                updatedApplication,
+            );
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getApplicationResume(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const company = req.user;
+            if (!company) throw new AppError("User not found", 401);
+            const applicationId = req.params.id;
+
+            if (!applicationId) throw new AppError("Application ID is required", 400);
+
+            const mode = (req.query.mode as string) || "view";
+
+            const fileStream = await this._applicationService.getApplicationResume(applicationId, company.id);
+
+            res.setHeader("Content-Type", fileStream.ContentType || "application/pdf");
+
+            if (mode === "download") {
+                res.setHeader("Content-Disposition", `attachment; filename="resume-${applicationId}.pdf"`);
+            } else {
+                res.setHeader("Content-Disposition", `inline; filename="resume-${applicationId}.pdf"`);
+            }
+
+            (fileStream.Body as Readable).pipe(res);
         } catch (error) {
             next(error);
         }

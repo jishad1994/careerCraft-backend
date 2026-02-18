@@ -1,14 +1,19 @@
 import mongoose, { Schema } from "mongoose";
-import { ICompany } from "./company.interface";
-import { addressSchema, documentSchema, profilePictureSchema } from "../user/user.schema";
-import { IBannerImage } from "../user/user.interface";
+import { COMPANY_REJECTION_CODES, COMPANY_VERIFICATION_STATUS, ICompany, IRejectionReason } from "./company.interface";
+import { addressSchema, documentSchema } from "../user/user.schema";
 import { CompanyVerificationHelper } from "../../service-helpers/company-verification.helper";
 import mongooseLeanVirtuals from "mongoose-lean-virtuals";
+import { bannerImageSchema, profilePictureSchema } from "../common/common.profile.schema";
 
-export const bannerImageSchema = new Schema<IBannerImage>(
+export const rejectionReasonSchema = new Schema<IRejectionReason>(
     {
-        key: { type: String, required: true },
-        location: { type: String, required: true },
+        code: {
+            type: String,
+            required: true,
+            enum: Object.values(COMPANY_REJECTION_CODES),
+        },
+        description: String,
+        rejectedAt: Date,
     },
     { _id: false },
 );
@@ -32,13 +37,13 @@ export const companySchema = new Schema<ICompany>(
             type: String,
             unique: true,
             sparse: true,
-            required: function (this:ICompany) {
+            required: function (this: ICompany) {
                 return !this.googleId;
             },
         },
         password: {
             type: String,
-            required: function (this:ICompany) {
+            required: function (this: ICompany) {
                 return !this.googleId;
             },
         },
@@ -58,10 +63,12 @@ export const companySchema = new Schema<ICompany>(
             type: Boolean,
             default: false,
         },
-        isVerified: {
-            type: Boolean,
-            default: false,
+        verificationStatus: {
+            type: String,
+            enum: Object.values(COMPANY_VERIFICATION_STATUS),
+            default: "pending",
         },
+        rejectionReasons: [rejectionReasonSchema],
 
         website: String,
         location: String,
