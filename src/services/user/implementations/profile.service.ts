@@ -1,7 +1,7 @@
 import { GetObjectCommandOutput } from "@aws-sdk/client-s3";
 import { UserProfileDTO } from "../../../dtos/userProfile.dto";
-import { AppError } from "../../../errors/app.error.";
-import { ValidationError } from "../../../errors/validation.error";
+import { AppError } from "../../../errors-classes/app.error.";
+import { ValidationError } from "../../../errors-classes/validation.error";
 import { toUserProfileDTO } from "../../../mappers/user.mapper";
 import { IDocument, IEducation, IExperience, IUser, IUserPopulated } from "../../../models/user/user.interface";
 import { IUserRepository } from "../../../repositories/user/user.repository.interface";
@@ -492,6 +492,25 @@ export class UserProfileService implements IUserProfileService {
         }
 
         const resume = user.resumeURL.find((doc) => doc.originalName === resumeName);
+
+        if (!resume) {
+            throw new AppError("Resume not found");
+        }
+
+        return await this._fileService.getFile(resume.key);
+    }
+
+    async getResumeByResumeKey(userId: string, resumeKey: string): Promise<GetObjectCommandOutput> {
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            throw new ValidationError("Invalid user id");
+        }
+
+        const user = await this._userRepository.findById(userId);
+        if (!user) {
+            throw new AppError("User not found");
+        }
+
+        const resume = user.resumeURL.find((doc) => doc.key === resumeKey);
 
         if (!resume) {
             throw new AppError("Resume not found");

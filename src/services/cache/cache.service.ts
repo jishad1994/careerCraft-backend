@@ -1,4 +1,4 @@
-import { AppError } from "../../errors/app.error.";
+import { AppError } from "../../errors-classes/app.error.";
 import { ICacheService } from "./cache.service.interface";
 
 export class CacheService implements ICacheService {

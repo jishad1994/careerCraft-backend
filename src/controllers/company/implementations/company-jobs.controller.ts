@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { ICompanyJobController } from "../interfaces/company-jobs.controller.interface";
-import { AppError } from "../../../errors/app.error.";
+import { AppError } from "../../../errors-classes/app.error.";
 import { ApiResponse } from "../../../utils/apiResponse.utils";
 import { ICompanyJobService } from "../../../services/job/interfaces/company-job.service.interface";
-import { AuthError } from "../../../errors/auth.error";
+import { AuthError } from "../../../errors-classes/auth.error";
 import { ISkillServivce } from "../../../services/skills/interfaces/skills.services.interfaces";
 import { JobSearchFilters } from "../../../repositories/job/job.repository.interface";
 import { HTTP_MESSAGES } from "../../../constants/messages/http.messages.constants";

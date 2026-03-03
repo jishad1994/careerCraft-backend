@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { AppError } from "../errors/app.error.";
+import { AppError } from "../errors-classes/app.error.";
 import logger from "../utils/logger";
 import { ApiResponse } from "../utils/apiResponse.utils";
 import { HTTP_MESSAGES, HTTP_STATUS } from "../constants/messages/http.messages.constants";

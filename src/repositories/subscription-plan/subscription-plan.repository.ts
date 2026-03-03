@@ -8,11 +8,11 @@ export class SubscriptionPlanRepository extends BaseRepository<ISubscriptionPlan
         super(model);
     }
 
+    async findActivePlans(filter?: { isActive: boolean }): Promise<ISubscriptionPlan[]> {
 
-    
-
-    async findActivePlans(): Promise<ISubscriptionPlan[]> {
-        return await this.model.find({ isActive: true }).sort({ price: 1 }).exec();
+        const query = filter ? { isActive: filter.isActive } : { isActive: true };
+        return await this.model.find(query).sort({ price: 1 }).exec();
+        
     }
     async getPlansByPriceRange(minPrice: number, maxPrice: number): Promise<ISubscriptionPlan[]> {
         return await this.model

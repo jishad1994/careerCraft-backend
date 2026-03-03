@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { Role } from "../models/user/user.interface";
 import { randomUUID } from "crypto";
 import logger from "./logger";
-import { AppError } from "../errors/app.error.";
+import { AppError } from "../errors-classes/app.error.";
 
 export type AccessPayload = { sub: string; role: Role };
 export type RefreshPayload = { jti: string; sub: string; role: Role };

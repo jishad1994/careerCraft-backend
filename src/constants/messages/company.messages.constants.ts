@@ -30,5 +30,9 @@ export const COMPANY_JOB_APPLICATION_MESSAGES = {
     ADD_NOTES_SUCCESSFULL: "Notes added successfully",
     STATISTIC_FETCH_SUCCESSFULL: "Statistics fetched successfully",
     REJECTED: "Application rejected successfully",
-    TOGGLE_FLAG_SUCCESSFULL:(flaggedStatus:string)=> `Application ${flaggedStatus} successfully`    ,
+    TOGGLE_FLAG_SUCCESSFULL: (flaggedStatus: string) => `Application ${flaggedStatus} successfully`,
 } as const;
+
+export const COMPANY_CANDIDATES_MESSAGE = {
+    CANDIDATE_PROFILE_FETCH_SUCCESSFULL: "Candidate profile fetch successfull",
+};

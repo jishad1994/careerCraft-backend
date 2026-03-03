@@ -30,4 +30,5 @@ export interface IUserProfileService {
     deleteUserBannerImage(userId: string): Promise<UserProfileDTO>;
 
     getResume(userId: string, resumeName: string): Promise<GetObjectCommandOutput>;
+    getResumeByResumeKey(userId: string, resumeKey: string): Promise<GetObjectCommandOutput>;
 }

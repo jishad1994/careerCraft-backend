@@ -1,10 +1,9 @@
 import s3 from "../../config/aws";
 import { S3_BUCKET } from "../../config/aws";
-import dotenv from "dotenv";
 import { DeleteObjectCommand, GetObjectCommand, GetObjectCommandOutput, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { IFileService } from "../../services/file-service/interfaces/file.service.interface";
-dotenv.config();
+import { getFileLocation } from "../../utils/s3-bucket.utils";
 export class S3Service implements IFileService {
     async uplodaFile(file: Express.Multer.File, folder: string, userId: string): Promise<string> {
         //user profilePictures folder name since the bucket policy has 'profilePicture' as private prefix
@@ -77,7 +76,7 @@ export class S3Service implements IFileService {
             }),
         );
 
-        const location = `https://${S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+        const location = getFileLocation(key);
 
         return { key, location };
     }
@@ -95,7 +94,7 @@ export class S3Service implements IFileService {
             }),
         );
 
-        const location = `https://${S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+        const location = getFileLocation(key);
 
         return { key, location };
     }

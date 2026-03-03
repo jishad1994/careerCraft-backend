@@ -1,4 +1,6 @@
 import mongoose, { Document } from "mongoose";
+import { ISkill } from "../skill/skill.interface";
+import { IEducation, IExperience } from "../user/user.interface";
 
 export const JOB_APPLICATION_STATUSES = {
     PENDING: "pending",
@@ -101,4 +103,48 @@ export interface IJobApplication extends Document<mongoose.Types.ObjectId> {
 
     createdAt: Date;
     updatedAt: Date;
+}
+
+
+
+export interface IJobApplicationDetails extends IJobApplication {
+  candidateName: string;
+  profilePicture?: {
+    key: string;
+    location: string;
+  };
+  experience: number;
+  skills: ISkill[];
+  education: IEducation[];
+  applicantDetails: IApplicantDetails;
+  jobDetails: IJobDetails;
+}
+
+export interface IJobDetails {
+  _id: string;
+  title: string;
+  slug: string;
+  company: string;
+  location: string;
+  employmentType: string;
+  workMode: string;
+  status: string;
+}
+
+export interface IApplicantDetails {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  profilePicture?: {
+    key: string;
+    location: string;
+  };
+  skills: string[];
+  education: IEducation[];
+  experience: IExperience[];
+  totalExperienceYears: number;
+  about?: string;
+  location?: string;
 }

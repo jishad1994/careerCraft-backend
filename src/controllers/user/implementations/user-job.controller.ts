@@ -3,7 +3,7 @@ import { IUserJobService } from "../../../services/job/interfaces/user-job.servi
 import { JobSearchFilters } from "../../../repositories/job/job.repository.interface";
 import { ApiResponse } from "../../../utils/apiResponse.utils";
 import { IUserJobController } from "../interfaces/user-job.controller.interface";
-import { AppError } from "../../../errors/app.error.";
+import { AppError } from "../../../errors-classes/app.error.";
 
 export class UserJobController implements IUserJobController {
     constructor(private _userJobService: IUserJobService) {}

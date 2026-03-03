@@ -20,9 +20,11 @@ import companyRoutes from "./routes/company/company.routes";
 import publicJobRoutes from "./routes/jobs/jobs.public.routes";
 import userRoutes from "./routes/user/user.routes";
 import requestLogger from "./middlewares/requestLogger.middleware";
+import { notificationRoutes } from "./routes/notification.routes";
+import { notificationAuthMiddleware } from "./middlewares/notification-auth.middlware";
+import webhookRoutes from "./routes/webhook.routes";
 
 const app: Application = express();
-
 
 app.use(
     cors({
@@ -62,9 +64,11 @@ await cacheService
 app.use(requestLogger);
 
 //routes
-app.use("/api/auth/user", userAuthRoutes);
-app.use("/api/auth/company", companyAuthRoutes);
-app.use("/api/auth", commonRoutes);
+app.use(API_ROUTES.AUTH_USER, userAuthRoutes);
+app.use(API_ROUTES.AUTH_COMPANY, companyAuthRoutes);
+app.use(API_ROUTES.COMMON_ROUTES, commonRoutes);
+app.use(API_ROUTES.WEBHOOK_ROUTE, webhookRoutes);
+app.use(API_ROUTES.NOTIFICATIONS, notificationAuthMiddleware, notificationRoutes);
 app.use(API_ROUTES.USER, userRoutes);
 app.use(API_ROUTES.COMPANY, companyRoutes);
 app.use(API_ROUTES.ADMIN, adminRoutes);

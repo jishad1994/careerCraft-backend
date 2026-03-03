@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import { IFileService } from "../interfaces/file.service.interface";
 import { S3_BUCKET } from "../../../config/aws";
-import { AppError } from "../../../errors/app.error.";
+import { AppError } from "../../../errors-classes/app.error.";
 import logger from "../../../utils/logger";
 import { GetObjectCommandOutput } from "@aws-sdk/client-s3";
 

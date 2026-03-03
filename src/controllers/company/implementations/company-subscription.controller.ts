@@ -1,0 +1,160 @@
+import { NextFunction, Request, Response } from "express";
+import { ISubscriptionPlanServce } from "../../../services/subscription-plan/interfaces/subscription-plan.service.interface";
+import { ApiResponse } from "../../../utils/apiResponse.utils";
+import { ICompanySubscriptionController } from "../interfaces/company-subscription.controller.interface";
+import { COMPANY_SUBSCRIPTION_MESSAGES } from "../../../constants/messages/company-subscription.messages.constants";
+import { AppError } from "../../../errors-classes/app.error.";
+import { AuthError } from "../../../errors-classes/auth.error";
+import { HTTP_MESSAGES, HTTP_STATUS } from "../../../constants/messages/http.messages.constants";
+import { SUBSCRIPTION_PLAN_MESSAGES } from "../../../constants/messages/admin.messages";
+import { ICompanySubscriptionService } from "../../../services/subscription/interfaces/company-subscription.service.interface";
+import logger from "../../../utils/logger";
+
+export class CompanySubscriptionController implements ICompanySubscriptionController {
+    constructor(
+        private readonly _companySubscriptionService: ICompanySubscriptionService,
+        private readonly _subscriptionPlanService: ISubscriptionPlanServce,
+    ) {}
+
+    /**
+     * Get all active subscription plans
+     * GET /api/subscriptions/plans
+     */
+    async getPlans(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const plans = await this._subscriptionPlanService.getActivePlans();
+
+            return ApiResponse.success(res, COMPANY_SUBSCRIPTION_MESSAGES.PLANS_FETCH_SUCCESSFULL, plans);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getPlanById(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const companyId = req.user?.id;
+            if (!companyId) {
+                throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
+            }
+
+            const planId = req.params.planId;
+            if (!planId) {
+                throw new AppError("No plan Id found");
+            }
+
+            const plan = this._subscriptionPlanService.getPlanById(planId);
+
+            logger.info('plan:',plan)
+
+            return ApiResponse.success(res, SUBSCRIPTION_PLAN_MESSAGES.FETCH_SUCCESSFULL_BY_ID, plan);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
+     * Get active subscription for logged-in company
+     * GET /api/subscriptions/active
+     */
+    async getActiveSubscription(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const companyId = req.user?.id;
+            if (!companyId) {
+                throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
+            }
+
+            const subscription = await this._companySubscriptionService.getActiveSubscription(companyId);
+
+            if (!subscription) {
+                throw new AppError(COMPANY_SUBSCRIPTION_MESSAGES.NO_ACTIVE_SUBSCRIPTION_FOUND, HTTP_STATUS.NOT_FOUND);
+            }
+
+            return ApiResponse.success(
+                res,
+                COMPANY_SUBSCRIPTION_MESSAGES.ACTIVE_SUBSCRIPTION_FETCH_SUCCESSFULL,
+                subscription,
+            );
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
+     * Get remaining limits
+     * GET /api/subscriptions/remaining-limits
+     */
+    async getRemainingLimits(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const companyId = req.user?.id;
+            if (!companyId) {
+                throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
+            }
+
+            const limits = await this._companySubscriptionService.getRemainingLimits(companyId);
+
+            if (!limits) {
+                throw new AppError("No active subscription found");
+            }
+
+            return ApiResponse.success(res, COMPANY_SUBSCRIPTION_MESSAGES.REMAINING_LIMITS_FETCH_SUCCESSFULL, limits);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
+     * Cancel subscription
+     * POST /api/subscriptions/cancel
+     */
+    async cancelSubscription(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const companyId = req.user?.id;
+            if (!companyId) {
+                throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
+            }
+
+            const { reason } = req.body;
+            const subscription = await this._companySubscriptionService.cancelSubscription(companyId, reason || "");
+            return ApiResponse.success(res, COMPANY_SUBSCRIPTION_MESSAGES.SUBSCRIPTION_CANCELLED_SUCCESSFULL, subscription);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
+     * Upgrade subscription (initiates payment for upgrade)
+     * POST /api/subscriptions/upgrade
+     */
+    async upgradeSubscription(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const companyId = req.user?.id;
+            if (!companyId) {
+                throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
+            }
+
+            const { planId } = req.body;
+            if (!planId) {
+                throw new AppError("No plan found");
+            }
+
+            // Check if company has active subscription
+            const activeSubscription = await this._companySubscriptionService.getActiveSubscription(companyId);
+            if (!activeSubscription) {
+                throw new AppError("No active subscription found to upgrade");
+            }
+
+            // Get new plan
+            const plan = await this._subscriptionPlanService.getPlanById(planId);
+            if (!plan) {
+                throw new AppError("No plan found");
+            }
+
+            // TODO: Create payment intent/session for upgrade
+            const paymentUrl = `${process.env.FRONTEND_URL}/payment/upgrade?planId=${planId}`;
+
+            return ApiResponse.success(res, COMPANY_SUBSCRIPTION_MESSAGES.UPGRADE_PAYMENT_INITIATED, { paymentUrl });
+        } catch (error) {
+            next(error);
+        }
+    }
+}

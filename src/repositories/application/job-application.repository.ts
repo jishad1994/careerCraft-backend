@@ -1,11 +1,67 @@
 import { FilterQuery, Model, PipelineStage, Types, UpdateQuery } from "mongoose";
-import { IJobApplication } from "../../models/job-application/job-application.interface";
+import { IJobApplication, IJobApplicationDetails } from "../../models/job-application/job-application.interface";
 import { BaseRepository } from "../base-repository/base.repository";
 import { CandidatesFilters, IJobApplicationRepository } from "./job-application.repository.interface";
 
 export class JobApplicationRepository extends BaseRepository<IJobApplication> implements IJobApplicationRepository {
     constructor(model: Model<IJobApplication>) {
         super(model);
+    }
+
+    async findApplicationDetailsById(applicationId: string): Promise<IJobApplicationDetails | null> {
+        const query: FilterQuery<IJobApplication> = {
+            _id: new Types.ObjectId(applicationId),
+        };
+
+        // Build aggregation pipeline
+
+        const pipeline: PipelineStage[] = [
+            { $match: query },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "applicant",
+                    foreignField: "_id",
+                    as: "applicantDetails",
+                },
+            },
+            { $unwind: "$applicantDetails" },
+
+            {
+                $lookup: {
+                    from: "jobs",
+                    localField: "job",
+                    foreignField: "_id",
+                    as: "jobDetails",
+                },
+            },
+            { $unwind: "$jobDetails" },
+            {
+                $lookup: {
+                    from: "skills",
+                    localField: "applicantDetails.skills",
+                    foreignField: "_id",
+                    as: "applicantSkills",
+                },
+            },
+        ];
+
+        // Add computed fields
+        pipeline.push({
+            $addFields: {
+                candidateName: {
+                    $concat: ["$applicantDetails.firstName", " ", "$applicantDetails.lastName"],
+                },
+                profilePicture: "$applicantDetails.profilePicture",
+                experience: "$applicantDetails.totalExperienceYears",
+                skills: "$applicantSkills",
+                education: "$applicantDetails.education",
+            },
+        });
+
+        const application = await this.model.aggregate<IJobApplicationDetails>(pipeline);
+
+        return application[0] || null;
     }
 
     async findByUserAndJob(userId: string, jobId: string): Promise<IJobApplication | null> {
@@ -147,7 +203,7 @@ export class JobApplicationRepository extends BaseRepository<IJobApplication> im
         limit: number,
         search: string,
         filters: CandidatesFilters,
-    ): Promise<[IJobApplication[], number]> {
+    ): Promise<[IJobApplicationDetails[], number]> {
         console.log("filters in repository:", filters);
         const query: FilterQuery<IJobApplication> = {
             company: new Types.ObjectId(companyId),
@@ -160,7 +216,7 @@ export class JobApplicationRepository extends BaseRepository<IJobApplication> im
 
         // Job filter
         if (filters.jobId) {
-            query.job = filters.jobId;
+            query.job = new Types.ObjectId(filters.jobId);
         }
 
         // Date range filter
@@ -278,15 +334,12 @@ export class JobApplicationRepository extends BaseRepository<IJobApplication> im
         const countPipeline = [...pipeline, { $count: "total" }];
         const countResult = await this.model.aggregate(countPipeline);
 
-        console.log("Count result:", countResult);
         const total = countResult[0]?.total || 0;
 
         // Add pagination
         pipeline.push({ $sort: { appliedAt: -1 } }, { $skip: (page - 1) * limit }, { $limit: limit });
 
         const applications = await this.model.aggregate(pipeline);
-
-        console.log("Applications result:", applications);
 
         return [applications, total];
     }

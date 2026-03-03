@@ -182,19 +182,19 @@ export const companySubscriptionSchema = new Schema<ICompanySubscription>(
 );
 
 // Compound Indexes for common queries
-companySubscriptionSchema.index({ companyId: 1, status: 1 });
-companySubscriptionSchema.index({ companyId: 1, endDate: -1 });
-companySubscriptionSchema.index({ status: 1, endDate: 1 }); // For expiry checks
-companySubscriptionSchema.index({ endDate: 1, autoRenew: 1 }); // For renewal processing
+// companySubscriptionSchema.index({ companyId: 1, status: 1 });
+// companySubscriptionSchema.index({ companyId: 1, endDate: -1 });
+// companySubscriptionSchema.index({ status: 1, endDate: 1 }); // For expiry checks
+// companySubscriptionSchema.index({ endDate: 1, autoRenew: 1 }); // For renewal processing
 
 // Unique constraint: one active subscription per company
-companySubscriptionSchema.index(
-    { companyId: 1 },
-    {
-        unique: true,
-        partialFilterExpression: { status: SubscriptionStatus.ACTIVE },
-    },
-);
+// companySubscriptionSchema.index(
+//     { companyId: 1 },
+//     {
+//         unique: true,
+//         partialFilterExpression: { status: SubscriptionStatus.ACTIVE },
+//     },
+// );
 
 // Virtual: Days remaining
 companySubscriptionSchema.virtual("daysRemaining").get(function (this: ICompanySubscription) {

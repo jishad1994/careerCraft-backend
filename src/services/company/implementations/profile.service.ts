@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
 import { CompanyProfileDTO } from "../../../dtos/companyProfile.dto";
-import { AppError } from "../../../errors/app.error.";
+import { AppError } from "../../../errors-classes/app.error.";
 import { COMPANY_VERIFICATION_STATUS, ICompany } from "../../../models/company/company.interface";
 import { ICompanyRepository } from "../../../repositories/company/company.repository.interface";
 import { ICompanyProfileService } from "../interfaces/profile.service.interface";
-import { ValidationError } from "../../../errors/validation.error";
+import { ValidationError } from "../../../errors-classes/validation.error";
 import { IFileService } from "../../file-service/interfaces/file.service.interface";
 import { IDocument } from "../../../models/user/user.interface";
 import { CompanyMapper } from "../../../mappers/company.mapper";
@@ -23,7 +23,7 @@ export class CompanyProfileService implements ICompanyProfileService {
         const company = await this._companyRepository.findById(companyId);
 
         if (!company) {
-            throw new AppError("Company profile not found");
+            throw new AppError("Company profile not found",404);
         }
 
         if (company.verificationStatus === COMPANY_VERIFICATION_STATUS.APPROVED) {

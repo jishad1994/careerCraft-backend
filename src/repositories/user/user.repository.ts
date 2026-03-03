@@ -3,8 +3,8 @@ import { IUserRepository } from "./user.repository.interface";
 import { BaseRepository } from "../base-repository/base.repository";
 import { Model } from "mongoose";
 import { MongoServerError } from "mongodb";
-import { ConflictError } from "../../errors/conflict.error";
-import { DataBaseError } from "../../errors/database.error";
+import { ConflictError } from "../../errors-classes/conflict.error";
+import { DataBaseError } from "../../errors-classes/database.error";
 
 export class UserRepository extends BaseRepository<IUser> implements IUserRepository {
     constructor(model: Model<IUser>) {

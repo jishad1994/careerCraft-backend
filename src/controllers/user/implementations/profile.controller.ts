@@ -1,6 +1,6 @@
 import { UserProfileDTO } from "../../../dtos/userProfile.dto";
-import { AppError } from "../../../errors/app.error.";
-import { AuthError } from "../../../errors/auth.error";
+import { AppError } from "../../../errors-classes/app.error.";
+import { AuthError } from "../../../errors-classes/auth.error";
 import { IUserProfileService } from "../../../services/user/interfaces/profile.service.interface";
 import { ApiResponse } from "../../../utils/apiResponse.utils";
 import { IUserProfileController } from "../interfaces/profile.controller.interface";

@@ -4,7 +4,7 @@ import { IJobRepository, JobSearchFilters } from "../../../repositories/job/job.
 import { ICompanyJobService } from "../interfaces/company-job.service.interface";
 import mongoose from "mongoose";
 import { PaginationMeta } from "../../../utils/apiResponse.utils";
-import { AppError } from "../../../errors/app.error.";
+import { AppError } from "../../../errors-classes/app.error.";
 
 export class CompanyJobService implements ICompanyJobService {
     constructor(private _jobRepository: IJobRepository) {}

@@ -17,4 +17,5 @@ export interface IBaseRepository<T extends Document> {
         userId: string,
         populateFields: Array<string | { path: string; select?: string }>,
     ): Promise<T | null>;
+    updateMany(filter: Partial<T>, update: Partial<T>): Promise<{ modifiedCount: number; matchedCount: number }>;
 }

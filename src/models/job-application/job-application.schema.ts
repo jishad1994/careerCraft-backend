@@ -105,7 +105,7 @@ const jobApplicationSchema = new Schema<IJobApplication>(
                 },
                 scheduledAt: Date,
                 completedAt: Date,
-                interviewers: [{ type: Schema.Types.ObjectId, ref: "User" }],
+                // interviewers: [{ type: Schema.Types.ObjectId, ref: "User" }],
                 feedback: String,
                 rating: { type: Number, min: 1, max: 5 },
                 status: {

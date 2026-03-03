@@ -1,7 +1,7 @@
 import { Model, Document, Types, FilterQuery } from "mongoose";
 import { IBaseRepository } from "./base.repository.inteface";
-import { DataBaseError } from "../../errors/database.error";
-import { AppError } from "../../errors/app.error.";
+import { DataBaseError } from "../../errors-classes/database.error";
+import { AppError } from "../../errors-classes/app.error.";
 
 export class BaseRepository<T extends Document> implements IBaseRepository<T> {
     constructor(protected readonly model: Model<T>) {}
@@ -17,7 +17,7 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
     ): Promise<T | null> {
         const query = this.model.findById(id).populate(populateFields);
 
-        return await query.lean<T>({ virtuals:true }).exec();
+        return await query.lean<T>({ virtuals: true }).exec();
     }
 
     //find by ID
@@ -125,4 +125,25 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
             throw new DataBaseError("db error while count resource");
         }
     }
+
+    async updateMany(filter: Partial<T>, update: Partial<T>): Promise<{ modifiedCount: number; matchedCount: number }> {
+        try {
+            const result = await this.model.updateMany(filter as FilterQuery<T>, update);
+            return {
+                modifiedCount: result.modifiedCount,
+                matchedCount: result.matchedCount,
+            };
+        } catch {
+            throw new DataBaseError("db error while update many");
+        }
+    }
+
+    // async createMany(entities: Partial<T>[]): Promise<T[]> {
+    //     try {
+    //          const result = await this.model.insertMany(entities);
+    //     return result.map(doc => doc.toObject()) as T[];
+    //     } catch {
+    //         throw new DataBaseError("db error while create many");
+    //     }
+    // }
 }

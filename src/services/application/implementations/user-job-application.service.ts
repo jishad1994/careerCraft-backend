@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
-import { ValidationError } from "../../../errors/validation.error";
+import { ValidationError } from "../../../errors-classes/validation.error";
 import { JobApplicationStatus, IJobApplication } from "../../../models/job-application/job-application.interface";
 import { IJobApplicationRepository } from "../../../repositories/application/job-application.repository.interface";
 import { IUserJobApplicationService } from "../interfaces/user-job-application.service.interface";
-import { AppError } from "../../../errors/app.error.";
+import { AppError } from "../../../errors-classes/app.error.";
 import { PaginationMeta } from "../../../utils/apiResponse.utils";
 import { IFileService } from "../../file-service/interfaces/file.service.interface";
 

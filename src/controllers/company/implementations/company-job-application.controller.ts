@@ -1,5 +1,5 @@
 import { COMPANY_JOB_APPLICATION_MESSAGES } from "../../../constants/messages/company.messages.constants";
-import { AppError } from "../../../errors/app.error.";
+import { AppError } from "../../../errors-classes/app.error.";
 import { JOB_APPLICATION_STATUSES } from "../../../models/job-application/job-application.interface";
 import { ICompanyJobApplicationServiceInterface } from "../../../services/application/interfaces/company-job-application.service.interface";
 import { ApiResponse } from "../../../utils/apiResponse.utils";
@@ -16,7 +16,7 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
             const applicationId = req.params.id;
             if (!applicationId) throw new AppError("Application ID is required", 400);
 
-            const application = await this._applicationService.getApplicationById(applicationId);
+            const application = await this._applicationService.getApplicationDetailsById(applicationId);
 
             return ApiResponse.success(res, COMPANY_JOB_APPLICATION_MESSAGES.FETCH_SUCCESSFULL, application);
         } catch (error) {

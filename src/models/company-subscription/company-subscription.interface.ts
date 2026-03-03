@@ -6,8 +6,10 @@ export enum SubscriptionStatus {
     EXPIRED = "expired",
     CANCELLED = "cancelled",
     PENDING = "pending",
-    SUSPENDED = "suspended"
+    SUSPENDED = "suspended",
 }
+
+export type companySubscriptionUsageTypes = "jobsPosted" | "resumesViewed" | "featuredUsed";
 
 export interface ISubscriptionUsage {
     jobsPosted: number;
@@ -47,11 +49,11 @@ export interface ICompanySubscription extends Document<mongoose.Types.ObjectId> 
     previousSubscriptionId?: mongoose.Types.ObjectId;
     createdAt: Date;
     updatedAt: Date;
-    
+
     // Instance methods
     isActive(): boolean;
     hasExpired(): boolean;
-    canUseFeature(feature: keyof ISubscriptionSnapshot['features']): boolean;
+    canUseFeature(feature: keyof ISubscriptionSnapshot["features"]): boolean;
     getRemainingLimits(): {
         jobs: number;
         resumeViews: number;

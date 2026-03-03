@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { IUserJobApplicationController } from "../interfaces/user-job-application.controller.interface";
 import { IUserJobApplicationService } from "../../../services/application/interfaces/user-job-application.service.interface";
 import { ApiResponse } from "../../../utils/apiResponse.utils";
-import { AppError } from "../../../errors/app.error.";
+import { AppError } from "../../../errors-classes/app.error.";
 
 export class UserJobApplicationController implements IUserJobApplicationController {
     constructor(private _userApplicationService: IUserJobApplicationService) {}

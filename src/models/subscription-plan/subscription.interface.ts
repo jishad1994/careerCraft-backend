@@ -30,4 +30,6 @@ export interface ISubscriptionPlan extends Document<mongoose.Types.ObjectId> {
     description?: string;
     createdAt: Date;
     updatedAt: Date;
+
+    
 }

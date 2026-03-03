@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import { ICompanyProfileService } from "../../../services/company/interfaces/profile.service.interface";
 import { ICompanyProfileController } from "../interfaces/company-profile.controller.interface";
-import { AppError } from "../../../errors/app.error.";
+import { AppError } from "../../../errors-classes/app.error.";
 import { CompanyProfileDTO } from "../../../dtos/companyProfile.dto";
 import { ApiResponse } from "../../../utils/apiResponse.utils";
-import { AuthError } from "../../../errors/auth.error";
+import { AuthError } from "../../../errors-classes/auth.error";
 import { HTTP_MESSAGES } from "../../../constants/messages/http.messages.constants";
 import { COMPANY_PROFILE_MESSAGES } from "../../../constants/messages/company.messages.constants";
-import { ValidationError } from "../../../errors/validation.error";
+import { ValidationError } from "../../../errors-classes/validation.error";
 import { IAddress } from "../../../models/user/user.interface";
 
 export class CompanyProfileController implements ICompanyProfileController {

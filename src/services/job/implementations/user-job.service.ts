@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { AppError } from "../../../errors/app.error.";
+import { AppError } from "../../../errors-classes/app.error.";
 import { IJobApplication } from "../../../models/job-application/job-application.interface";
 import { IJob } from "../../../models/job/job.interface";
 import { IJobApplicationRepository } from "../../../repositories/application/job-application.repository.interface";
@@ -7,7 +7,7 @@ import { IJobRepository, JobSearchFilters } from "../../../repositories/job/job.
 import { PaginationMeta } from "../../../utils/apiResponse.utils";
 import { IUserJobService } from "../interfaces/user-job.service.interface";
 import { IFileService } from "../../file-service/interfaces/file.service.interface";
-import { ValidationError } from "../../../errors/validation.error";
+import { ValidationError } from "../../../errors-classes/validation.error";
 
 export class UserJobService implements IUserJobService {
     constructor(

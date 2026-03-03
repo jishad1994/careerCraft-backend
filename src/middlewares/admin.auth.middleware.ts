@@ -4,7 +4,7 @@ import logger from "../utils/logger";
 import { ApiResponse } from "../utils/apiResponse.utils";
 import { HTTP_MESSAGES } from "../constants/messages/http.messages.constants";
 import { AuthCookiesSchema } from "../validators-schemas/auth.schemas";
-import { AppError } from "../errors/app.error.";
+import { AppError } from "../errors-classes/app.error.";
 
 export function AdminAuthMiddleware(req: Request, res: Response, next: NextFunction) {
     

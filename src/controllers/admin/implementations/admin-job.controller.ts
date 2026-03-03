@@ -2,7 +2,7 @@ import { IAdminJobService } from "../../../services/job/interfaces/admin-job.ser
 
 import { Request, Response, NextFunction } from "express";
 import { IAdminJobController } from "../interfaces/admin-job.controller.interface";
-import { AuthError } from "../../../errors/auth.error";
+import { AuthError } from "../../../errors-classes/auth.error";
 import { IJob, JobStatus } from "../../../models/job/job.interface";
 import { ApiResponse } from "../../../utils/apiResponse.utils";
 import { ADMIN_JOB_MESSAGES } from "../../../constants/messages/admin.messages";

@@ -10,4 +10,5 @@ userRoutes.use("/me",userAuthMiddleware, userProfileRoutes);
 userRoutes.use("/jobs",userAuthMiddleware, userJobRoutes);
 userRoutes.use("/applications", userAuthMiddleware,userJobApplicationRoutes);
 
+
 export default userRoutes;

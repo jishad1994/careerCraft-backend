@@ -1,8 +1,9 @@
 import { UpdateQuery } from "mongoose";
-import { IJobApplication } from "../../models/job-application/job-application.interface";
+import { IJobApplication, IJobApplicationDetails } from "../../models/job-application/job-application.interface";
 import { IBaseRepository } from "../base-repository/base.repository.inteface";
 
 export interface IJobApplicationRepository extends IBaseRepository<IJobApplication> {
+    findApplicationDetailsById(applicationId: string): Promise<IJobApplicationDetails | null>;
     findByUserAndJob(userId: string, jobId: string): Promise<IJobApplication | null>;
     getApplicantsList(
         companyId: string,
@@ -10,7 +11,7 @@ export interface IJobApplicationRepository extends IBaseRepository<IJobApplicati
         limit: number,
         search: string,
         filters: CandidatesFilters,
-    ): Promise<[IJobApplication[], number]>;
+    ): Promise<[IJobApplicationDetails[], number]>;
     findByApplicant(
         applicantId: string,
         page: number,

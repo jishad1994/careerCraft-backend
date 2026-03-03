@@ -3,8 +3,8 @@ import { BaseRepository } from "../base-repository/base.repository";
 import { FilterQuery, Model } from "mongoose";
 import { MongoServerError } from "mongodb";
 import { ICompanyRepository } from "./company.repository.interface";
-import { DataBaseError } from "../../errors/database.error";
-import { ConflictError } from "../../errors/conflict.error";
+import { DataBaseError } from "../../errors-classes/database.error";
+import { ConflictError } from "../../errors-classes/conflict.error";
 
 export class CompanyRepository extends BaseRepository<ICompany> implements ICompanyRepository {
     constructor(model: Model<ICompany>) {

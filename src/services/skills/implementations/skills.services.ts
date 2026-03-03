@@ -3,8 +3,8 @@ import { ISkill } from "../../../models/skill/skill.interface";
 import { ISkillRepository } from "../../../repositories/skill/skill.repository.interface";
 import { PaginationMeta } from "../../../utils/apiResponse.utils";
 import { ISkillServivce } from "../interfaces/skills.services.interfaces";
-import { ValidationError } from "../../../errors/validation.error";
-import { AppError } from "../../../errors/app.error.";
+import { ValidationError } from "../../../errors-classes/validation.error";
+import { AppError } from "../../../errors-classes/app.error.";
 
 export class SkillsService implements ISkillServivce {
     constructor(private _skillRepository: ISkillRepository) {}

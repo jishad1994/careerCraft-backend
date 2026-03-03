@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
-import { ValidationError } from "../../../errors/validation.error";
+import { ValidationError } from "../../../errors-classes/validation.error";
 import {
     IJobApplication,
+    IJobApplicationDetails,
     JobApplicationStatistics,
     JobApplicationStatus,
 } from "../../../models/job-application/job-application.interface";
@@ -10,15 +11,22 @@ import {
     IJobApplicationRepository,
 } from "../../../repositories/application/job-application.repository.interface";
 import { ICompanyJobApplicationServiceInterface } from "../interfaces/company-job-application.service.interface";
-import { AppError } from "../../../errors/app.error.";
+import { AppError } from "../../../errors-classes/app.error.";
 import { PaginationMeta } from "../../../utils/apiResponse.utils";
 import { IFileService } from "../../file-service/interfaces/file.service.interface";
 import { GetObjectCommandOutput } from "@aws-sdk/client-s3";
+import { INotificationService } from "../../notification/interface/notification.service.interface";
+import { ISocketService } from "../../../shared/services/socket/interface/socket.service.interface";
+import { CreateNotificationParams } from "../../../interfaces/notification-interfaces";
+import { NOTIFICATION_PRIORITIES, NOTIFICATION_TYPES } from "../../../models/notifications/notification.interface";
+import { NOTIFICATION_MESSAGES } from "../../../constants/messages/notification.messages";
 
 export class CompanyJobApplicationService implements ICompanyJobApplicationServiceInterface {
     constructor(
         private _applicationRepository: IJobApplicationRepository,
         private _fileService: IFileService,
+        private _notificationService: INotificationService,
+        private _socketServer: ISocketService,
     ) {}
 
     async getApplicantsList(
@@ -27,8 +35,7 @@ export class CompanyJobApplicationService implements ICompanyJobApplicationServi
         limit: number,
         search: string,
         filters: CandidatesFilters,
-    ): Promise<{ applications: IJobApplication[]; paginationMeta: PaginationMeta }> {
-        console.log("filters in service:", filters);
+    ): Promise<{ applications: IJobApplicationDetails[]; paginationMeta: PaginationMeta }> {
         const [applications, total] = await this._applicationRepository.getApplicantsList(
             companyId,
             page,
@@ -50,19 +57,15 @@ export class CompanyJobApplicationService implements ICompanyJobApplicationServi
         return { applications, paginationMeta };
     }
 
-    async getApplicationById(applicationId: string): Promise<IJobApplication> {
+    async getApplicationDetailsById(applicationId: string): Promise<IJobApplicationDetails> {
         if (!mongoose.Types.ObjectId.isValid(applicationId)) {
             throw new ValidationError("Invalid application ID");
         }
 
-        const application = await this._applicationRepository.findById(applicationId);
+        const application = await this._applicationRepository.findApplicationDetailsById(applicationId);
         if (!application) {
             throw new AppError("Application not found", 404);
         }
-
-        const resumeSignedURL = await this._fileService.generateSignedUrl(application.resume.fileKey);
-
-        application.resume.signedURL = resumeSignedURL;
 
         return application;
     }
@@ -121,7 +124,7 @@ export class CompanyJobApplicationService implements ICompanyJobApplicationServi
         status: string,
         changedBy?: string,
         notes?: string,
-    ): Promise<IJobApplication> {
+    ): Promise<IJobApplicationDetails> {
         if (!mongoose.Types.ObjectId.isValid(applicationId)) {
             throw new ValidationError("Invalid application ID");
         }
@@ -159,19 +162,37 @@ export class CompanyJobApplicationService implements ICompanyJobApplicationServi
             notes,
         };
 
-        const updatedApplication = await this._applicationRepository.updateById(applicationId, {
+        await this._applicationRepository.updateById(applicationId, {
             ...updates,
             $push: { statusHistory: statusUpdate },
         });
+
+        const updatedApplication = await this.getApplicationDetailsById(applicationId);
 
         if (!updatedApplication) {
             throw new AppError("Failed to update application", 500);
         }
 
+        const notificationParams: CreateNotificationParams = {
+            userId: updatedApplication.applicant.toString(),
+            type: NOTIFICATION_TYPES.APPLICATION_STATUS,
+            title: NOTIFICATION_MESSAGES.APPLICATION_STATUS_UPDATED,
+            message: `Your job application status has changed to ${updatedApplication.status}`,
+            priority: NOTIFICATION_PRIORITIES.HIGH,
+            metadata: {
+                applicationId: updatedApplication._id,
+            },
+        };
+
+        console.log("user id:", notificationParams.userId, typeof notificationParams.userId);
+        // const notification = await this._notificationService.createNotification(notificationParams);
+
+        // await this._socketServer.sendNotificationToUser( notification.userId.toString(), notification);
+
         return updatedApplication;
     }
 
-    async markApplicationAsViewed(applicationId: string, viewedBy: string): Promise<IJobApplication> {
+    async markApplicationAsViewed(applicationId: string, viewedBy: string): Promise<IJobApplicationDetails> {
         if (!mongoose.Types.ObjectId.isValid(applicationId)) {
             throw new ValidationError("Invalid application ID");
         }
@@ -181,14 +202,17 @@ export class CompanyJobApplicationService implements ICompanyJobApplicationServi
             viewedBy: new mongoose.Types.ObjectId(viewedBy),
         };
 
-        const updatedApplication = await this._applicationRepository.updateById(applicationId, updates);
+        await this._applicationRepository.updateById(applicationId, updates);
+
+        const updatedApplication = this.getApplicationDetailsById(applicationId);
+
         if (!updatedApplication) {
             throw new AppError("Application not found", 404);
         }
 
         return updatedApplication;
     }
-    async toggleStarApplication(applicationId: string, isStarred: boolean): Promise<IJobApplication> {
+    async toggleStarApplication(applicationId: string, isStarred: boolean): Promise<IJobApplicationDetails> {
         if (!mongoose.Types.ObjectId.isValid(applicationId)) {
             throw new ValidationError("Invalid application ID");
         }
@@ -202,11 +226,11 @@ export class CompanyJobApplicationService implements ICompanyJobApplicationServi
         application.isStarred = isStarred;
 
         await application.save();
-
-        return application;
+        const updatedApplication = this.getApplicationDetailsById(applicationId);
+        return updatedApplication;
     }
 
-    async addNotes(applicationId: string, notes: string): Promise<IJobApplication> {
+    async addNotes(applicationId: string, notes: string): Promise<IJobApplicationDetails> {
         if (!mongoose.Types.ObjectId.isValid(applicationId)) {
             throw new ValidationError("Invalid application ID");
         }
@@ -216,11 +240,12 @@ export class CompanyJobApplicationService implements ICompanyJobApplicationServi
             lastUpdatedAt: new Date(),
         };
 
-        const updatedApplication = await this._applicationRepository.updateById(applicationId, updates);
+        await this._applicationRepository.updateById(applicationId, updates);
+
+        const updatedApplication = this.getApplicationDetailsById(applicationId);
         if (!updatedApplication) {
             throw new AppError("Application not found", 404);
         }
-
         return updatedApplication;
     }
 

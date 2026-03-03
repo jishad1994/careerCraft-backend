@@ -3,7 +3,7 @@ import { IJob } from "../../../models/job/job.interface";
 import { IJobRepository } from "../../../repositories/job/job.repository.interface";
 import { PaginationMeta } from "../../../utils/apiResponse.utils";
 import { IAdminJobService } from "../interfaces/admin-job.service.interface";
-import { AppError } from "../../../errors/app.error.";
+import { AppError } from "../../../errors-classes/app.error.";
 import { IJobApplicationRepository } from "../../../repositories/application/job-application.repository.interface";
 import { IJobApplication } from "../../../models/job-application/job-application.interface";
 

@@ -1,6 +1,6 @@
 import { ICacheService } from "../services/cache/cache.service.interface";
 import { RedisClientType, createClient } from "redis";
-import { AppError } from "../errors/app.error.";
+import { AppError } from "../errors-classes/app.error.";
 
 export class RedisCacheRepo implements ICacheService {
     private client: RedisClientType;

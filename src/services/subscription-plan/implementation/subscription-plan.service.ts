@@ -1,9 +1,10 @@
 import mongoose from "mongoose";
-import { AppError } from "../../../errors/app.error.";
+import { AppError } from "../../../errors-classes/app.error.";
 import { ISubscriptionPlan } from "../../../models/subscription-plan/subscription.interface";
 import { ISubscriptionPlanRepository } from "../../../repositories/subscription-plan/subscription-plan.repository.interface";
 import { ISubscriptionPlanServce } from "../interfaces/subscription-plan.service.interface";
-import { ValidationError } from "../../../errors/validation.error";
+import { ValidationError } from "../../../errors-classes/validation.error";
+import logger from "../../../utils/logger";
 
 export class SubscriptionPlanService implements ISubscriptionPlanServce {
     constructor(private _planRepository: ISubscriptionPlanRepository) {}
@@ -36,7 +37,15 @@ export class SubscriptionPlanService implements ISubscriptionPlanServce {
         if (!mongoose.Types.ObjectId.isValid(planId)) {
             throw new ValidationError("Invalid objectId format");
         }
-        return await this._planRepository.findById(planId);
+        const plan = await this._planRepository.findById(planId);
+
+        logger.info('plan in repository',plan)
+        if (!plan) {
+            throw new AppError("No subscription plan found");
+        }
+        
+
+        return plan;
     }
 
     async getPlanByName(planName: string): Promise<ISubscriptionPlan> {
