@@ -7,9 +7,14 @@ import { ICompanyJobApplicationController } from "../interfaces/company-job-appl
 import { Readable } from "stream";
 
 import { Request, Response, NextFunction } from "express";
+import { IInterviewService } from "../../../services/interview-service/interivew.service.interface";
+import { ValidationError } from "../../../errors-classes/validation.error";
 
 export class CompanyJobApplicationController implements ICompanyJobApplicationController {
-    constructor(private _applicationService: ICompanyJobApplicationServiceInterface) {}
+    constructor(
+        private _applicationService: ICompanyJobApplicationServiceInterface,
+        private _interviewService: IInterviewService,
+    ) {}
 
     async getApplicationById(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
@@ -273,6 +278,141 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
             }
 
             (fileStream.Body as Readable).pipe(res);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async scheduleInterview(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const companyId = req.user?.id;
+
+            if (!companyId) {
+                throw new ValidationError("Unauthorized access");
+            }
+
+            const { applicationId } = req.params;
+
+            if (!applicationId) {
+                throw new AppError("Application id not found", 401);
+            }
+
+            const interview = await this._interviewService.scheduleInterview(applicationId, req.body, companyId);
+
+            return ApiResponse.success(res, COMPANY_JOB_APPLICATION_MESSAGES.INTERVIEW_SCHEDULED_SUCCESSFULLY, interview);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async rescheduleInterview(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const { applicationId, interviewId } = req.params;
+
+            const { scheduledAt, round, reason } = req.body;
+
+            const interview = await this._interviewService.rescheduleInterview(
+                applicationId,
+                interviewId,
+                parseInt(round),
+                new Date(scheduledAt),
+                reason,
+            );
+
+            return ApiResponse.success(res, COMPANY_JOB_APPLICATION_MESSAGES.INTERVIEW_RESCHEDULED, interview);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async cancelInterview(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const { applicationId, interviewId } = req.params;
+            const { reason, round } = req.body;
+
+            const interview = await this._interviewService.cancelInterview(
+                applicationId,
+                interviewId,
+                parseInt(round),
+                reason,
+            );
+
+            return ApiResponse.success(res, COMPANY_JOB_APPLICATION_MESSAGES.INTERVIEW_CANCELLED, interview);
+            
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async completeInterview(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const { applicationId, interviewId } = req.params;
+            const { feedback, rating, round } = req.body;
+
+            const interview = await this._interviewService.completeInterview(
+                applicationId,
+                interviewId,
+                parseInt(round),
+                feedback,
+                rating,
+            );
+
+            return res.status(200).json({
+                success: true,
+                message: "Interview completed",
+                data: interview,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getInterviewsByApplication(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const { applicationId } = req.params;
+            const page = Number(req.query.page) || 1;
+            const limit = Number(req.query.page) || 10;
+
+            if (!applicationId) {
+                throw new AppError("Application id not found", 401);
+            }
+
+            const { interviews, paginationMeta } = await this._interviewService.getInterviewsbyApplication(
+                applicationId,
+                page,
+                limit,
+            );
+
+            return ApiResponse.success(
+                res,
+                COMPANY_JOB_APPLICATION_MESSAGES.INTERVIEWS_FETCHED,
+                interviews,
+                200,
+                paginationMeta,
+            );
+        } catch (error) {
+            next(error);
+        }
+    }
+    async getInterviewsByJob(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const { jobId } = req.params;
+            const page = Number(req.query.page) || 1;
+            const limit = Number(req.query.page) || 10;
+
+            if (!jobId) {
+                throw new AppError("No job id found", 401);
+            }
+
+            const { interviews, paginationMeta } = await this._interviewService.getInterviewsbyJob(jobId, page, limit);
+
+            return ApiResponse.success(
+                res,
+                COMPANY_JOB_APPLICATION_MESSAGES.INTERVIEWS_FETCHED,
+                interviews,
+                200,
+                paginationMeta,
+            );
         } catch (error) {
             next(error);
         }

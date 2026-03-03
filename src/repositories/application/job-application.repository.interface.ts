@@ -1,5 +1,9 @@
 import { UpdateQuery } from "mongoose";
-import { IJobApplication, IJobApplicationDetails } from "../../models/job-application/job-application.interface";
+import {
+    IInterview,
+    IJobApplication,
+    IJobApplicationDetails,
+} from "../../models/job-application/job-application.interface";
 import { IBaseRepository } from "../base-repository/base.repository.inteface";
 
 export interface IJobApplicationRepository extends IBaseRepository<IJobApplication> {
@@ -27,6 +31,15 @@ export interface IJobApplicationRepository extends IBaseRepository<IJobApplicati
     findByJob(jobId: string, page: number, limit: number, status?: string): Promise<[IJobApplication[], number]>;
     updateById(id: string, updates: UpdateQuery<IJobApplication>): Promise<IJobApplication | null>;
     getApplicationStats(companyId: string): Promise<Array<{ status: string; count: number }>>;
+
+    addInterview(applicationId: string, interview: IInterview): Promise<IJobApplication | null>;
+    updateInterview(
+        applicationId: string,
+        interviewId: string,
+        round: number,
+        updateData: Partial<IInterview>,
+    ): Promise<IJobApplication | null>;
+    removeInterview(applicationId: string, interviewId: string, round: number): Promise<IJobApplication | null>;
 }
 
 export interface CandidatesFilters {

@@ -1,6 +1,28 @@
 import mongoose, { Model, Schema } from "mongoose";
 import { IJobApplication } from "./job-application.interface";
 
+const InterviewSchema = new Schema(
+    {
+        round: { type: Number, required: true },
+        type: {
+            type: String,
+            enum: ["phone", "video", "in-person", "technical", "hr"],
+            required: true,
+        },
+        scheduledAt: Date,
+        completedAt: Date,
+        // interviewers: [{ type: Schema.Types.ObjectId, ref: "User" }],
+        feedback: String,
+        rating: { type: Number, min: 1, max: 5 },
+        status: {
+            type: String,
+            enum: ["scheduled", "completed", "cancelled", "rescheduled"],
+            default: "scheduled",
+        },
+    },
+    { _id: true },
+);
+
 const jobApplicationSchema = new Schema<IJobApplication>(
     {
         job: {
@@ -95,26 +117,7 @@ const jobApplicationSchema = new Schema<IJobApplication>(
         notes: String,
         feedback: String,
 
-        interviews: [
-            {
-                round: { type: Number, required: true },
-                type: {
-                    type: String,
-                    enum: ["phone", "video", "in-person", "technical", "hr"],
-                    required: true,
-                },
-                scheduledAt: Date,
-                completedAt: Date,
-                // interviewers: [{ type: Schema.Types.ObjectId, ref: "User" }],
-                feedback: String,
-                rating: { type: Number, min: 1, max: 5 },
-                status: {
-                    type: String,
-                    enum: ["scheduled", "completed", "cancelled", "rescheduled"],
-                    default: "scheduled",
-                },
-            },
-        ],
+        interviews: [InterviewSchema],
 
         // Metadata
         appliedAt: {
@@ -149,7 +152,7 @@ const jobApplicationSchema = new Schema<IJobApplication>(
             index: true,
         },
     },
-    { timestamps: true }
+    { timestamps: true },
 );
 
 // Pre-save middleware to update statusHistory
@@ -172,5 +175,5 @@ jobApplicationSchema.virtual("applicationAge").get(function () {
 
 export const JobApplication: Model<IJobApplication> = mongoose.model<IJobApplication>(
     "JobApplication",
-    jobApplicationSchema
+    jobApplicationSchema,
 );

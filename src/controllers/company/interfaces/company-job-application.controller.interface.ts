@@ -22,4 +22,14 @@ export interface ICompanyJobApplicationController {
     rejectApplication(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
     getApplicationResume(req: Request, res: Response, next: NextFunction): Promise<void>;
+
+    scheduleInterview(req: Request, res: Response,next:NextFunction): Promise<Response|void> 
+
+    rescheduleInterview(req: Request, res: Response,next:NextFunction): Promise<Response|void> 
+
+    cancelInterview(req: Request, res: Response,next:NextFunction): Promise<Response|void> 
+
+    completeInterview(req: Request, res: Response,next:NextFunction): Promise<Response|void>
+
+    getInterviewsByApplication(req: Request, res: Response,next:NextFunction): Promise<Response|void>
 }

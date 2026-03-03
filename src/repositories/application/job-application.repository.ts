@@ -1,5 +1,9 @@
 import { FilterQuery, Model, PipelineStage, Types, UpdateQuery } from "mongoose";
-import { IJobApplication, IJobApplicationDetails } from "../../models/job-application/job-application.interface";
+import {
+    IInterview,
+    IJobApplication,
+    IJobApplicationDetails,
+} from "../../models/job-application/job-application.interface";
 import { BaseRepository } from "../base-repository/base.repository";
 import { CandidatesFilters, IJobApplicationRepository } from "./job-application.repository.interface";
 
@@ -439,4 +443,82 @@ export class JobApplicationRepository extends BaseRepository<IJobApplication> im
                 return {};
         }
     }
+
+    // ... existing methods
+
+    /**
+     * Add interview to application
+     */
+    async addInterview(applicationId: string, interview: IInterview): Promise<IJobApplication | null> {
+        return await this.model
+            .findByIdAndUpdate(
+                applicationId,
+                {
+                    $push: { interviews: interview },
+                    lastUpdatedAt: new Date(),
+                },
+                { new: true, runValidators: true },
+            )
+            .populate("applicant")
+            .populate("job")
+            .populate("company")
+            .lean();
+    }
+
+    /**
+     * Update specific interview in application
+     */
+    async updateInterview(
+        applicationId: string,
+        interviewId: string,
+        round: number,
+        updateData: Partial<IInterview>,
+    ): Promise<IJobApplication | null> {
+        const updateFields: Record<string, unknown> = {};
+
+        Object.keys(updateData).forEach((key) => {
+            updateFields[`interviews.$.${key}`] = updateData[key as keyof IInterview];
+        });
+
+        return await this.model
+            .findOneAndUpdate(
+                {
+                    _id: new Types.ObjectId(applicationId),
+                    "interviews.round": round,
+                    "interviews._id": new Types.ObjectId(interviewId),
+                },
+                {
+                    $set: {
+                        ...updateFields,
+                        lastUpdatedAt: new Date(),
+                    },
+                },
+                { new: true, runValidators: true },
+            )
+            .populate("applicant")
+            .populate("job")
+            .populate("company")
+            .lean();
+    }
+
+    /**
+     * Remove interview from application
+     */
+    async removeInterview(applicationId: string, interviewId: string, round: number): Promise<IJobApplication | null> {
+        return await this.model
+            .findByIdAndUpdate(
+                applicationId,
+                {
+                    $pull: { interviews: { round, _id: new Types.ObjectId(interviewId) } },
+                    lastUpdatedAt: new Date(),
+                },
+                { new: true },
+            )
+            .populate("applicant")
+            .populate("job")
+            .populate("company")
+            .lean();
+    }
+
+    
 }

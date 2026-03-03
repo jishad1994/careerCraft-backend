@@ -79,16 +79,7 @@ export interface IJobApplication extends Document<mongoose.Types.ObjectId> {
     notes?: string;
     feedback?: string;
 
-    interviews?: Array<{
-        round: number;
-        type: "phone" | "video" | "in-person" | "technical" | "hr";
-        scheduledAt?: Date;
-        completedAt?: Date;
-        interviewers?: mongoose.Types.ObjectId[];
-        feedback?: string;
-        rating?: number; // 1-5
-        status: "scheduled" | "completed" | "cancelled" | "rescheduled";
-    }>;
+    interviews?: IInterview[];
 
     appliedAt: Date;
     viewedAt?: Date;
@@ -105,46 +96,58 @@ export interface IJobApplication extends Document<mongoose.Types.ObjectId> {
     updatedAt: Date;
 }
 
-
-
 export interface IJobApplicationDetails extends IJobApplication {
-  candidateName: string;
-  profilePicture?: {
-    key: string;
-    location: string;
-  };
-  experience: number;
-  skills: ISkill[];
-  education: IEducation[];
-  applicantDetails: IApplicantDetails;
-  jobDetails: IJobDetails;
+    candidateName: string;
+    profilePicture?: {
+        key: string;
+        location: string;
+    };
+    experience: number;
+    skills: ISkill[];
+    education: IEducation[];
+    applicantDetails: IApplicantDetails;
+    jobDetails: IJobDetails;
 }
 
 export interface IJobDetails {
-  _id: string;
-  title: string;
-  slug: string;
-  company: string;
-  location: string;
-  employmentType: string;
-  workMode: string;
-  status: string;
+    _id: string;
+    title: string;
+    slug: string;
+    company: string;
+    location: string;
+    employmentType: string;
+    workMode: string;
+    status: string;
+}
+
+export interface IInterview {
+    _id?: mongoose.Types.ObjectId|
+    
+    string;
+    round: number;
+    type: "phone" | "video" | "in-person" | "technical" | "hr";
+    scheduledAt?: Date;
+    completedAt?: Date;
+    interviewers?: mongoose.Types.ObjectId[];
+    feedback?: string;
+    rating?: number; // 1-5
+    status: "scheduled" | "completed" | "cancelled" | "rescheduled";
 }
 
 export interface IApplicantDetails {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone?: string;
-  profilePicture?: {
-    key: string;
-    location: string;
-  };
-  skills: string[];
-  education: IEducation[];
-  experience: IExperience[];
-  totalExperienceYears: number;
-  about?: string;
-  location?: string;
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone?: string;
+    profilePicture?: {
+        key: string;
+        location: string;
+    };
+    skills: string[];
+    education: IEducation[];
+    experience: IExperience[];
+    totalExperienceYears: number;
+    about?: string;
+    location?: string;
 }
