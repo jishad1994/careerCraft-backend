@@ -86,7 +86,7 @@ export class UserNotificationController implements IUserNotificationController {
 
             const notification = await this._notificationService.markAsRead(id, userId);
 
-            return ApiResponse.success(res, "Notification marked as read", notification, 200);
+            return ApiResponse.success(res, NOTIFICATION_MESSAGES.NOTIFICATION_MARKED_AS_READ, notification, 200);
         } catch (error) {
             next(error);
         }

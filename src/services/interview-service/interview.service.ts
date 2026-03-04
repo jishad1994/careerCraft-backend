@@ -1,4 +1,5 @@
 import { AppError } from "../../errors-classes/app.error.";
+import { InterviewFilter, InterviewWithPopulated } from "../../interfaces/interview.interface";
 import { IInterview, IJobApplicationDetails } from "../../models/job-application/job-application.interface";
 import { NOTIFICATION_TYPES } from "../../models/notifications/notification.interface";
 import { IJobApplicationRepository } from "../../repositories/application/job-application.repository.interface";
@@ -13,6 +14,16 @@ export class InterviewService implements IInterviewService {
         private readonly notificationService: INotificationService,
         private readonly socketService: ISocketService,
     ) {}
+
+    async getPopulatedInterviewById(interviewId: string): Promise<InterviewWithPopulated> {
+        const interview = await this.applicationRepository.findPopulatedInterviewById(interviewId);
+
+        if (!interview) {
+            throw new Error("Interview not found");
+        }
+
+        return interview;
+    }
 
     async scheduleInterview(
         applicationId: string,
@@ -66,7 +77,7 @@ export class InterviewService implements IInterviewService {
         }
 
         const interview = application.interviews?.find((i) => String(i._id) === interviewId);
-        
+
         if (!interview) {
             throw new Error("Interview not found");
         }
@@ -76,7 +87,7 @@ export class InterviewService implements IInterviewService {
             status: "rescheduled",
         };
 
-        await this.applicationRepository.updateInterview(applicationId, interviewId, round, updatedInterview);
+        await this.applicationRepository.updateInterview(applicationId, interviewId,  updatedInterview);
 
         await this.createInterviewNotification(
             application.applicant._id.toString(),
@@ -112,7 +123,7 @@ export class InterviewService implements IInterviewService {
             status: "cancelled",
         };
 
-        await this.applicationRepository.updateInterview(applicationId, interviewId, round, updatedInterview);
+        await this.applicationRepository.updateInterview(applicationId, interviewId,  updatedInterview);
 
         await this.createInterviewNotification(
             application.applicant._id.toString(),
@@ -136,7 +147,7 @@ export class InterviewService implements IInterviewService {
     async updateInterview(
         applicationId: string,
         interviewId: string,
-        round: number,
+
         updateData: Partial<IInterview>,
     ): Promise<IInterview> {
         const application = await this.applicationRepository.findById(applicationId);
@@ -144,12 +155,12 @@ export class InterviewService implements IInterviewService {
             throw new AppError("Application not found", 401);
         }
 
-        const interview = application.interviews?.find((i) => i.round === round);
+        const interview = application.interviews?.find((i) => i._id?.toString() === interviewId);
         if (!interview) {
             throw new Error("Interview not found");
         }
 
-        await this.applicationRepository.updateInterview(applicationId, interviewId, round, updateData);
+        await this.applicationRepository.updateInterview(applicationId, interviewId, updateData);
 
         return { ...interview, ...updateData };
     }
@@ -171,25 +182,15 @@ export class InterviewService implements IInterviewService {
         return await this.updateInterview(applicationId, interviewId, round, updateData);
     }
 
-
-
-    async getInterviewsbyApplication(
-        applicationId: string,
+    async getInterviews(
+        filter: InterviewFilter,
         page: number = 1,
         limit: number = 10,
-    ): Promise<{ interviews: IInterview[]; paginationMeta: PaginationMeta }> {
-
-        const application = await this.applicationRepository.findById(applicationId);
-
-        if (!application) {
-            throw new Error("Application not found");
-        }
-
-        const interviews = application.interviews || [];
-
-        const total = application.interviews?.length || 0;
+    ): Promise<{ interviews: InterviewWithPopulated[]; paginationMeta: PaginationMeta }> {
+        const [interviews, total] = await this.applicationRepository.getInterviewsWithPopulated(filter, page, limit);
 
         const totalPages = Math.ceil(total / limit);
+
         const paginationMeta: PaginationMeta = {
             page,
             limit,
@@ -202,21 +203,16 @@ export class InterviewService implements IInterviewService {
         return { interviews, paginationMeta };
     }
 
-
-
-    async getInterviewsbyJob(
-        jobId: string,
-        page: number,
+    /**
+     * Get upcoming interviews
+     */
+    async getUpcomingInterviews(
+        filter: Partial<InterviewFilter>,
+        days: number = 7,
+        page: number = 1,
         limit: number = 10,
-    ): Promise<{ interviews: IInterview[]; paginationMeta: PaginationMeta }> {
-
-        const [applications, total] = await this.applicationRepository.findByJob(jobId, page, limit);
-
-        if (!applications) {
-            throw new Error("Application not found");
-        }
-
-        const interviews = applications.flatMap((app) => app.interviews ?? []);
+    ): Promise<{ interviews: InterviewWithPopulated[]; paginationMeta: PaginationMeta }> {
+        const [interviews, total] = await this.applicationRepository.getUpcomingInterviews(filter, days, page, limit);
 
         const totalPages = Math.ceil(total / limit);
 
@@ -230,6 +226,19 @@ export class InterviewService implements IInterviewService {
         };
 
         return { interviews, paginationMeta };
+    }
+
+    /**
+     * Get interview statistics
+     */
+    async getInterviewStats(filter: Partial<InterviewFilter>): Promise<{
+        total: number;
+        byStatus: Record<string, number>;
+        byType: Record<string, number>;
+        upcoming: number;
+        past: number;
+    }> {
+        return await this.applicationRepository.getInterviewStats(filter);
     }
 
     private validateInterviewData(data: Partial<IInterview>): void {

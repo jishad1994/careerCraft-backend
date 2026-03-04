@@ -1,4 +1,7 @@
-import { COMPANY_JOB_APPLICATION_MESSAGES } from "../../../constants/messages/company.messages.constants";
+import {
+    COMPANY_JOB_APPLICATION_MESSAGES,
+    INTERVIEW_MESSAGES,
+} from "../../../constants/messages/company.messages.constants";
 import { AppError } from "../../../errors-classes/app.error.";
 import { JOB_APPLICATION_STATUSES } from "../../../models/job-application/job-application.interface";
 import { ICompanyJobApplicationServiceInterface } from "../../../services/application/interfaces/company-job-application.service.interface";
@@ -9,6 +12,7 @@ import { Readable } from "stream";
 import { Request, Response, NextFunction } from "express";
 import { IInterviewService } from "../../../services/interview-service/interivew.service.interface";
 import { ValidationError } from "../../../errors-classes/validation.error";
+import { InterviewFilter } from "../../../interfaces/interview.interface";
 
 export class CompanyJobApplicationController implements ICompanyJobApplicationController {
     constructor(
@@ -299,7 +303,7 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
 
             const interview = await this._interviewService.scheduleInterview(applicationId, req.body, companyId);
 
-            return ApiResponse.success(res, COMPANY_JOB_APPLICATION_MESSAGES.INTERVIEW_SCHEDULED_SUCCESSFULLY, interview);
+            return ApiResponse.success(res, INTERVIEW_MESSAGES.INTERVIEW_SCHEDULED_SUCCESSFULLY, interview);
         } catch (error) {
             next(error);
         }
@@ -319,7 +323,7 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
                 reason,
             );
 
-            return ApiResponse.success(res, COMPANY_JOB_APPLICATION_MESSAGES.INTERVIEW_RESCHEDULED, interview);
+            return ApiResponse.success(res, INTERVIEW_MESSAGES.INTERVIEW_RESCHEDULED, interview);
         } catch (error) {
             next(error);
         }
@@ -337,8 +341,7 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
                 reason,
             );
 
-            return ApiResponse.success(res, COMPANY_JOB_APPLICATION_MESSAGES.INTERVIEW_CANCELLED, interview);
-            
+            return ApiResponse.success(res, INTERVIEW_MESSAGES.INTERVIEW_CANCELLED, interview);
         } catch (error) {
             next(error);
         }
@@ -359,7 +362,23 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
 
             return res.status(200).json({
                 success: true,
-                message: "Interview completed",
+                message: INTERVIEW_MESSAGES.INTERVIEW_COMPLETED,
+                data: interview,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+    async updateInterview(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const { applicationId, interviewId } = req.params;
+            const { updateData } = req.body;
+
+            const interview = await this._interviewService.updateInterview(applicationId, interviewId,  updateData);
+
+            return res.status(200).json({
+                success: true,
+                message: INTERVIEW_MESSAGES.INTERVIEW_UPDATED,
                 data: interview,
             });
         } catch (error) {
@@ -367,48 +386,102 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
         }
     }
 
-    async getInterviewsByApplication(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+    async getAllInterviews(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
-            const { applicationId } = req.params;
-            const page = Number(req.query.page) || 1;
-            const limit = Number(req.query.page) || 10;
-
-            if (!applicationId) {
-                throw new AppError("Application id not found", 401);
-            }
-
-            const { interviews, paginationMeta } = await this._interviewService.getInterviewsbyApplication(
+            const {
+                companyId,
+                jobId,
                 applicationId,
-                page,
-                limit,
+                status,
+                type,
+                round,
+                startDate,
+                endDate,
+                search,
+                page = 1,
+                limit = 10,
+            } = req.query;
+
+            const filter: InterviewFilter = {
+                companyId: companyId as string,
+                jobId: jobId as string,
+                applicationId: applicationId as string,
+                status: status ? (status as string).split(",") : undefined,
+                type: type ? (type as string).split(",") : undefined,
+                round: round ? parseInt(round as string) : undefined,
+                startDate: startDate ? new Date(startDate as string) : undefined,
+                endDate: endDate ? new Date(endDate as string) : undefined,
+                search: search as string,
+            };
+
+            const { interviews, paginationMeta } = await this._interviewService.getInterviews(
+                filter,
+                parseInt(page as string),
+                parseInt(limit as string),
             );
 
-            return ApiResponse.success(
-                res,
-                COMPANY_JOB_APPLICATION_MESSAGES.INTERVIEWS_FETCHED,
-                interviews,
-                200,
-                paginationMeta,
-            );
+            return ApiResponse.success(res, INTERVIEW_MESSAGES.INTERVIEWS_FETCHED, interviews, 200, paginationMeta);
         } catch (error) {
             next(error);
         }
     }
-    async getInterviewsByJob(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
-        try {
-            const { jobId } = req.params;
-            const page = Number(req.query.page) || 1;
-            const limit = Number(req.query.page) || 10;
 
-            if (!jobId) {
-                throw new AppError("No job id found", 401);
+    async getPopulatedInterviewById(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { interviewId } = req.params;
+
+            if (!interviewId) {
+                throw new AppError("Interview ID is required", 400);
             }
 
-            const { interviews, paginationMeta } = await this._interviewService.getInterviewsbyJob(jobId, page, limit);
+            const interview = await this._interviewService.getPopulatedInterviewById(interviewId);
+
+            return ApiResponse.success(res, INTERVIEW_MESSAGES.INTERVIEW_FETCHED, interview);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getInterviewStats(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const { companyId, jobId, applicationId } = req.query;
+
+            const filter: Partial<InterviewFilter> = {
+                companyId: companyId as string,
+                jobId: jobId as string,
+                applicationId: applicationId as string,
+            };
+
+            const stats = await this._interviewService.getInterviewStats(filter);
+
+            return ApiResponse.success(res, INTERVIEW_MESSAGES.INTERVIEWS_STATISTICS_FETCHED_SUCCESSFULLY, stats);
+        } catch (error) {
+            next(error);
+        }
+    }
+    async getUpcomingInterviews(req: Request, res: Response, next: NextFunction) {
+        try {
+            const companyId = req.user?.id;
+            if (!companyId) {
+                throw new ValidationError("Unauthorized access");
+            }
+            const { jobId, days = 7, page = 1, limit = 10 } = req.query;
+
+            const filter = {
+                companyId: companyId as string,
+                jobId: jobId as string,
+            };
+
+            const { interviews, paginationMeta } = await this._interviewService.getUpcomingInterviews(
+                filter,
+                parseInt(days as string),
+                parseInt(page as string),
+                parseInt(limit as string),
+            );
 
             return ApiResponse.success(
                 res,
-                COMPANY_JOB_APPLICATION_MESSAGES.INTERVIEWS_FETCHED,
+                INTERVIEW_MESSAGES.UPCOMING_INTERVIEWS_FETCHED,
                 interviews,
                 200,
                 paginationMeta,

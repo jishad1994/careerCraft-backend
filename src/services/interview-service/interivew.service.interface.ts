@@ -1,7 +1,10 @@
+import { InterviewFilter, InterviewWithPopulated } from "../../interfaces/interview.interface";
 import { IInterview } from "../../models/job-application/job-application.interface";
 import { PaginationMeta } from "../../utils/apiResponse.utils";
 
 export interface IInterviewService {
+    getPopulatedInterviewById(interviewId: string): Promise<InterviewWithPopulated>;
+
     scheduleInterview(applicationId: string, interviewData: Partial<IInterview>, scheduledBy: string): Promise<IInterview>;
 
     rescheduleInterview(
@@ -17,7 +20,7 @@ export interface IInterviewService {
     updateInterview(
         applicationId: string,
         interviewId: string,
-        round: number,
+       
         updateData: Partial<IInterview>,
     ): Promise<IInterview>;
 
@@ -29,16 +32,24 @@ export interface IInterviewService {
         rating?: number,
     ): Promise<IInterview>;
 
-    getInterviewsbyApplication(
-        applicationId: string,
-        page: number,
-        limit: number,
-    ): Promise<{ interviews: IInterview[]; paginationMeta: PaginationMeta }>;
+    getInterviews(
+        filter: InterviewFilter,
+        page?: number,
+        limit?: number,
+    ): Promise<{ interviews: InterviewWithPopulated[]; paginationMeta: PaginationMeta }>;
 
-    getInterviewsbyJob(
-        jobId: string,
-        page: number,
-        limit: number,
-    ): Promise<{ interviews: IInterview[]; paginationMeta: PaginationMeta }>;
-    // getAllInterviews(companyId: string): Promise<IInterview[]>;
+    getInterviewStats(filter: Partial<InterviewFilter>): Promise<{
+        total: number;
+        byStatus: Record<string, number>;
+        byType: Record<string, number>;
+        upcoming: number;
+        past: number;
+    }>;
+
+    getUpcomingInterviews(
+        filter: Partial<InterviewFilter>,
+        days?: number,
+        page?: number,
+        limit?: number,
+    ): Promise<{ interviews: InterviewWithPopulated[]; paginationMeta: PaginationMeta }>;
 }

@@ -60,6 +60,7 @@ import { PaymentRepository } from "../repositories/payment/payment.repository";
 import { Payment } from "../models/payments/payments.schema";
 import { CompanySubscriptionPaymentController } from "../controllers/subscription-payment/implementations/company-subscription-payment-controller";
 import { CompanyCandidateController } from "../controllers/company/implementations/company.candidates.controller";
+import { InterviewService } from "../services/interview-service/interview.service";
 
 //redis cache service instance
 const redisRepo = new RedisCacheRepo(process.env.REDIS_URL || "redis://localhost:6379");
@@ -147,7 +148,9 @@ const companyJobApplicationService = new CompanyJobApplicationService(
     notificationService,
     socketServer,
 );
-const companyJobApplicationController = new CompanyJobApplicationController(companyJobApplicationService);
+
+const interviewServie = new InterviewService(jobApplicationRepository, notificationService, socketServer);
+const companyJobApplicationController = new CompanyJobApplicationController(companyJobApplicationService, interviewServie);
 
 //jobs services
 const userJobService = new UserJobService(jobRepository, jobApplicationRepository, fileService);

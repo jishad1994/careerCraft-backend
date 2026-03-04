@@ -23,13 +23,17 @@ export interface ICompanyJobApplicationController {
 
     getApplicationResume(req: Request, res: Response, next: NextFunction): Promise<void>;
 
-    scheduleInterview(req: Request, res: Response,next:NextFunction): Promise<Response|void> 
+    scheduleInterview(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
-    rescheduleInterview(req: Request, res: Response,next:NextFunction): Promise<Response|void> 
+    rescheduleInterview(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
-    cancelInterview(req: Request, res: Response,next:NextFunction): Promise<Response|void> 
+    cancelInterview(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
-    completeInterview(req: Request, res: Response,next:NextFunction): Promise<Response|void>
+    completeInterview(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+    
+    updateInterview(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
-    getInterviewsByApplication(req: Request, res: Response,next:NextFunction): Promise<Response|void>
+    getPopulatedInterviewById(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+
+    getUpcomingInterviews(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 }

@@ -122,7 +122,6 @@ export interface IJobDetails {
 
 export interface IInterview {
     _id?: mongoose.Types.ObjectId|
-    
     string;
     round: number;
     type: "phone" | "video" | "in-person" | "technical" | "hr";

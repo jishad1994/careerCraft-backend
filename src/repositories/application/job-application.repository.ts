@@ -6,6 +6,7 @@ import {
 } from "../../models/job-application/job-application.interface";
 import { BaseRepository } from "../base-repository/base.repository";
 import { CandidatesFilters, IJobApplicationRepository } from "./job-application.repository.interface";
+import { InterviewFilter, InterviewMatch, InterviewWithPopulated } from "../../interfaces/interview.interface";
 
 export class JobApplicationRepository extends BaseRepository<IJobApplication> implements IJobApplicationRepository {
     constructor(model: Model<IJobApplication>) {
@@ -471,7 +472,6 @@ export class JobApplicationRepository extends BaseRepository<IJobApplication> im
     async updateInterview(
         applicationId: string,
         interviewId: string,
-        round: number,
         updateData: Partial<IInterview>,
     ): Promise<IJobApplication | null> {
         const updateFields: Record<string, unknown> = {};
@@ -484,7 +484,6 @@ export class JobApplicationRepository extends BaseRepository<IJobApplication> im
             .findOneAndUpdate(
                 {
                     _id: new Types.ObjectId(applicationId),
-                    "interviews.round": round,
                     "interviews._id": new Types.ObjectId(interviewId),
                 },
                 {
@@ -520,5 +519,301 @@ export class JobApplicationRepository extends BaseRepository<IJobApplication> im
             .lean();
     }
 
-    
+    async findPopulatedInterviewById(interviewId: string): Promise<InterviewWithPopulated | null> {
+        const pipeline: PipelineStage[] = [];
+
+        // Step 1: Match application that contains this interview
+        pipeline.push({
+            $match: {
+                "interviews._id": new Types.ObjectId(interviewId),
+            },
+        });
+
+        // Step 2: Unwind interviews
+        pipeline.push({
+            $unwind: {
+                path: "$interviews",
+                preserveNullAndEmptyArrays: false,
+            },
+        });
+
+        // Step 3: Match specific interview
+        pipeline.push({
+            $match: {
+                "interviews._id": new Types.ObjectId(interviewId),
+            },
+        });
+
+        // Step 4-6: Lookup context (same as buildInterviewPipeline)
+        pipeline.push(
+            {
+                $lookup: {
+                    from: "jobs",
+                    localField: "job",
+                    foreignField: "_id",
+                    as: "jobDetails",
+                },
+            },
+            { $unwind: "$jobDetails" },
+            {
+                $lookup: {
+                    from: "companies",
+                    localField: "company",
+                    foreignField: "_id",
+                    as: "companyDetails",
+                },
+            },
+            { $unwind: "$companyDetails" },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "applicant",
+                    foreignField: "_id",
+                    as: "applicantDetails",
+                },
+            },
+            { $unwind: "$applicantDetails" },
+        );
+
+        // Step 7: Project final structure
+        pipeline.push({
+            $project: {
+                _id: "$interviews._id",
+                interview: "$interviews",
+                applicationId: "$_id",
+                jobId: "$job",
+                jobTitle: "$jobDetails.title",
+                companyId: "$company",
+                companyName: "$companyDetails.name",
+                applicantId: "$applicant",
+                applicantName: {
+                    $concat: ["$applicantDetails.firstName", " ", "$applicantDetails.lastName"],
+                },
+                applicantEmail: "$applicantDetails.email",
+                applicantPhone: "$applicantDetails.phone",
+                applicantProfilePicture: "$applicantDetails.profilePicture",
+                applicationStatus: "$status",
+                appliedAt: "$appliedAt",
+            },
+        });
+
+        const result = await this.model.aggregate<InterviewWithPopulated>(pipeline);
+
+        return result[0] || null;
+    }
+
+    async getInterviewsWithPopulated(
+        filter: InterviewFilter,
+        page: number = 1,
+        limit: number = 10,
+    ): Promise<[interviews: InterviewWithPopulated[], total: number]> {
+        const pipeline = this.buildInterviewPipeline(filter);
+
+        // Count total
+        const countPipeline = [...pipeline, { $count: "total" }];
+        const countResult = await this.model.aggregate(countPipeline);
+        const total = countResult[0]?.total || 0;
+
+        // Add pagination
+        const skip = (page - 1) * limit;
+        pipeline.push({ $sort: { "interview.scheduledAt": -1 } }, { $skip: skip }, { $limit: limit });
+
+        const interviews = await this.model.aggregate<InterviewWithPopulated>(pipeline);
+
+        return [interviews, total];
+    }
+
+    async getInterviewStats(filter: Partial<InterviewFilter>): Promise<{
+        total: number;
+        byStatus: Record<string, number>;
+        byType: Record<string, number>;
+        upcoming: number;
+        past: number;
+    }> {
+        const pipeline = this.buildInterviewPipeline(filter);
+
+        pipeline.push({
+            $facet: {
+                total: [{ $count: "count" }],
+                byStatus: [{ $group: { _id: "$interview.status", count: { $sum: 1 } } }],
+                byType: [{ $group: { _id: "$interview.type", count: { $sum: 1 } } }],
+                upcoming: [{ $match: { "interview.scheduledAt": { $gte: new Date() } } }, { $count: "count" }],
+                past: [{ $match: { "interview.scheduledAt": { $lt: new Date() } } }, { $count: "count" }],
+            },
+        });
+
+        const result = await this.model.aggregate(pipeline);
+        const stats = result[0];
+
+        return {
+            total: stats.total[0]?.count || 0,
+            byStatus: this.arrayToRecord(stats.byStatus),
+            byType: this.arrayToRecord(stats.byType),
+            upcoming: stats.upcoming[0]?.count || 0,
+            past: stats.past[0]?.count || 0,
+        };
+    }
+
+    async getUpcomingInterviews(
+        filter: Partial<InterviewFilter>,
+        days: number = 7,
+        page: number = 1,
+        limit: number = 10,
+    ): Promise<[interviews: InterviewWithPopulated[], total: number]> {
+        const now = new Date();
+        const futureDate = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+
+        const upcomingFilter: InterviewFilter = {
+            ...filter,
+            startDate: now,
+            endDate: futureDate,
+            status: ["scheduled", "rescheduled"],
+        };
+
+        return await this.getInterviewsWithPopulated(upcomingFilter, page, limit);
+    }
+
+    private buildInterviewPipeline(filter: InterviewFilter): PipelineStage[] {
+        const pipeline: PipelineStage[] = [];
+
+        // Step 1: Match applications
+        const matchStage: Record<string, unknown> = {};
+
+        if (filter.companyId) {
+            matchStage.company = new Types.ObjectId(filter.companyId);
+        }
+
+        if (filter.jobId) {
+            matchStage.job = new Types.ObjectId(filter.jobId);
+        }
+
+        if (filter.applicationId) {
+            matchStage._id = new Types.ObjectId(filter.applicationId);
+        }
+
+        if (Object.keys(matchStage).length > 0) {
+            pipeline.push({ $match: matchStage });
+        }
+
+        // Step 2: Unwind interviews
+        pipeline.push({
+            $unwind: {
+                path: "$interviews",
+                preserveNullAndEmptyArrays: false,
+            },
+        });
+
+        // Step 3: Match interview filters
+        const interviewMatch: InterviewMatch = {};
+
+        if (filter.status && filter.status.length > 0) {
+            interviewMatch["interviews.status"] = { $in: filter.status };
+        }
+
+        if (filter.type && filter.type.length > 0) {
+            interviewMatch["interviews.type"] = { $in: filter.type };
+        }
+
+        if (filter.round) {
+            interviewMatch["interviews.round"] = filter.round;
+        }
+
+        if (filter.startDate || filter.endDate) {
+            interviewMatch["interviews.scheduledAt"] = {};
+            if (filter.startDate) {
+                interviewMatch["interviews.scheduledAt"].$gte = filter.startDate;
+            }
+            if (filter.endDate) {
+                interviewMatch["interviews.scheduledAt"].$lte = filter.endDate;
+            }
+        }
+
+        if (Object.keys(interviewMatch).length > 0) {
+            pipeline.push({ $match: interviewMatch });
+        }
+
+        // Step 4: Lookup job details
+        pipeline.push({
+            $lookup: {
+                from: "jobs",
+                localField: "job",
+                foreignField: "_id",
+                as: "jobDetails",
+            },
+        });
+
+        pipeline.push({ $unwind: "$jobDetails" });
+
+        // Step 5: Lookup company details
+        pipeline.push({
+            $lookup: {
+                from: "companies",
+                localField: "company",
+                foreignField: "_id",
+                as: "companyDetails",
+            },
+        });
+
+        pipeline.push({ $unwind: "$companyDetails" });
+
+        // Step 6: Lookup applicant details
+        pipeline.push({
+            $lookup: {
+                from: "users",
+                localField: "applicant",
+                foreignField: "_id",
+                as: "applicantDetails",
+            },
+        });
+
+        pipeline.push({ $unwind: "$applicantDetails" });
+
+        // Step 7: Search filter
+        if (filter.search) {
+            pipeline.push({
+                $match: {
+                    $or: [
+                        { "applicantDetails.firstName": { $regex: filter.search, $options: "i" } },
+                        { "applicantDetails.lastName": { $regex: filter.search, $options: "i" } },
+                        { "applicantDetails.email": { $regex: filter.search, $options: "i" } },
+                        { "jobDetails.title": { $regex: filter.search, $options: "i" } },
+                    ],
+                },
+            });
+        }
+
+        // Step 8: Project final structure
+        pipeline.push({
+            $project: {
+                _id: "$interviews._id",
+                interview: "$interviews",
+                applicationId: "$_id",
+                jobId: "$job",
+                jobTitle: "$jobDetails.title",
+                companyId: "$company",
+                companyName: "$companyDetails.name",
+                applicantId: "$applicant",
+                applicantName: {
+                    $concat: ["$applicantDetails.firstName", " ", "$applicantDetails.lastName"],
+                },
+                applicantEmail: "$applicantDetails.email",
+                applicantPhone: "$applicantDetails.phone",
+                applicantProfilePicture: "$applicantDetails.profilePicture",
+                applicationStatus: "$status",
+                appliedAt: "$appliedAt",
+            },
+        });
+
+        return pipeline;
+    }
+
+    private arrayToRecord(arr: Array<{ _id: string; count: number }>): Record<string, number> {
+        return arr.reduce(
+            (acc, item) => {
+                acc[item._id] = item.count;
+                return acc;
+            },
+            {} as Record<string, number>,
+        );
+    }
 }

@@ -10,7 +10,7 @@ companyJobRoutes.get("/", companyJobController.getCompanyJobs.bind(companyJobCon
 companyJobRoutes.get(
     "/statistics",
 
-    companyJobController.getJobStatistics.bind(companyJobController)
+    companyJobController.getJobStatistics.bind(companyJobController),
 );
 
 companyJobRoutes.get("/search-skills", companyJobController.searchSkills.bind(companyJobController));
@@ -21,13 +21,13 @@ companyJobRoutes.put("/:jobId", companyJobController.updateJob.bind(companyJobCo
 
 companyJobRoutes.get(
     "/:jobId/applications",
-    companyJobApplicationController.getApplicationsByJob.bind(companyJobApplicationController)
+    companyJobApplicationController.getApplicationsByJob.bind(companyJobApplicationController),
 );
 
 companyJobRoutes.patch(
     "/:jobId/status",
 
-    companyJobController.updateJobStatus.bind(companyJobController)
+    companyJobController.updateJobStatus.bind(companyJobController),
 );
 
 companyJobRoutes.delete("/:jobId", companyJobController.deleteJob.bind(companyJobController));

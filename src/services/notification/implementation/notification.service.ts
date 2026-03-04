@@ -10,7 +10,9 @@ import { INotificationRepository } from "../../../repositories/notification/noti
 import { PaginationMeta } from "../../../utils/apiResponse.utils";
 import { NOTIFICATION_MESSAGES } from "../../../constants/messages/notification.messages";
 import logger from "../../../utils/logger";
-import { AppError, } from "../../../errors-classes/app.error.";
+import { AppError } from "../../../errors-classes/app.error.";
+import { ValidationError } from "../../../errors-classes/validation.error";
+import { USER_AUTH_MESSAGES } from "../../../constants/messages/user.messages.constants";
 
 export class NotificationService implements INotificationService {
     constructor(private notificationRepository: INotificationRepository) {}
@@ -19,7 +21,7 @@ export class NotificationService implements INotificationService {
      * Create notification
      */
     async createNotification(params: CreateNotificationParams): Promise<INotification> {
-        if (mongoose.Types.ObjectId.isValid(params.userId)) {
+        if (!mongoose.Types.ObjectId.isValid(params.userId)) {
             logger.error("Invalid userId provided while creating notification");
             throw new AppError("invalid user object id is provided ");
         }
@@ -31,7 +33,7 @@ export class NotificationService implements INotificationService {
             title: params.title,
             message: params.message,
             priority: params.priority || NOTIFICATION_PRIORITIES.MEDIUM,
-            link: params.link ,
+            link: params.link,
             metadata: params.metadata,
             isRead: false,
         });
@@ -81,19 +83,18 @@ export class NotificationService implements INotificationService {
      * Mark notification as read
      */
     async markAsRead(notificationId: string, userId: string): Promise<INotification | null> {
-        const filter = {
-            _id: new Types.ObjectId(notificationId),
-            userId: new Types.ObjectId(userId),
-        };
 
-        const update = {
-            isRead: true,
-            readAt: new Date(),
-        };
-        const notification = await this.notificationRepository.updateOneByFilter(filter, update);
+        if (!notificationId) {
+            throw new ValidationError(NOTIFICATION_MESSAGES.NOTIFICATION_ID_MISSING, 401);
+        }
+        if (!userId) {
+            throw new ValidationError(USER_AUTH_MESSAGES.USER_ID_MISSING, 401);
+        }
+
+        const notification = await this.notificationRepository.markAsRead(notificationId, userId);
 
         if (!notification) {
-            throw new Error("Notification not found or you don't have permission to update it");
+            throw new ValidationError(NOTIFICATION_MESSAGES.NOTIFICATION_NOT_FOUND_OR_UNAUTHORIZED_ACCESS, 401);
         }
 
         return notification;
