@@ -5,6 +5,8 @@ import { ICompanyJobService } from "../interfaces/company-job.service.interface"
 import mongoose from "mongoose";
 import { PaginationMeta } from "../../../utils/apiResponse.utils";
 import { AppError } from "../../../errors-classes/app.error.";
+import { ValidationError } from "../../../errors-classes/validation.error";
+import { COMPANY_JOB_MESSAGES } from "../../../constants/messages/company.messages.constants";
 
 export class CompanyJobService implements ICompanyJobService {
     constructor(private _jobRepository: IJobRepository) {}
@@ -27,7 +29,7 @@ export class CompanyJobService implements ICompanyJobService {
         companyId: string,
         page: number = 1,
         limit: number = 10,
-        filters: JobSearchFilters
+        filters: JobSearchFilters,
     ): Promise<{ jobs: IJob[]; paginationMeta: PaginationMeta }> {
         const [jobs, total] = await this._jobRepository.findByCompany(companyId, page, limit, filters);
 
@@ -77,18 +79,20 @@ export class CompanyJobService implements ICompanyJobService {
 
     async updateJobStatus(companyId: string, jobId: string, status: string): Promise<IJob> {
         // Verify ownership
+
         const job = await this.getJobById(companyId, jobId);
 
-        if(!job.isVerified){
-            throw new AppError('Job should be verified by admin first')
+        if (!job) {
+            throw new ValidationError(COMPANY_JOB_MESSAGES.JOB_NOT_FOUND, 401);
         }
 
+        
         const validStatuses = ["draft", "active", "paused", "closed"];
-
+        
         if (!validStatuses.includes(status)) {
             throw new AppError("Invalid status", 400);
         }
-
+        
         const updatedJob = await this._jobRepository.updateById(jobId, { status: status as JobStatus });
 
         if (!updatedJob) {

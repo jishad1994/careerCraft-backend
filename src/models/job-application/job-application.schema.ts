@@ -1,7 +1,7 @@
 import mongoose, { Model, Schema } from "mongoose";
-import { IJobApplication } from "./job-application.interface";
+import { IInterview, IJobApplication } from "./job-application.interface";
 
-const InterviewSchema = new Schema(
+const InterviewSchema = new Schema<IInterview>(
     {
         round: { type: Number, required: true },
         type: {
@@ -14,6 +14,8 @@ const InterviewSchema = new Schema(
         // interviewers: [{ type: Schema.Types.ObjectId, ref: "User" }],
         feedback: String,
         rating: { type: Number, min: 1, max: 5 },
+        isRescheduled: { type: Boolean, default: false },
+        rescheduledReson: String,
         status: {
             type: String,
             enum: ["scheduled", "completed", "cancelled", "rescheduled"],

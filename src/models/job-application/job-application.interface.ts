@@ -121,13 +121,14 @@ export interface IJobDetails {
 }
 
 export interface IInterview {
-    _id?: mongoose.Types.ObjectId|
-    string;
+    _id?: mongoose.Types.ObjectId | string;
     round: number;
     type: "phone" | "video" | "in-person" | "technical" | "hr";
     scheduledAt?: Date;
     completedAt?: Date;
     interviewers?: mongoose.Types.ObjectId[];
+    isRescheduled?: boolean;
+    rescheduledReson?: string;
     feedback?: string;
     rating?: number; // 1-5
     status: "scheduled" | "completed" | "cancelled" | "rescheduled";

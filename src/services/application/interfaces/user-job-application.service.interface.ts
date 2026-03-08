@@ -1,4 +1,4 @@
-import { IJobApplication } from "../../../models/job-application/job-application.interface";
+import { IJobApplication, IJobApplicationDetails } from "../../../models/job-application/job-application.interface";
 import { PaginationMeta } from "../../../utils/apiResponse.utils";
 
 export interface IUserJobApplicationService {
@@ -12,7 +12,7 @@ export interface IUserJobApplicationService {
         limit: number,
         status?: string
     ): Promise<{ applications: IJobApplication[]; paginationMeta: PaginationMeta }>;
-    getApplicationById(applicationId: string): Promise<IJobApplication>;
+    getApplicationById(applicationId: string): Promise<IJobApplicationDetails>;
 
     checkApplicationStatus(jobId: string, userId: string): Promise<{ hasApplied: boolean; application?: IJobApplication }>;
     withdrawApplication(applicationId: string, userId: string): Promise<IJobApplication>;

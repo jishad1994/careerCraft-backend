@@ -61,6 +61,10 @@ import { Payment } from "../models/payments/payments.schema";
 import { CompanySubscriptionPaymentController } from "../controllers/subscription-payment/implementations/company-subscription-payment-controller";
 import { CompanyCandidateController } from "../controllers/company/implementations/company.candidates.controller";
 import { InterviewService } from "../services/interview-service/interview.service";
+import { WebRTCEventHandler } from "../services/Webrtc/implementations/Webrtc.event-handler.service";
+import { WebRTCService } from "../services/Webrtc/implementations/Webrtc.service";
+import { WebRTCRepository } from "../repositories/webrtc/Webrtc.repository";
+import { CallSession } from "../models/call-session/call.session.schema";
 
 //redis cache service instance
 const redisRepo = new RedisCacheRepo(process.env.REDIS_URL || "redis://localhost:6379");
@@ -99,10 +103,23 @@ const notificationRepository = new NotificationRepository(Notification);
 const notificationService = new NotificationService(notificationRepository);
 const notificationController = new UserNotificationController(notificationService);
 
+//vido or audio call session repository
+
+const webRTCRepository = new WebRTCRepository(CallSession);
+//webrtc service
+const webrtcService = new WebRTCService(webRTCRepository);
+//webrtc event handler service
+const webrtcEventHandlerService = new WebRTCEventHandler(webrtcService);
+
 //socket server
 const userSocketMapService = new UserSocketMapservice(); //userId to set of socketIds
 const eventHandlerService = new SocketEventHandlerService(notificationRepository, userSocketMapService);
-const socketServer = new SocketServer(eventHandlerService, userSocketMapService, notificationRepository);
+const socketServer = new SocketServer(
+    eventHandlerService,
+    userSocketMapService,
+    webrtcEventHandlerService,
+    notificationRepository,
+);
 
 //file service
 
@@ -137,10 +154,6 @@ const jobRepository = new JobRepository(Job);
 
 const jobApplicationRepository = new JobApplicationRepository(JobApplication);
 
-// user application services
-const userJobApplicationService = new UserJobApplicationService(jobApplicationRepository, fileService);
-const userJobApplicationController = new UserJobApplicationController(userJobApplicationService);
-
 //compnay application services
 const companyJobApplicationService = new CompanyJobApplicationService(
     jobApplicationRepository,
@@ -151,6 +164,10 @@ const companyJobApplicationService = new CompanyJobApplicationService(
 
 const interviewServie = new InterviewService(jobApplicationRepository, notificationService, socketServer);
 const companyJobApplicationController = new CompanyJobApplicationController(companyJobApplicationService, interviewServie);
+
+// user application services
+const userJobApplicationService = new UserJobApplicationService(jobApplicationRepository, fileService);
+const userJobApplicationController = new UserJobApplicationController(userJobApplicationService, interviewServie);
 
 //jobs services
 const userJobService = new UserJobService(jobRepository, jobApplicationRepository, fileService);

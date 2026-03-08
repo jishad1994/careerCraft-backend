@@ -5,6 +5,7 @@ export const COMPANY_JOB_MESSAGES = {
     DELETED: "Job deleted successfully",
     FETCH_SUCCESSFULL: "Jobs fetch successfull",
     STATISTIC_FETCH_SUCCESSFULL: "Jobs statistics fetch successfull",
+    JOB_NOT_FOUND: "Job not found",
 } as const;
 
 export const COMPANY_SKILL_MESSAGES = {

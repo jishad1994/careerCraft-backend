@@ -5,4 +5,7 @@ export interface IUserJobApplicationController {
     getApplicationById(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
     getUserApplications(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
     withdrawApplication(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+    getAllInterviews(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+    getPopulatedInterviewById(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+    getInterviewStats(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 }

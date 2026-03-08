@@ -10,6 +10,7 @@ import { verifyAccessToken } from "../../../../utils/jwt.utils";
 import { SocketData } from "../../../../interfaces/socket-interfaces";
 import logger from "../../../../utils/logger";
 import { INotification } from "../../../../models/notifications/notification.interface";
+import { IWebRTCEventHandler } from "../../../../services/Webrtc/interfaces/Webrtc.event-handler.service.interface";
 
 export class SocketServer implements ISocketService {
     private io!: Server;
@@ -18,15 +19,14 @@ export class SocketServer implements ISocketService {
         // httpServer: HttpServer,
         private readonly eventHandlerService: ISocketEventHandler,
         private readonly userSocketMap: IUserSocketMapService,
+        private readonly webRtcHandler: IWebRTCEventHandler,
         private notificationRepository: INotificationRepository,
         // private readonly frontendUrl: string,
     ) {}
 
-    public connect(httpServer: HttpServer,frontendUrl:string) {
+    public connect(httpServer: HttpServer, frontendUrl: string) {
         // Initialize Socket.IO server
         this.io = new Server(httpServer, {
-
-
             cors: {
                 origin: frontendUrl,
                 credentials: true,
@@ -83,6 +83,9 @@ export class SocketServer implements ISocketService {
         this.io.on("connection", async (socket: Socket) => {
             //handle connection
             this.eventHandlerService.handleConnection(socket);
+
+            //register video call based events
+            this.webRtcHandler.register(socket, this.io);
 
             // Handle get unread count
             socket.on("notification:getCount", async () => {

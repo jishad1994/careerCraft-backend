@@ -10,10 +10,11 @@ export function errorHandler(err: unknown, req: Request, res: Response, next: Ne
         return ApiResponse.validationError(res, HTTP_MESSAGES.VALIDATION_ERROR, z.treeifyError(err));
 
     if (err instanceof AppError) {
-        if (err.isOperational) {    
+        if (err.isOperational) {
             logger.error(err.message);
 
-            console.log("this is error message form auth error", err.message);
+            console.log( err.message);
+            logger.error('Error stack',err.stack);
             return ApiResponse.error(res, err.message, null, err.statusCode);
         }
 

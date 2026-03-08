@@ -583,6 +583,7 @@ export class JobApplicationRepository extends BaseRepository<IJobApplication> im
                 applicationId: "$_id",
                 jobId: "$job",
                 jobTitle: "$jobDetails.title",
+                jobSlug: "$jobDetails.slug",
                 companyId: "$company",
                 companyName: "$companyDetails.name",
                 applicantId: "$applicant",
@@ -686,6 +687,9 @@ export class JobApplicationRepository extends BaseRepository<IJobApplication> im
         if (filter.jobId) {
             matchStage.job = new Types.ObjectId(filter.jobId);
         }
+        if (filter.applicantId) {
+            matchStage.applicant = new Types.ObjectId(filter.applicantId);
+        }
 
         if (filter.applicationId) {
             matchStage._id = new Types.ObjectId(filter.applicationId);
@@ -770,16 +774,29 @@ export class JobApplicationRepository extends BaseRepository<IJobApplication> im
 
         // Step 7: Search filter
         if (filter.search) {
-            pipeline.push({
-                $match: {
-                    $or: [
-                        { "applicantDetails.firstName": { $regex: filter.search, $options: "i" } },
-                        { "applicantDetails.lastName": { $regex: filter.search, $options: "i" } },
-                        { "applicantDetails.email": { $regex: filter.search, $options: "i" } },
-                        { "jobDetails.title": { $regex: filter.search, $options: "i" } },
-                    ],
-                },
-            });
+            if (filter.companyId) {
+                pipeline.push({
+                    $match: {
+                        $or: [
+                            { "applicantDetails.firstName": { $regex: filter.search, $options: "i" } },
+                            { "applicantDetails.lastName": { $regex: filter.search, $options: "i" } },
+                            { "applicantDetails.email": { $regex: filter.search, $options: "i" } },
+                            { "jobDetails.title": { $regex: filter.search, $options: "i" } },
+                        ],
+                    },
+                });
+            } else if (filter.applicantId) {
+                pipeline.push({
+                    $match: {
+                        $or: [
+                            { "companyDetails.name": { $regex: filter.search, $options: "i" } },
+                            { "companyDetails.email": { $regex: filter.search, $options: "i" } },
+                            { "applicantDetails.email": { $regex: filter.search, $options: "i" } },
+                            { "jobDetails.title": { $regex: filter.search, $options: "i" } },
+                        ],
+                    },
+                });
+            }
         }
 
         // Step 8: Project final structure
@@ -790,8 +807,12 @@ export class JobApplicationRepository extends BaseRepository<IJobApplication> im
                 applicationId: "$_id",
                 jobId: "$job",
                 jobTitle: "$jobDetails.title",
+                jobSlug: "$jobDetails.slug",
                 companyId: "$company",
                 companyName: "$companyDetails.name",
+                companyEmail: "$companyDetails.email",
+                companyPhone: "$companyDetails.phone",
+                companyProfilePicture: "$companyDetails.profilePicture",
                 applicantId: "$applicant",
                 applicantName: {
                     $concat: ["$applicantDetails.firstName", " ", "$applicantDetails.lastName"],

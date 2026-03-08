@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { ValidationError } from "../../../errors-classes/validation.error";
-import { JobApplicationStatus, IJobApplication } from "../../../models/job-application/job-application.interface";
+import { JobApplicationStatus, IJobApplication, IJobApplicationDetails } from "../../../models/job-application/job-application.interface";
 import { IJobApplicationRepository } from "../../../repositories/application/job-application.repository.interface";
 import { IUserJobApplicationService } from "../interfaces/user-job-application.service.interface";
 import { AppError } from "../../../errors-classes/app.error.";
@@ -23,12 +23,12 @@ export class UserJobApplicationService implements IUserJobApplicationService {
         return { appliedStatus: !!existingApplication, applicationStatus: existingApplication?.status ?? null };
     }
 
-    async getApplicationById(applicationId: string): Promise<IJobApplication> {
+    async getApplicationById(applicationId: string): Promise<IJobApplicationDetails> {
         if (!mongoose.Types.ObjectId.isValid(applicationId)) {
             throw new ValidationError("Invalid application ID");
         }
 
-        const application = await this._jobApplicationRepository.findById(applicationId);
+        const application = await this._jobApplicationRepository.findApplicationDetailsById(applicationId);
         if (!application) {
             throw new AppError("Application not found", 404);
         }

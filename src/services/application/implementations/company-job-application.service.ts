@@ -20,6 +20,7 @@ import { ISocketService } from "../../../shared/services/socket/interface/socket
 import { CreateNotificationParams } from "../../../interfaces/notification-interfaces";
 import { NOTIFICATION_PRIORITIES, NOTIFICATION_TYPES } from "../../../models/notifications/notification.interface";
 import { NOTIFICATION_MESSAGES } from "../../../constants/messages/notification.messages";
+import logger from "../../../utils/logger";
 
 export class CompanyJobApplicationService implements ICompanyJobApplicationServiceInterface {
     constructor(
@@ -58,6 +59,7 @@ export class CompanyJobApplicationService implements ICompanyJobApplicationServi
     }
 
     async getApplicationDetailsById(applicationId: string): Promise<IJobApplicationDetails> {
+        
         if (!mongoose.Types.ObjectId.isValid(applicationId)) {
             throw new ValidationError("Invalid application ID");
         }
@@ -126,6 +128,8 @@ export class CompanyJobApplicationService implements ICompanyJobApplicationServi
         notes?: string,
     ): Promise<IJobApplicationDetails> {
         if (!mongoose.Types.ObjectId.isValid(applicationId)) {
+
+            logger.info('inside update application status service')
             throw new ValidationError("Invalid application ID");
         }
 

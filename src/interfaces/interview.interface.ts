@@ -4,6 +4,7 @@ export interface InterviewFilter {
   companyId?: string;
   jobId?: string;
   applicationId?: string;
+  applicantId?: string;
   status?: string[];
   type?: string[];
   round?: number;
@@ -18,8 +19,14 @@ export interface InterviewWithPopulated {
   applicationId: string;
   jobId: string;
   jobTitle: string;
+  jobSlug: string;
   companyId: string;
   companyName: string;
+  companyProfilePicture?:{
+    key: string;
+    location: string;
+  },
+  companyEmail:string;
   applicantId: string;
   applicantName: string;
   applicantEmail: string;

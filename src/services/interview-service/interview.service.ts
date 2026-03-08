@@ -85,9 +85,11 @@ export class InterviewService implements IInterviewService {
         const updatedInterview: Partial<IInterview> = {
             scheduledAt: newScheduledAt,
             status: "rescheduled",
+            isRescheduled: true,
+            rescheduledReson: reason,
         };
 
-        await this.applicationRepository.updateInterview(applicationId, interviewId,  updatedInterview);
+        await this.applicationRepository.updateInterview(applicationId, interviewId, updatedInterview);
 
         await this.createInterviewNotification(
             application.applicant._id.toString(),
@@ -123,7 +125,7 @@ export class InterviewService implements IInterviewService {
             status: "cancelled",
         };
 
-        await this.applicationRepository.updateInterview(applicationId, interviewId,  updatedInterview);
+        await this.applicationRepository.updateInterview(applicationId, interviewId, updatedInterview);
 
         await this.createInterviewNotification(
             application.applicant._id.toString(),
@@ -179,7 +181,7 @@ export class InterviewService implements IInterviewService {
             rating,
         };
 
-        return await this.updateInterview(applicationId, interviewId, round, updateData);
+        return await this.updateInterview(applicationId, interviewId, updateData);
     }
 
     async getInterviews(

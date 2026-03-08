@@ -13,6 +13,8 @@ import { Request, Response, NextFunction } from "express";
 import { IInterviewService } from "../../../services/interview-service/interivew.service.interface";
 import { ValidationError } from "../../../errors-classes/validation.error";
 import { InterviewFilter } from "../../../interfaces/interview.interface";
+import { AuthError } from "../../../errors-classes/auth.error";
+import { USER_AUTH_MESSAGES } from "../../../constants/messages/user.messages.constants";
 
 export class CompanyJobApplicationController implements ICompanyJobApplicationController {
     constructor(
@@ -374,7 +376,7 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
             const { applicationId, interviewId } = req.params;
             const { updateData } = req.body;
 
-            const interview = await this._interviewService.updateInterview(applicationId, interviewId,  updateData);
+            const interview = await this._interviewService.updateInterview(applicationId, interviewId, updateData);
 
             return res.status(200).json({
                 success: true,
@@ -388,8 +390,12 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
 
     async getAllInterviews(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
+            const companyId = req.user?.id;
+
+            if (!companyId) {
+                throw new AuthError(USER_AUTH_MESSAGES.USER_ID_MISSING, 401);
+            }
             const {
-                companyId,
                 jobId,
                 applicationId,
                 status,
@@ -413,6 +419,8 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
                 endDate: endDate ? new Date(endDate as string) : undefined,
                 search: search as string,
             };
+
+            console.log("comapny id:", companyId);
 
             const { interviews, paginationMeta } = await this._interviewService.getInterviews(
                 filter,
