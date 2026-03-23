@@ -95,7 +95,7 @@ userProfileRoutes.delete(
     userProfileController.deleteCertificate.bind(userProfileController),
 );
 userProfileRoutes.get(
-    "/resume/:resumeName",
+    "/resumes/view",
 
     userProfileController.getResume.bind(userProfileController),
 );

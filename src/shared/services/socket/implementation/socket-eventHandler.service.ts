@@ -26,6 +26,8 @@ export class SocketEventHandlerService implements ISocketEventHandler {
         // Join user to their personal room
         socket.join(`user:${userData.userId}`);
 
+        
+
         // Send initial unread count
         this.sendUnreadCount(socket, userData.userId);
     }

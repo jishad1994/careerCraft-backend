@@ -5,21 +5,23 @@ import { ISubscriptionPlanRepository } from "../../../repositories/subscription-
 import { ISubscriptionPlanServce } from "../interfaces/subscription-plan.service.interface";
 import { ValidationError } from "../../../errors-classes/validation.error";
 import logger from "../../../utils/logger";
+import { ConflictError } from "../../../errors-classes/conflict.error";
 
 export class SubscriptionPlanService implements ISubscriptionPlanServce {
     constructor(private _planRepository: ISubscriptionPlanRepository) {}
 
     async createPlan(planData: ISubscriptionPlan): Promise<ISubscriptionPlan> {
+        
         const existingPlan = await this._planRepository.findByName(planData.name);
+
         if (existingPlan) {
-            throw new AppError(`Plan with name '${planData.name}' already exists`);
+            throw new ConflictError(`Plan with name '${planData.name}' already exists`);
         }
         if (planData.name.toLowerCase() != "free" && planData.price === 0) {
-            throw new AppError("Free plan must have name free");
+            throw new ValidationError("Free plan must have name free", 400);
         }
-        // Validate free plan constraints
         if (planData.name.toLowerCase() === "free" && planData.price !== 0) {
-            throw new AppError("Free plan must have price of 0");
+            throw new ValidationError("Free plan must have price of 0", 400);
         }
 
         return await this._planRepository.create(planData);
@@ -39,11 +41,10 @@ export class SubscriptionPlanService implements ISubscriptionPlanServce {
         }
         const plan = await this._planRepository.findById(planId);
 
-        logger.info('plan in repository',plan)
+        logger.info("plan in repository", plan);
         if (!plan) {
             throw new AppError("No subscription plan found");
         }
-        
 
         return plan;
     }

@@ -1,23 +1,28 @@
 import { NextFunction, Request, Response } from "express";
 import logger from "../utils/logger";
-import { ApiResponse } from "../utils/apiResponse.utils";
 import { HTTP_MESSAGES } from "../constants/messages/http.messages.constants";
 import { AccessPayload, verifyAccessToken } from "../utils/jwt.utils";
+import { AuthError } from "../errors-classes/auth.error";
 
 export function notificationAuthMiddleware(req: Request, res: Response, next: NextFunction) {
-    const token = req.cookies.accessToken;
+   const token = req.cookies?.accessToken;
 
-    if (!token) {
-        logger.error("unauthorized request expired request ");
-        return ApiResponse.unauthorized(res, HTTP_MESSAGES.UNAUTHORIZED);
-    }
-    try {
-        const payload: AccessPayload = verifyAccessToken(token);
+  if (!token) {
+    logger.warn("Missing access token");
+    return next(new AuthError(HTTP_MESSAGES.UNAUTHORIZED, 401));
+  }
 
-        req.user = { id: payload.sub, role: payload.role }; //converted to more meaningfull manner
+  try {
+    const payload: AccessPayload = verifyAccessToken(token);
 
-        next();
-    } catch (error) {
-        return ApiResponse.unauthorized(res, error instanceof Error ? error.message : HTTP_MESSAGES.SESSION_EXPIRED);
-    }
+    req.user = { id: payload.sub, role: payload.role };
+
+    next();
+  } catch {
+    logger.warn("Invalid or expired token");
+
+    return next(
+      new AuthError(HTTP_MESSAGES.SESSION_EXPIRED, 401)
+    );
+  }
 }

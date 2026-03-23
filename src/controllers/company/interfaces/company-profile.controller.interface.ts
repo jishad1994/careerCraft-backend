@@ -19,5 +19,7 @@ export interface ICompanyProfileController {
 
     deleteDocument(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
     
+    viewDocument(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+    
     reapplyForVerification(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 }

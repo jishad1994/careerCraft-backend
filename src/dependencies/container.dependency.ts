@@ -65,6 +65,10 @@ import { WebRTCEventHandler } from "../services/Webrtc/implementations/Webrtc.ev
 import { WebRTCService } from "../services/Webrtc/implementations/Webrtc.service";
 import { WebRTCRepository } from "../repositories/webrtc/Webrtc.repository";
 import { CallSession } from "../models/call-session/call.session.schema";
+import { InvoiceService } from "../shared/services/invoice-service/invoice.service";
+import { InvoiceRepository } from "../repositories/invoice/invoice.repository";
+import { Invoice } from "../models/invoice/invoice.model";
+import { InvoiceController } from "../controllers/invoice/invoice.controller";
 
 //redis cache service instance
 const redisRepo = new RedisCacheRepo(process.env.REDIS_URL || "redis://localhost:6379");
@@ -205,11 +209,25 @@ const paymentRepository = new PaymentRepository(Payment);
 
 //company subscription payment
 
+//invoice
+const invoiceRepository = new InvoiceRepository(Invoice);
+const invoiceService = new InvoiceService(
+    invoiceRepository,
+    companyRepo,
+    companySubscriptionRepository,
+    paymentRepository,
+    fileService,
+);
+const invoiceController = new InvoiceController(invoiceService);
+
+
+//subscription payment controller
 const companySubscriptionPaymentService = new SubscriptionPaymentService(
     paymentService,
     subscriptionPlanRepository,
     companySubscriptionRepository,
     paymentRepository,
+    invoiceService,
 );
 
 const companySubscriptionPaymentController = new CompanySubscriptionPaymentController(companySubscriptionPaymentService);
@@ -242,4 +260,5 @@ export {
     companySubscriptionController,
     companySubscriptionPaymentController,
     companyCandidateController,
+    invoiceController
 };

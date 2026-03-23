@@ -6,6 +6,7 @@ import { IFileService } from "../../services/file-service/interfaces/file.servic
 import { getFileLocation } from "../../utils/s3-bucket.utils";
 export class S3Service implements IFileService {
     async uplodaFile(file: Express.Multer.File, folder: string, userId: string): Promise<string> {
+        
         //user profilePictures folder name since the bucket policy has 'profilePicture' as private prefix
         const key = `${folder}/${userId}/${Date.now()}-${file.originalname}`;
 
@@ -20,6 +21,23 @@ export class S3Service implements IFileService {
         );
 
         return key; //since the bucket is private by default only the key returns
+    }
+
+    async uploadBuffer(buffer: Buffer, folder: string, fileName: string, contentType: string): Promise<string> {
+        
+        const key = `${folder}/${Date.now()}-${fileName}`;
+
+        await s3.send(
+            new PutObjectCommand({
+                Bucket: S3_BUCKET,
+                Key: key,
+                Body: buffer,
+                ContentType: contentType,
+                ContentDisposition: "inline", // or attachment
+            }),
+        );
+
+        return key;
     }
 
     async uploadResume(file: Express.Multer.File, userId: string): Promise<string> {

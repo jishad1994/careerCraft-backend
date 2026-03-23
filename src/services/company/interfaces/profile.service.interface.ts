@@ -1,3 +1,4 @@
+import { GetObjectCommandOutput } from "@aws-sdk/client-s3";
 import { CompanyProfileDTO } from "../../../dtos/companyProfile.dto";
 import { ICompany } from "../../../models/company/company.interface";
 
@@ -12,4 +13,5 @@ export interface ICompanyProfileService {
     uploadDocument(companyId: string, document: Express.Multer.File): Promise<CompanyProfileDTO>;
     deleteDocument(companyId: string, documentKey: string): Promise<CompanyProfileDTO>;
     reapplyForVerification(companyId: string): Promise<CompanyProfileDTO>;
+    viewDocument(companyId: string,documentkey:string): Promise<GetObjectCommandOutput>;
 }

@@ -6,14 +6,16 @@ import { CompanyProfileDTO } from "../../../dtos/companyProfile.dto";
 import { ApiResponse } from "../../../utils/apiResponse.utils";
 import { AuthError } from "../../../errors-classes/auth.error";
 import { HTTP_MESSAGES } from "../../../constants/messages/http.messages.constants";
-import { COMPANY_PROFILE_MESSAGES } from "../../../constants/messages/company.messages.constants";
+import {
+    COMPANY_DOCUMENT_MESSAGES,
+    COMPANY_PROFILE_MESSAGES,
+} from "../../../constants/messages/company.messages.constants";
 import { ValidationError } from "../../../errors-classes/validation.error";
 import { IAddress } from "../../../models/user/user.interface";
+import { Readable } from "stream";
 
 export class CompanyProfileController implements ICompanyProfileController {
     constructor(private _companyProfileService: ICompanyProfileService) {}
-
-
 
     async reapplyForVerification(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
@@ -158,6 +160,31 @@ export class CompanyProfileController implements ICompanyProfileController {
             if (!documentKey) throw new AppError("Document key if not found");
             const profile = await this._companyProfileService.deleteDocument(company.id, documentKey);
             return ApiResponse.success(res, COMPANY_PROFILE_MESSAGES.DOCUMENT_DELETED, profile);
+        } catch (error) {
+            next(error);
+        }
+    }
+    async viewDocument(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const company = req.user;
+
+            if (!company) throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED, 401);
+
+            const documentKey = req.query.key;
+
+            const mode = (req.query.mode as string) || "view";
+
+            if (typeof documentKey !== "string") throw new AppError(COMPANY_DOCUMENT_MESSAGES.INVALID_DOCUMENT_KEY);
+
+            const documentStream = await this._companyProfileService.viewDocument(company.id, documentKey);
+
+            res.setHeader("Content-Type", documentStream.ContentType || "application/pdf");
+            if (mode === "download") {
+                res.setHeader("Content-Disposition", `attachment; filename="document-${documentStream}.pdf"`);
+            } else {
+                res.setHeader("Content-Disposition", `inline; filename="document-${documentStream}.pdf"`);
+            }
+            (documentStream.Body as Readable).pipe(res);
         } catch (error) {
             next(error);
         }

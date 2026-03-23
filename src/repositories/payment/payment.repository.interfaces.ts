@@ -6,4 +6,5 @@ export interface IPaymentRepository extends IBaseRepository<IPayment> {
     findByCompany(companyId: string): Promise<IPayment[]>;
     updateStatus(id: string, status: PaymentStatus, additionalData?: Partial<IPayment>): Promise<IPayment | null>;
     findPendingBySubscription(subscriptionId: string): Promise<IPayment | null>;
+    findByInvoiceNumber(invoiceNumber: string): Promise<IPayment | null>;
 }

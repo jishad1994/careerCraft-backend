@@ -4,7 +4,8 @@ import companyJobRoutes from "./company.jobs.routes";
 import companyApplicationRoutes from "./company.applications.routes";
 import { companyAuthMiddleware } from "../../middlewares/company.auth.middleware";
 import companySubscriptionRoutes from "./company.subscription.routes";
-import candidateRoutes from "./compay.candidates.routes";
+import candidateRoutes from "./company.candidates.routes";
+import companyInvoiceRoutes from "./company.invoice.routes";
 
 export const companyRoutes = express.Router();
 
@@ -17,5 +18,7 @@ companyRoutes.use("/applications", companyAuthMiddleware, companyApplicationRout
 companyRoutes.use("/subscriptions", companySubscriptionRoutes);
 
 companyRoutes.use("/candidates", candidateRoutes);
+
+companyRoutes.use("/invoices", companyInvoiceRoutes);
 
 export default companyRoutes;

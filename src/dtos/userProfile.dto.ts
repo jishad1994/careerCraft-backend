@@ -25,11 +25,11 @@ export class ExperienceDTO {
     description?: string;
 }
 
-export class AddressDTO {
-    city!: string;
-    state!: string;
-    country!: string;
-    postalCode!: string;
+export interface AddressDTO {
+    city?: string;
+    state?: string;
+    country?: string;
+    postalCode?: string;
 }
 
 export class JobsAppliedDTO {

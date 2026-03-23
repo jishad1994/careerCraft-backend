@@ -36,9 +36,12 @@ export class AuthService implements IAuthService {
     async refresh(
         oldRefreshToken: string,
     ): Promise<{ accessToken: string; refreshToken: string; user: AuthUserResponseDTO }> {
+        console.log("old refresh token:", oldRefreshToken);
         const payload = verifyRefreshToken(oldRefreshToken);
 
         const record = await this._refreshTokenRepository.find(payload.jti);
+
+        console.log("record: ", record);
 
         if (!record || record.role !== payload.role || record.userId !== payload.sub) {
             throw new AuthError("invalid refresh token");
@@ -53,7 +56,7 @@ export class AuthService implements IAuthService {
                 ? await this._userRepository.findById(payload.sub)
                 : await this._companyRepository.findById(payload.sub);
 
-        if (!userDoc) throw new AppError("User not found");
+        if (!userDoc) throw new AppError("User not found", 401);
 
         const user = AuthMapper.toAuthUserDto(userDoc);
 
@@ -108,7 +111,7 @@ export class AuthService implements IAuthService {
                 ? await this._userRepository.findOne({ email })
                 : await this._companyRepository.findByEmail(email as string);
 
-        if (!userDoc) throw new AppError("No User Found");
+        if (!userDoc) throw new AuthError("No User Found", 401);
 
         if (userDoc.isBlocked) throw new AuthError(HTTP_MESSAGES.FORBIDDEN, HTTP_STATUS.FORBIDDEN);
 

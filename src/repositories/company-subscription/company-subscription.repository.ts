@@ -1,23 +1,23 @@
 import { Model, Types } from "mongoose";
-import { companySubscriptionUsageTypes, ICompanySubscription, SubscriptionStatus,  } from "../../models/company-subscription/company-subscription.interface";
+import {
+    companySubscriptionUsageTypes,
+    ICompanySubscription,
+    SubscriptionStatus,
+} from "../../models/company-subscription/company-subscription.interface";
 import { BaseRepository } from "../base-repository/base.repository";
 import { ICompanySubscriptionRepository } from "./company-subscription.repository.interface";
 
-export class CompanySubscriptionRepository
-    extends BaseRepository<ICompanySubscription>
-    implements ICompanySubscriptionRepository
-{
-
+export class CompanySubscriptionRepository extends BaseRepository<ICompanySubscription>
+    implements ICompanySubscriptionRepository {
     constructor(model: Model<ICompanySubscription>) {
         super(model);
     }
-
 
     async findActiveByCompany(companyId: string): Promise<ICompanySubscription | null> {
         return await this.model
             .findOne({
                 companyId: new Types.ObjectId(companyId),
-                status: SubscriptionStatus.ACTIVE,
+                status: { $in: [SubscriptionStatus.ACTIVE, SubscriptionStatus.PENDING] },
                 startDate: { $lte: new Date() },
                 endDate: { $gte: new Date() },
             })
@@ -58,15 +58,12 @@ export class CompanySubscriptionRepository
                     cancelledAt: new Date(),
                     cancelReason: reason,
                 },
-                { new: true, runValidators: true },
+                { new: true },
             )
             .lean();
     }
 
-    async incrementUsage(
-        id: string,
-        type: companySubscriptionUsageTypes,
-    ): Promise<ICompanySubscription | null> {
+    async incrementUsage(id: string, type: companySubscriptionUsageTypes): Promise<ICompanySubscription | null> {
         const subscription = await this.model.findById(id);
         if (!subscription) return null;
 

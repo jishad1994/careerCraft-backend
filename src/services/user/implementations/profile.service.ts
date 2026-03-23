@@ -488,13 +488,13 @@ export class UserProfileService implements IUserProfileService {
 
         const user = await this._userRepository.findById(userId);
         if (!user) {
-            throw new AppError("User not found");
+            throw new AppError("User not found", 401);
         }
 
         const resume = user.resumeURL.find((doc) => doc.originalName === resumeName);
 
         if (!resume) {
-            throw new AppError("Resume not found");
+            throw new AppError("Resume not found", 401);
         }
 
         return await this._fileService.getFile(resume.key);
@@ -513,7 +513,7 @@ export class UserProfileService implements IUserProfileService {
         const resume = user.resumeURL.find((doc) => doc.key === resumeKey);
 
         if (!resume) {
-            throw new AppError("Resume not found");
+            throw new ValidationError("Resume not found",404);
         }
 
         return await this._fileService.getFile(resume.key);

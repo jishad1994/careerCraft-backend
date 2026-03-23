@@ -2,6 +2,7 @@ import express from "express";
 import {
     companySubscriptionController,
     companySubscriptionPaymentController,
+    invoiceController,
 } from "../../dependencies/container.dependency";
 import { companyAuthMiddleware } from "../../middlewares/company.auth.middleware";
 
@@ -11,6 +12,11 @@ companySubscriptionRoutes.get(
     "/active",
     companyAuthMiddleware,
     companySubscriptionController.getActiveSubscription.bind(companySubscriptionController),
+);
+companySubscriptionRoutes.get(
+    "/:subscriptionId/invoice",
+    companyAuthMiddleware,
+    invoiceController.getInvoiceBySubscription.bind(invoiceController),
 );
 
 companySubscriptionRoutes.get(
@@ -51,6 +57,11 @@ companySubscriptionRoutes.post(
     "/payments",
     companyAuthMiddleware,
     companySubscriptionPaymentController.retryPayment.bind(companySubscriptionPaymentController),
+);
+companySubscriptionRoutes.get(
+    "/payments/:paymentId",
+    companyAuthMiddleware,
+    companySubscriptionPaymentController.getPaymentById.bind(companySubscriptionPaymentController),
 );
 companySubscriptionRoutes.get(
     "/payments/:intentId",

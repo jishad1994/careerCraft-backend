@@ -1,38 +1,36 @@
 import { Request, Response, NextFunction } from "express";
 import { AccessPayload, verifyAccessToken } from "../utils/jwt.utils";
 import logger from "../utils/logger";
-import { ApiResponse } from "../utils/apiResponse.utils";
 import { HTTP_MESSAGES } from "../constants/messages/http.messages.constants";
 import { AuthCookiesSchema } from "../validators-schemas/auth.schemas";
 import { AppError } from "../errors-classes/app.error.";
+import { AuthError } from "../errors-classes/auth.error";
 
 export function AdminAuthMiddleware(req: Request, res: Response, next: NextFunction) {
-    
-    const result = AuthCookiesSchema.safeParse(req.cookies);
+  const result = AuthCookiesSchema.safeParse(req.cookies);
 
-    if (!result.success) {
-        logger.warn("Cookie validation failed", result.error.flatten());
-        return ApiResponse.unauthorized(res, HTTP_MESSAGES.MISSING_TOKEN);
+  if (!result.success) {
+    return next(new AppError(HTTP_MESSAGES.MISSING_TOKEN, 401));
+  }
+
+  const { accessToken } = result.data;
+
+  try {
+    const payload: AccessPayload = verifyAccessToken(accessToken);
+
+    if (payload.role !== "admin") {
+      return next(new AppError(HTTP_MESSAGES.FORBIDDEN, 403));
     }
 
-    const { accessToken } = result.data;
+    req.user = { id: payload.sub, role: payload.role };
+    next();
 
-    try {
-        const payload: AccessPayload = verifyAccessToken(accessToken);
-
-        if (payload.role !== "admin") {
-            return ApiResponse.forbidden(res, HTTP_MESSAGES.FORBIDDEN);
-        }
-
-        req.user = { id: payload.sub, role: payload.role }; //converted to more meaningfull manner
-
-        next();
-    } catch (error: unknown) {
-        if (error instanceof AppError) {
-            return ApiResponse.unauthorized(res, error.message);
-        }
-
-        logger.error("Unexpected Auth Error:", error);
-        return ApiResponse.unauthorized(res, HTTP_MESSAGES.UNAUTHORIZED);
+  } catch (error: unknown) {
+    if (error instanceof AppError) {
+      return next(error);
     }
+
+    logger.error("Unexpected Auth Error:", error);
+    return next(new AuthError(HTTP_MESSAGES.UNAUTHORIZED, 401));
+  }
 }

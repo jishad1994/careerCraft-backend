@@ -84,7 +84,7 @@ export const companySchema = new Schema<ICompany>(
         },
         numberOfEmployees: Number,
         staffs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Staff" }],
-        documents: [documentSchema],
+        documents: [documentSchema],    
         jobsPosted: [{ type: mongoose.Schema.Types.ObjectId, ref: "Job" }],
     },
 

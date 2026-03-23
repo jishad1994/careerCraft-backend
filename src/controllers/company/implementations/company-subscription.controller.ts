@@ -38,12 +38,13 @@ export class CompanySubscriptionController implements ICompanySubscriptionContro
             }
 
             const planId = req.params.planId;
+            console.log('planId:',planId)
             if (!planId) {
                 throw new AppError("No plan Id found");
             }
 
-            const plan = this._subscriptionPlanService.getPlanById(planId);
-
+            const plan =  await this._subscriptionPlanService.getPlanById(planId);
+console.log('plan',plan)
             logger.info('plan:',plan)
 
             return ApiResponse.success(res, SUBSCRIPTION_PLAN_MESSAGES.FETCH_SUCCESSFULL_BY_ID, plan);
@@ -58,7 +59,9 @@ export class CompanySubscriptionController implements ICompanySubscriptionContro
      */
     async getActiveSubscription(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
+
             const companyId = req.user?.id;
+
             if (!companyId) {
                 throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
             }
@@ -109,13 +112,18 @@ export class CompanySubscriptionController implements ICompanySubscriptionContro
     async cancelSubscription(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const companyId = req.user?.id;
+
             if (!companyId) {
                 throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
             }
-
             const { reason } = req.body;
+
+
             const subscription = await this._companySubscriptionService.cancelSubscription(companyId, reason || "");
+
+
             return ApiResponse.success(res, COMPANY_SUBSCRIPTION_MESSAGES.SUBSCRIPTION_CANCELLED_SUCCESSFULL, subscription);
+            
         } catch (error) {
             next(error);
         }

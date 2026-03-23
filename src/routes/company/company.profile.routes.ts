@@ -31,6 +31,8 @@ companyProfileRoutes.post(
     upload.single("document"),
     companyProfileController.uploadDocument.bind(companyProfileController),
 );
+companyProfileRoutes.get("/documents", companyProfileController.viewDocument.bind(companyProfileController));
+
 companyProfileRoutes.delete("/documents", companyProfileController.deleteDocument.bind(companyProfileController));
 
 companyProfileRoutes.patch("/reapply-verification", companyProfileController.reapplyForVerification.bind(companyProfileController));

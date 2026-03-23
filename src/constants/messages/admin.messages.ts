@@ -7,6 +7,7 @@ export const ADMIN_JOB_MESSAGES = {
 } as const;
 
 export const SUBSCRIPTION_PLAN_MESSAGES = {
+    PLAN_NOT_FOUND: "Plan not found",
     FETCH_SUCCESSFULL: "Subscription plans fetch successfull",
     FETCH_SUCCESSFULL_BY_ID: "Subscription plans fetch by id successfull",
     CREATED: "Subscription plan created successfully",

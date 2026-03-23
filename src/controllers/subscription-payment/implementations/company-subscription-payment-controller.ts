@@ -7,6 +7,7 @@ import { ApiResponse } from "../../../utils/apiResponse.utils";
 import { COMPANY_SUBSCRIPTION_MESSAGES } from "../../../constants/messages/company-subscription.messages.constants";
 import logger from "../../../utils/logger";
 import { AppError } from "../../../errors-classes/app.error.";
+import { HTTP_MESSAGES } from "../../../constants/messages/http.messages.constants";
 
 export class CompanySubscriptionPaymentController implements ICompanySubscriptionPaymentController {
     constructor(private readonly _subscriptionPaymentService: ISubscriptionPaymentService) {}
@@ -67,7 +68,7 @@ export class CompanySubscriptionPaymentController implements ICompanySubscriptio
     }
 
     /**
-     * Retry failed payment  
+     * Retry failed payment
      */
     async retryPayment(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
@@ -91,7 +92,7 @@ export class CompanySubscriptionPaymentController implements ICompanySubscriptio
     }
 
     /**
-     * Get payment status 
+     * Get payment status
      */
     async getPaymentStatus(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
@@ -104,6 +105,28 @@ export class CompanySubscriptionPaymentController implements ICompanySubscriptio
             const status = await this._subscriptionPaymentService.getPaymentStatus(intentId);
 
             return ApiResponse.success(res, COMPANY_SUBSCRIPTION_MESSAGES.PAYMENT_STATUS_RETRIEVED, status);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getPaymentById(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const companyId = req.user?.id;
+
+            if (!companyId) {
+                throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED, 403);
+            }
+            const { paymentId } = req.params;
+
+              console.log('paymentid:',paymentId)
+            if (!paymentId) {
+                throw new ValidationError("Payment  ID is required", 404);
+            }
+
+            const payment = await this._subscriptionPaymentService.getPaymentById(paymentId, companyId);
+
+            return ApiResponse.success(res, COMPANY_SUBSCRIPTION_MESSAGES.PAYMENT_FETCH_SUCCESSFULL, payment);
         } catch (error) {
             next(error);
         }

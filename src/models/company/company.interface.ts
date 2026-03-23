@@ -1,5 +1,5 @@
 import mongoose, { Document, ObjectId } from "mongoose";
-import { IBannerImage, IDocument, IProfilePicture, Role } from "../user/user.interface";
+import { IAddress, IBannerImage, IDocument, IProfilePicture, Role } from "../user/user.interface";
 import { AddressDTO } from "../../dtos/userProfile.dto";
 
 export const COMPANY_REJECTION_CODES = {
@@ -45,6 +45,7 @@ export interface ICompany extends Document<mongoose.Types.ObjectId> {
     googleId?: string;
 
     provider: "google" | "local";
+    
     role: Role;
 
     profilePicture?: IProfilePicture;
@@ -61,7 +62,7 @@ export interface ICompany extends Document<mongoose.Types.ObjectId> {
 
     GSTIN?: string;
 
-    address?: AddressDTO[];
+    address?: IAddress[];
 
     logo?: string;
 

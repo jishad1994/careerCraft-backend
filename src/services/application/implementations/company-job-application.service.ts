@@ -174,14 +174,14 @@ export class CompanyJobApplicationService implements ICompanyJobApplicationServi
         const updatedApplication = await this.getApplicationDetailsById(applicationId);
 
         if (!updatedApplication) {
-            throw new AppError("Failed to update application", 500);
+            throw new AppError("Failed to update application", 400);
         }
 
         const notificationParams: CreateNotificationParams = {
             userId: updatedApplication.applicant.toString(),
             type: NOTIFICATION_TYPES.APPLICATION_STATUS,
             title: NOTIFICATION_MESSAGES.APPLICATION_STATUS_UPDATED,
-            message: `Your job application status has changed to ${updatedApplication.status}`,
+            message: `Your job application of job ${updatedApplication.jobDetails.slug} has changed to status ${updatedApplication.status}`,
             priority: NOTIFICATION_PRIORITIES.HIGH,
             metadata: {
                 applicationId: updatedApplication._id,
@@ -189,9 +189,9 @@ export class CompanyJobApplicationService implements ICompanyJobApplicationServi
         };
 
         console.log("user id:", notificationParams.userId, typeof notificationParams.userId);
-        // const notification = await this._notificationService.createNotification(notificationParams);
+        const notification = await this._notificationService.createNotification(notificationParams);
 
-        // await this._socketServer.sendNotificationToUser( notification.userId.toString(), notification);
+        await this._socketServer.sendNotificationToUser( notification.userId.toString(), notification);
 
         return updatedApplication;
     }

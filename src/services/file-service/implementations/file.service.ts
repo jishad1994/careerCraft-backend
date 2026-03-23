@@ -14,9 +14,19 @@ export class FileService implements IFileService {
             return this.provider.uplodaFile(file, folder, userId, isPublic);
         } catch (error) {
             logger.error(error);
-            throw new AppError("Error while uploading file");
+            throw new AppError("Error while uploading file",400);
         }
     }
+
+    async uploadBuffer(buffer: Buffer, folder: string, fileName: string, contentType: string): Promise<string> {
+        try {
+            return this.provider.uploadBuffer(buffer, folder, fileName, contentType);
+        } catch (error) {
+            logger.error(error);
+            throw new AppError("Error while uploading buffer",400);
+        }
+    }
+
 
     async deleteFile(key: string): Promise<void> {
         return this.provider.deleteFile(key);
@@ -53,7 +63,6 @@ export class FileService implements IFileService {
     }
 
     async getFile(key: string): Promise<GetObjectCommandOutput> {
-        
         return await this.provider.getFile(key);
     }
 }

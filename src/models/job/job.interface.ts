@@ -1,6 +1,5 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 
-import { Document } from "mongoose";
 import { ISkill } from "../skill/skill.interface";
 
 export type EmploymentType = "full-time" | "part-time" | "contract" | "internship" | "freelance";
@@ -15,7 +14,7 @@ export interface IJob extends Document<mongoose.Types.ObjectId> {
     slug: string;
 
     // recruiter: mongoose.Types.ObjectId;
-    
+
     company: mongoose.Types.ObjectId;
 
     description: string;

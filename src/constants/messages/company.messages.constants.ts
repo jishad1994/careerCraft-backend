@@ -47,6 +47,11 @@ export const INTERVIEW_MESSAGES = {
     UPCOMING_INTERVIEWS_FETCHED: "Upcoming interviews fetched successfully",
 } as const;
 
+export const COMPANY_DOCUMENT_MESSAGES = {
+    DOCUMENT_NOT_FOUND: "Document not found",
+    INVALID_DOCUMENT_KEY:"Invalid document key"
+};
+
 export const COMPANY_CANDIDATES_MESSAGE = {
     CANDIDATE_PROFILE_FETCH_SUCCESSFULL: "Candidate profile fetch successfull",
 };

@@ -41,4 +41,8 @@ export class PaymentRepository extends BaseRepository<IPayment> implements IPaym
             })
             .lean();
     }
+
+    async findByInvoiceNumber(invoiceNumber: string): Promise<IPayment | null> {
+        return this.model.findOne({ invoiceNumber });
+    }
 }

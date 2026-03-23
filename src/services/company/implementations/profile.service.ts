@@ -8,6 +8,8 @@ import { ValidationError } from "../../../errors-classes/validation.error";
 import { IFileService } from "../../file-service/interfaces/file.service.interface";
 import { IDocument } from "../../../models/user/user.interface";
 import { CompanyMapper } from "../../../mappers/company.mapper";
+import { GetObjectCommandOutput } from "@aws-sdk/client-s3";
+import { COMPANY_DOCUMENT_MESSAGES,  } from "../../../constants/messages/company.messages.constants";
 
 export class CompanyProfileService implements ICompanyProfileService {
     constructor(
@@ -23,7 +25,7 @@ export class CompanyProfileService implements ICompanyProfileService {
         const company = await this._companyRepository.findById(companyId);
 
         if (!company) {
-            throw new AppError("Company profile not found",404);
+            throw new AppError("Company profile not found", 404);
         }
 
         if (company.verificationStatus === COMPANY_VERIFICATION_STATUS.APPROVED) {
@@ -269,5 +271,19 @@ export class CompanyProfileService implements ICompanyProfileService {
         }
 
         return CompanyMapper.toCompanyProfileDTO(company);
+    }
+    async viewDocument(companyId: string, documentKey: string): Promise<GetObjectCommandOutput> {
+        if (!mongoose.Types.ObjectId.isValid(companyId)) {
+            throw new ValidationError("Invalid company id");
+        }
+
+        const company = await this._companyRepository.findById(companyId);
+        if (!company) throw new AppError("Company not found", 401);
+
+        const document = company.documents.find((doc) => doc.key == documentKey);
+
+        if (!document) throw new ValidationError(COMPANY_DOCUMENT_MESSAGES.DOCUMENT_NOT_FOUND);
+
+        return await this._fileService.getFile(document.key)
     }
 }

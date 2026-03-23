@@ -15,7 +15,7 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
         await this.cache.set<string>(
             this.key(tokenId),
             JSON.stringify({ userId, role, email, expiresAt }), //payload
-            ttl
+            ttl,
         );
     }
 

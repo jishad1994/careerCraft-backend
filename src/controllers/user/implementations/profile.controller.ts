@@ -333,14 +333,16 @@ export class UserProfileController implements IUserProfileController {
             if (!user) {
                 throw new AuthError("Unauthorized");
             }
-            const { resumeName } = req.params;
+            const resumeKey = String(req.query.resumeKey) || "";
             const mode = (req.query.mode as string) || "view";
 
-            const fileStream = await this._userProfileService.getResume(user.id, resumeName);
+            const fileStream = await this._userProfileService.getResumeByResumeKey(user.id, resumeKey);
+
+            res.setHeader("Content-Type", fileStream.ContentType || "application/pdf");
             if (mode === "download") {
                 res.setHeader("Content-Disposition", `attachment; filename="resume-${fileStream}.pdf"`);
             } else {
-                res.setHeader("Content-Disposition", `inline; filename="resume-${resumeName}.pdf"`);
+                res.setHeader("Content-Disposition", `inline; filename="resume-${fileStream}.pdf"`);
             }
             (fileStream.Body as Readable).pipe(res);
         } catch (error) {

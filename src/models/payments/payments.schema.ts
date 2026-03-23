@@ -9,7 +9,7 @@ const paymentGatewayResponseSchema = new Schema(
             required: true,
             trim: true,
         },
-        
+
         transactionId: {
             type: String,
             required: true,
@@ -42,7 +42,8 @@ const paymentMetadataSchema = new Schema(
         deviceId: String,
         location: String,
     },
-    { _id: false }, )
+    { _id: false },
+);
 
 export const paymentSchema = new Schema<IPayment>(
     {
@@ -116,8 +117,7 @@ export const paymentSchema = new Schema<IPayment>(
         },
         invoiceNumber: {
             type: String,
-            unique: true,
-            trim: true,
+            sparse: true,
             index: true,
         },
         receiptUrl: {
@@ -138,7 +138,7 @@ export const paymentSchema = new Schema<IPayment>(
         failedAt: {
             type: Date,
         },
-       
+
         // Additional Info
         description: {
             type: String,

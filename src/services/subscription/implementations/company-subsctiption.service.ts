@@ -1,3 +1,5 @@
+import { COMPANY_SUBSCRIPTION_MESSAGES } from "../../../constants/messages/company-subscription.messages.constants";
+import { ValidationError } from "../../../errors-classes/validation.error";
 import {
     ICompanySubscription,
     SubscriptionStatus,
@@ -9,6 +11,9 @@ export class CompanySubscriptionService implements ICompanySubscriptionService {
     constructor(private readonly _companySubscriptionRepository: ICompanySubscriptionRepository) {}
 
     async getActiveSubscription(companyId: string): Promise<ICompanySubscription | null> {
+
+
+
         return await this._companySubscriptionRepository.findActiveByCompany(companyId);
     }
 
@@ -31,9 +36,12 @@ export class CompanySubscriptionService implements ICompanySubscriptionService {
      * Cancel subscription
      */
     async cancelSubscription(companyId: string, reason: string): Promise<ICompanySubscription> {
+
+
         const subscription = await this.getActiveSubscription(companyId);
+
         if (!subscription) {
-            throw new Error("No active subscription found");
+            throw new ValidationError(COMPANY_SUBSCRIPTION_MESSAGES.EXISTING_PLAN_FOUND);
         }
 
         const cancelled = await this._companySubscriptionRepository.cancel(subscription._id.toString(), reason);
@@ -43,6 +51,7 @@ export class CompanySubscriptionService implements ICompanySubscriptionService {
         }
 
         return cancelled;
+
     }
 
     /**

@@ -1,4 +1,3 @@
-
 import { ICompanySubscriptionRepository } from "../../repositories/company-subscription/company-subscription.repository.interface";
 import { IPaymentRepository } from "../../repositories/payment/payment.repository.interfaces";
 import { ISubscriptionPlanRepository } from "../../repositories/subscription-plan/subscription-plan.repository.interface";
@@ -8,9 +7,16 @@ import {
     PaymentConfirmationResponse,
     PaymentIntentResponse,
 } from "./subscription-payment.service.interface";
-import {  Currency, PaymentMethod, PaymentStatus, PaymentType, } from "../../models/payments/payments.interface";
+import { Currency, IPayment, PaymentMethod, PaymentStatus, PaymentType } from "../../models/payments/payments.interface";
 import { SubscriptionStatus } from "../../models/company-subscription/company-subscription.interface";
 import { Types } from "mongoose";
+import { ValidationError } from "../../errors-classes/validation.error";
+import { SUBSCRIPTION_PLAN_MESSAGES } from "../../constants/messages/admin.messages";
+import { COMPANY_SUBSCRIPTION_MESSAGES } from "../../constants/messages/company-subscription.messages.constants";
+import { IInvoiceService } from "../../shared/services/invoice-service/invoice.service.interface";
+import { AppError } from "../../errors-classes/app.error.";
+import { AuthError } from "../../errors-classes/auth.error";
+import { HTTP_MESSAGES } from "../../constants/messages/http.messages.constants";
 
 export class SubscriptionPaymentService implements ISubscriptionPaymentService {
     constructor(
@@ -18,23 +24,29 @@ export class SubscriptionPaymentService implements ISubscriptionPaymentService {
         private readonly _subscriptionPlanRepository: ISubscriptionPlanRepository,
         private readonly _companySubscriptionRepository: ICompanySubscriptionRepository,
         private readonly _paymentRepository: IPaymentRepository,
+        private readonly _invoiceService: IInvoiceService,
     ) {}
 
     /**
      * Create Stripe payment intent and pending subscription
      */
-    async createPaymentIntentAndSubscribe(companyId: string, planId: string, isUpgrade: boolean): Promise<PaymentIntentResponse> {
-        // Get plan details
+    async createPaymentIntentAndSubscribe(
+        companyId: string,
+        planId: string,
+        isUpgrade: boolean,
+    ): Promise<PaymentIntentResponse> {
         const plan = await this._subscriptionPlanRepository.findById(planId);
+
         if (!plan) {
-            throw new Error("Plan not found");
+            throw new ValidationError(SUBSCRIPTION_PLAN_MESSAGES.PLAN_NOT_FOUND, 404);
         }
 
         // Check for existing active subscription if not upgrade
+
         if (!isUpgrade) {
             const existing = await this._companySubscriptionRepository.findActiveByCompany(companyId);
             if (existing) {
-                throw new Error("Company already has an active subscription");
+                throw new ValidationError(COMPANY_SUBSCRIPTION_MESSAGES.EXISTING_PLAN_FOUND);
             }
         }
 
@@ -100,28 +112,33 @@ export class SubscriptionPaymentService implements ISubscriptionPaymentService {
     /**
      * Confirm Stripe payment and activate subscription
      */
-    async confirmPaymentAndActivateSubscription(subscriptionId: string, paymentIntentId: string): Promise<PaymentConfirmationResponse> {
+    async confirmPaymentAndActivateSubscription(
+        subscriptionId: string,
+        paymentIntentId: string,
+    ): Promise<PaymentConfirmationResponse> {
         const paymentStatus = await this._paymentService.getPaymentStatus(paymentIntentId);
 
         if (paymentStatus !== "succeeded") {
-            throw new Error("Payment not successful");
+            throw new AppError("Payment not successful", 400);
         }
 
         const subscription = await this._companySubscriptionRepository.findById(subscriptionId);
 
         if (!subscription) {
-            throw new Error("Subscription not found");
+            throw new ValidationError("Subscription not found", 404);
         }
 
         const payment = await this._paymentRepository.findPendingBySubscription(subscriptionId);
 
         if (!payment) {
-            throw new Error("Payment not found");
+            throw new ValidationError("Payment not found", 404);
         }
+
+        const invoice = await this._invoiceService.generateInvoiceForSubscription(subscriptionId, payment._id.toString());
 
         await this._paymentRepository.updateStatus(payment._id.toString(), PaymentStatus.COMPLETED, {
             transactionId: paymentIntentId,
-
+            invoiceNumber: invoice.invoiceNumber,
             gatewayResponse: {
                 gatewayName: "stripe",
                 transactionId: paymentIntentId,
@@ -146,6 +163,8 @@ export class SubscriptionPaymentService implements ISubscriptionPaymentService {
             paymentId: payment._id.toString(),
             subscriptionId,
             status: "success",
+            invoiceId: invoice._id.toString(),
+            invoiceNumber: invoice.invoiceNumber,
         };
     }
 
@@ -178,7 +197,6 @@ export class SubscriptionPaymentService implements ISubscriptionPaymentService {
         // Update payment with new transaction ID
         await this._paymentRepository.updateStatus(payment._id.toString(), PaymentStatus.PENDING, {
             transactionId: paymentIntent.intentId,
-
         });
 
         return {
@@ -212,6 +230,22 @@ export class SubscriptionPaymentService implements ISubscriptionPaymentService {
     //  */
     async verifyWebhookSignature(payload: string, signature: string, webhookSecret: string) {
         return this._paymentService.verifyWebhookSignature(payload, signature, webhookSecret);
+    }
+
+    async getPaymentById(paymentId: string, companyId: string): Promise<IPayment | null> {
+        console.log("paymentid:", paymentId);
+        const payment = await this._paymentRepository.findById<IPayment>(paymentId);
+
+        console.log("payment:", payment);
+        if (!payment) {
+            throw new ValidationError("Payment not found", 404);
+        }
+
+        if (payment.companyId.toString() !== companyId.toString()) {
+            throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED, 403);
+        }
+
+        return payment;
     }
 
     // /**

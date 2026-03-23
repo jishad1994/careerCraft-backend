@@ -25,7 +25,7 @@ export class SocketServer implements ISocketService {
     ) {}
 
     public connect(httpServer: HttpServer, frontendUrl: string) {
-        // Initialize Socket.IO server
+        
         this.io = new Server(httpServer, {
             cors: {
                 origin: frontendUrl,

@@ -9,20 +9,20 @@ export async function isUserBlocked(req: Request, res: Response, next: NextFunct
         const user = req.user;
 
         if (!user) {
-            throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
+            return next(new AuthError(HTTP_MESSAGES.UNAUTHORIZED));
         }
 
-        const userModel = userRepo;
-
-        const userData = await userModel.findById(user.id);
+        const userData = await userRepo.findById(user.id);
 
         if (!userData) {
-            throw new AuthError(USER_AUTH_MESSAGES.USER_NOT_FOUND);
+            return next(new AuthError(USER_AUTH_MESSAGES.USER_NOT_FOUND));
         }
 
         if (userData.isBlocked) {
-            throw new AuthError(HTTP_MESSAGES.FORBIDDEN,HTTP_STATUS.FORBIDDEN);
+            return next(new AuthError(HTTP_MESSAGES.FORBIDDEN, HTTP_STATUS.FORBIDDEN));
         }
+
+        next();
     } catch (error) {
         next(error);
     }
