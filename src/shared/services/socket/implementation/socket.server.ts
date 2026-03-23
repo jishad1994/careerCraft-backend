@@ -11,6 +11,7 @@ import { SocketData } from "../../../../interfaces/socket-interfaces";
 import logger from "../../../../utils/logger";
 import { INotification } from "../../../../models/notifications/notification.interface";
 import { IWebRTCEventHandler } from "../../../../services/Webrtc/interfaces/Webrtc.event-handler.service.interface";
+import { IChatEventHandler } from "../interface/chat-eventHandler.interface";
 
 export class SocketServer implements ISocketService {
     private io!: Server;
@@ -21,11 +22,11 @@ export class SocketServer implements ISocketService {
         private readonly userSocketMap: IUserSocketMapService,
         private readonly webRtcHandler: IWebRTCEventHandler,
         private notificationRepository: INotificationRepository,
-        // private readonly frontendUrl: string,
-    ) {}
+        private readonly chatHandler: IChatEventHandler,
+    ) // private readonly frontendUrl: string,
+    {}
 
     public connect(httpServer: HttpServer, frontendUrl: string) {
-        
         this.io = new Server(httpServer, {
             cors: {
                 origin: frontendUrl,
@@ -86,6 +87,8 @@ export class SocketServer implements ISocketService {
 
             //register video call based events
             this.webRtcHandler.register(socket, this.io);
+
+            this.chatHandler.register(socket, this.io);
 
             // Handle get unread count
             socket.on("notification:getCount", async () => {

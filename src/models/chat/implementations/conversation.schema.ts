@@ -1,6 +1,6 @@
 // conversation.schema.ts
-import mongoose, { Model, Schema, Types } from "mongoose";
-import { IchatParticipant, IConversation, IConversationMethods } from "../interfaces/conversation.interface";
+import mongoose, { Model, Schema } from "mongoose";
+import { IchatParticipant, IConversation, IConversationMethods,  } from "../interfaces/conversation.interface";
 
 type ConversationModel = Model<IConversation, IConversationMethods>;
 
@@ -85,38 +85,18 @@ const conversationSchema = new Schema<IConversation, ConversationModel, IConvers
 );
 
 
+conversationSchema.index({ "participants.userId": 1 });
 
 // Instance Methods
 conversationSchema.methods.getOtherParticipant = function (currentUserId: string) {
     return this.participants.find((p) => p.userId.toString() !== currentUserId);
 };
 
-conversationSchema.methods.incrementUnreadCount = async function (userId: string) {
-    const participant = this.participants.find((p) => p.userId.toString() === userId);
-    if (participant) {
-        participant.unreadCount += 1;
-        await this.save();
-    }
-};
 
-conversationSchema.methods.resetUnreadCount = async function (userId: string) {
-    const participant = this.participants.find((p) => p.userId.toString() === userId);
-    if (participant) {
-        participant.unreadCount = 0;
-        participant.lastReadAt = new Date();
-        await this.save();
-    }
-};
 
-conversationSchema.methods.updateLastMessage = async function (message: any) {
-    this.lastMessage = {
-        content: message.content,
-        senderId: message.senderId,
-        createdAt: message.createdAt,
-        messageType: message.messageType,
-    };
-    await this.save();
-};
+
+
+
 
 export const Conversation: ConversationModel = mongoose.model<IConversation, ConversationModel>(
     "Conversation",

@@ -69,6 +69,13 @@ import { InvoiceService } from "../shared/services/invoice-service/invoice.servi
 import { InvoiceRepository } from "../repositories/invoice/invoice.repository";
 import { Invoice } from "../models/invoice/invoice.model";
 import { InvoiceController } from "../controllers/invoice/invoice.controller";
+import { ChatEventHandler } from "../shared/services/socket/implementation/chat-eventHandler.service";
+import { ChatService } from "../services/chat/chat.service";
+import { ConversationRepository } from "../repositories/chat/implementations/conversation.repository";
+import { Conversation } from "../models/chat/implementations/conversation.schema";
+import { MessageRepository } from "../repositories/chat/implementations/message.repository";
+import { Message } from "../models/chat/implementations/message.schema";
+import { ChatController } from "../controllers/chat/chat.controller";
 
 //redis cache service instance
 const redisRepo = new RedisCacheRepo(process.env.REDIS_URL || "redis://localhost:6379");
@@ -97,7 +104,11 @@ const refreshTokenRepo = new RefreshTokenRepository(cacheService);
 //user auth service
 const authService = new AuthService(userRepo, companyRepo, refreshTokenRepo, cacheService, otpService, emailService);
 
-//copmany auth service
+//file service
+
+const s3Service = new S3Service();
+
+const fileService = new FileService(s3Service);
 
 //userAuth controller
 const authController = new AuthController(authService, cacheService);
@@ -118,18 +129,18 @@ const webrtcEventHandlerService = new WebRTCEventHandler(webrtcService);
 //socket server
 const userSocketMapService = new UserSocketMapservice(); //userId to set of socketIds
 const eventHandlerService = new SocketEventHandlerService(notificationRepository, userSocketMapService);
+const conversationRepository = new ConversationRepository(Conversation);
+const messageRepository = new MessageRepository(Message);
+const chatService = new ChatService(conversationRepository, messageRepository, fileService, notificationService);
+const chatHandlerService = new ChatEventHandler(chatService, userSocketMapService);
 const socketServer = new SocketServer(
     eventHandlerService,
     userSocketMapService,
     webrtcEventHandlerService,
     notificationRepository,
+    chatHandlerService,
 );
 
-//file service
-
-const s3Service = new S3Service();
-
-const fileService = new FileService(s3Service);
 //admin controller
 const adminService = new AdminService(userRepo, companyRepo, emailService, fileService, cacheService);
 
@@ -220,7 +231,6 @@ const invoiceService = new InvoiceService(
 );
 const invoiceController = new InvoiceController(invoiceService);
 
-
 //subscription payment controller
 const companySubscriptionPaymentService = new SubscriptionPaymentService(
     paymentService,
@@ -233,6 +243,10 @@ const companySubscriptionPaymentService = new SubscriptionPaymentService(
 const companySubscriptionPaymentController = new CompanySubscriptionPaymentController(companySubscriptionPaymentService);
 
 const companyCandidateController = new CompanyCandidateController(userProfileService);
+
+//chat
+
+const chatController = new ChatController(chatService);
 
 export {
     cacheService,
@@ -260,5 +274,6 @@ export {
     companySubscriptionController,
     companySubscriptionPaymentController,
     companyCandidateController,
-    invoiceController
+    invoiceController,
+    chatController,
 };
