@@ -9,6 +9,7 @@ import { IChatService } from "./chat.service.interface";
 import { IMessage, MessageStatus, MessageType } from "../../models/chat/interfaces/message.interface";
 import { ValidationError } from "../../errors-classes/validation.error";
 import { getFileLocation } from "../../utils/s3-bucket.utils";
+import { PaginationMeta } from "../../utils/apiResponse.utils";
 
 export class ChatService implements IChatService {
     constructor(
@@ -121,15 +122,31 @@ export class ChatService implements IChatService {
         return message;
     }
 
-    async getMessages(conversationId: string, page: number = 1, limit: number = 50): Promise<IMessage[]> {
-        return await this._messageRepository.findByConversation(conversationId, page, limit);
+    async getMessages(
+        conversationId: string,
+        page: number = 1,
+        limit: number = 50,
+    ): Promise<{ messages: IMessage[]; paginationMeta: PaginationMeta }> {
+        const [messages, total] = await this._messageRepository.findByConversation(conversationId, page, limit);
+
+        const totalPages = Math.ceil(total / limit);
+        const paginationMeta: PaginationMeta = {
+            page,
+            limit,
+            totalItems: total,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1,
+        };
+
+        return { messages, paginationMeta };
     }
 
     async markMessagesAsRead(conversationId: string, userId: string): Promise<void> {
-        const messages = await this._messageRepository.findByConversation(conversationId);
+        const [messages] = await this._messageRepository.findByConversation(conversationId);
         const unreadMessageIds = messages
-            .filter((msg) => msg.receiverId.toString() === userId && msg.status !== "read")
-            .map((msg) => msg._id.toString());
+            .filter((msg: IMessage) => msg.receiverId.toString() === userId && msg.status !== "read")
+            .map((msg: IMessage) => msg._id.toString());
 
         if (unreadMessageIds.length > 0) {
             await this._messageRepository.markAsRead(unreadMessageIds, userId);

@@ -1,6 +1,7 @@
 import { CreateConversationDTO, SendMessageDTO } from "../../dtos/chat.dto";
 import { IConversation } from "../../models/chat/interfaces/conversation.interface";
 import { IMessage } from "../../models/chat/interfaces/message.interface";
+import { PaginationMeta } from "../../utils/apiResponse.utils";
 
 export interface IChatService {
     createConversation(data: CreateConversationDTO): Promise<IConversation>;
@@ -15,7 +16,11 @@ export interface IChatService {
     getUserConversations(userId: string): Promise<IConversation[]>;
     getTotalUnreadCount(userId: string): Promise<number>;
     sendMessage(data: SendMessageDTO): Promise<IMessage>;
-    getMessages(conversationId: string, page?: number, limit?: number): Promise<IMessage[]>;
+    getMessages(
+        conversationId: string,
+        page?: number,
+        limit?: number,
+    ): Promise<{ messages: IMessage[]; paginationMeta: PaginationMeta }>;
     markMessagesAsRead(conversationId: string, userId: string): Promise<void>;
     markMessagesAsDelivered(messageIds: string[]): Promise<void>;
     editMessage(messageId: string, newContent: string): Promise<IMessage | null>;

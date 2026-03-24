@@ -3,10 +3,7 @@ import { IMessage, MessageStatus } from "../../../models/chat/interfaces/message
 import { IMessageRepository } from "../interfaces/message.repository.interface";
 
 export class MessageRepository implements IMessageRepository {
-
-
     constructor(private readonly model: Model<IMessage>) {}
-
 
     async create(data: Partial<IMessage>): Promise<IMessage> {
         return await this.model.create(data);
@@ -16,14 +13,23 @@ export class MessageRepository implements IMessageRepository {
         return await this.model.findById(id);
     }
 
-    async findByConversation(conversationId: string, page: number = 1, limit: number = 50): Promise<IMessage[]> {
-        return await this.model.find({
+    async findByConversation(conversationId: string, page: number = 1, limit: number = 50): Promise<[IMessage[], number]> {
+        const query = {
             conversationId,
             isDeleted: false,
-        })
-            .sort({ createdAt: -1 })
-            .skip((page - 1) * limit)
-            .limit(limit);
+        };
+
+        const [messages, total] = await Promise.all([
+            this.model
+                .find(query)
+                .sort({ createdAt: -1 })
+                .skip((page - 1) * limit)
+                .limit(limit),
+
+            this.model.countDocuments(query),
+        ]);
+
+        return [messages, total];
     }
 
     async countByConversation(conversationId: string): Promise<number> {

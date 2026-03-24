@@ -3,7 +3,7 @@ import { IMessage } from "../../../models/chat/interfaces/message.interface";
 export interface IMessageRepository {
     create(data: Partial<IMessage>): Promise<IMessage>;
     findById(id: string): Promise<IMessage | null>;
-    findByConversation(conversationId: string, page?: number, limit?: number): Promise<IMessage[]>;
+    findByConversation(conversationId: string, page?: number, limit?: number): Promise<[IMessage[],number]>;
     countByConversation(conversationId: string): Promise<number>;
     countUnread(conversationId: string, userId: string): Promise<number>;
     markAsDelivered(messageIds: string[]): Promise<void>;

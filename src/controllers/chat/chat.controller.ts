@@ -117,12 +117,9 @@ export class ChatController implements IChatController {
                 throw new AuthError(HTTP_MESSAGES.FORBIDDEN, 403);
             }
 
-            const messages = await this._chatService.getMessages(id, page, limit);
+            const { messages, paginationMeta } = await this._chatService.getMessages(id, page, limit);
 
-            return ApiResponse.success(res, "Messages fetched successfully", {
-                messages,
-                pagination: { page, limit },
-            });
+            return ApiResponse.success(res, "Messages fetched successfully", messages, 200, paginationMeta);
         } catch (error) {
             next(error);
         }
@@ -182,7 +179,7 @@ export class ChatController implements IChatController {
                 throw new ValidationError("No file uploaded", 400);
             }
 
-            const {conversationId} = req.params;
+            const { conversationId } = req.params;
             if (!conversationId) {
                 throw new ValidationError("No conversation id found", 400);
             }

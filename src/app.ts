@@ -23,6 +23,8 @@ import requestLogger from "./middlewares/requestLogger.middleware";
 import { notificationRoutes } from "./routes/notification.routes";
 import { notificationAuthMiddleware } from "./middlewares/notification-auth.middlware";
 import webhookRoutes from "./routes/webhook.routes";
+import { commonAuthMiddleware } from "./middlewares/common.auth.middleware";
+import chatRoutes from "./routes/chat.routes";
 
 const app: Application = express();
 
@@ -76,6 +78,7 @@ app.use(API_ROUTES.COMPANY, companyRoutes);
 app.use(API_ROUTES.ADMIN, adminRoutes);
 app.use(API_ROUTES.SKILLS, skillsRoutes);
 app.use(API_ROUTES.JOBS, publicJobRoutes);
+app.use(API_ROUTES.CHATS, chatRoutes);
 
 //errro handler middleware
 app.use(errorHandler);
