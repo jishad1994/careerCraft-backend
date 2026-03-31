@@ -1,4 +1,4 @@
 export const INVOICE_MESSAGES = {
     FETCH_SUCCESSFULL: "Invoice fetch successfull",
-    NOT_FOUND:'Not found'
+    NOT_FOUND: "Invoice not found",
 } as const;

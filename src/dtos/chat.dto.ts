@@ -3,17 +3,17 @@ import { IAttachment, MessageType } from "../models/chat/interfaces/message.inte
 export interface SendMessageDTO {
     conversationId: string;
     senderId: string;
-    senderType: 'user' | 'company';
+    senderType: "user" | "company";
     receiverId: string;
-    receiverType: 'user' | 'company';
+    receiverType: "user" | "company";
     content: string;
     messageType?: MessageType;
     attachments?: IAttachment[];
 }
- 
+
 export interface CreateConversationDTO {
-    participant1: { userId: string; userType: 'user' | 'company' };
-    participant2: { userId: string; userType: 'user' | 'company' };
+    participant1: { userId: string; userType: "user" | "company";  };
+    participant2: { userId: string; userType: "user" | "company";  };
     initiatedBy: string;
     jobId?: string;
     applicationId?: string;

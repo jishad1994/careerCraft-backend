@@ -23,7 +23,6 @@ import requestLogger from "./middlewares/requestLogger.middleware";
 import { notificationRoutes } from "./routes/notification.routes";
 import { notificationAuthMiddleware } from "./middlewares/notification-auth.middlware";
 import webhookRoutes from "./routes/webhook.routes";
-import { commonAuthMiddleware } from "./middlewares/common.auth.middleware";
 import chatRoutes from "./routes/chat.routes";
 
 const app: Application = express();

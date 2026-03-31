@@ -284,6 +284,7 @@ export class CompanyJobApplicationService implements ICompanyJobApplicationServi
         }
 
         const resume = application.resume;
+        console.log('resume file key',resume.fileKey)
         if (!resume) throw new AppError("Application does not have a resume", 404);
 
         return this._fileService.getFile(resume.fileKey);

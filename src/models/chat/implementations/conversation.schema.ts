@@ -1,6 +1,6 @@
 // conversation.schema.ts
 import mongoose, { Model, Schema } from "mongoose";
-import { IchatParticipant, IConversation, IConversationMethods,  } from "../interfaces/conversation.interface";
+import { IchatParticipant, IConversation, IConversationMethods } from "../interfaces/conversation.interface";
 
 type ConversationModel = Model<IConversation, IConversationMethods>;
 
@@ -84,19 +84,12 @@ const conversationSchema = new Schema<IConversation, ConversationModel, IConvers
     },
 );
 
-
 conversationSchema.index({ "participants.userId": 1 });
 
 // Instance Methods
 conversationSchema.methods.getOtherParticipant = function (currentUserId: string) {
     return this.participants.find((p) => p.userId.toString() !== currentUserId);
 };
-
-
-
-
-
-
 
 export const Conversation: ConversationModel = mongoose.model<IConversation, ConversationModel>(
     "Conversation",

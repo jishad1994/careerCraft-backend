@@ -113,6 +113,13 @@ export class InvoiceService implements IInvoiceService {
             throw new ValidationError("Invoice not found", 404);
         }
 
+        const formatCurrency = (amount: number) => {
+            return new Intl.NumberFormat("en-IN", {
+                style: "currency",
+                currency: "INR",
+            }).format(amount);  
+        };
+
         return new Promise((resolve, reject) => {
             const doc = new PDFDocument({
                 size: "A4",
@@ -124,135 +131,173 @@ export class InvoiceService implements IInvoiceService {
             doc.on("end", () => resolve(Buffer.concat(chunks)));
             doc.on("error", reject);
 
-            // Header
+            // 🔥 OPTIONAL (recommended for ₹ symbol support)
+            // doc.registerFont("Roboto", "path/to/Roboto-Regular.ttf");
+            // doc.registerFont("Roboto-Bold", "path/to/Roboto-Bold.ttf");
+            // doc.font("Roboto");
+
+            // ================= HEADER =================
             doc.fontSize(20).font("Helvetica-Bold").text("INVOICE", { align: "center" });
             doc.moveDown(0.5);
 
-            // Company Logo/Name
             doc.fontSize(16).font("Helvetica-Bold").text("CareerCraft", { align: "center" });
             doc.fontSize(10).font("Helvetica").text("Job Portal Platform", { align: "center" });
             doc.text("Email: support@careercraft.com", { align: "center" });
             doc.text("Phone: +91-XXXXXXXXXX", { align: "center" });
+
             doc.moveDown(1);
 
-            // Invoice Details
+            // ================= INVOICE DETAILS =================
             const invoiceY = doc.y;
-            doc.fontSize(10).font("Helvetica-Bold").text(`Invoice Number:`, 50, invoiceY);
+
+            doc.fontSize(10).font("Helvetica-Bold").text("Invoice Number:", 50, invoiceY);
             doc.font("Helvetica").text(invoice.invoiceNumber, 150, invoiceY);
 
-            doc.font("Helvetica-Bold").text(`Issue Date:`, 50, invoiceY + 15);
+            doc.font("Helvetica-Bold").text("Issue Date:", 50, invoiceY + 15);
             doc.font("Helvetica").text(new Date(invoice.issueDate).toLocaleDateString("en-IN"), 150, invoiceY + 15);
 
-            doc.font("Helvetica-Bold").text(`Status:`, 50, invoiceY + 30);
+            doc.font("Helvetica-Bold").text("Status:", 50, invoiceY + 30);
             doc.font("Helvetica")
-                .fillColor(invoice.status === InvoiceStatus.PAID ? "#16a34a" : "#dc2626")
+                .fillColor(invoice.status === "paid" ? "#16a34a" : "#dc2626")
                 .text(invoice.status.toUpperCase(), 150, invoiceY + 30)
                 .fillColor("#000000");
 
-            // Bill To
+            // ================= BILL TO =================
             doc.moveDown(3);
+
             doc.fontSize(12).font("Helvetica-Bold").text("Bill To:");
             doc.fontSize(10).font("Helvetica").text(invoice.companyDetails.name);
             doc.text(invoice.companyDetails.email);
+
             if (invoice.companyDetails.phone) {
                 doc.text(invoice.companyDetails.phone);
             }
+
             if (invoice.companyDetails.address) {
                 const addr = invoice.companyDetails.address;
-                // if (addr.street) doc.text(addr.street);
                 doc.text(`${addr.city}, ${addr.state} - ${addr.postalCode}`);
                 doc.text(addr.country);
             }
+
             if (invoice.companyDetails.gstin) {
                 doc.text(`GSTIN: ${invoice.companyDetails.gstin}`);
             }
 
             doc.moveDown(2);
 
-            // Table Header
+            // ================= TABLE =================
             const tableTop = doc.y;
+
             const col1X = 50;
             const col2X = 300;
             const col3X = 380;
             const col4X = 460;
 
-            doc.fontSize(10)
+            const col1Width = 240;
+            const col2Width = 50;
+            const col3Width = 70;
+            const col4Width = 80;
+
+            // Header Background
+            doc.rect(col1X, tableTop, 495, 25).fillAndStroke("#e5e7eb", "#d1d5db");
+
+            doc.fillColor("#000")
                 .font("Helvetica-Bold")
-                .fillColor("#1f2937")
-                .rect(col1X, tableTop, 495, 25)
-                .fillAndStroke("#e5e7eb", "#d1d5db");
+                .fontSize(10)
+                .text("Description", col1X, tableTop + 8, { width: col1Width })
+                .text("Qty", col2X, tableTop + 8, { width: col2Width, align: "center" })
+                .text("Price", col3X, tableTop + 8, { width: col3Width, align: "right" })
+                .text("Amount", col4X, tableTop + 8, { width: col4Width, align: "right" });
 
-            doc.fillColor("#000000")
-                .text("Description", col1X + 5, tableTop + 8, { width: 240 })
-                .text("Qty", col2X + 5, tableTop + 8, { width: 50 })
-                .text("Price", col3X + 5, tableTop + 8, { width: 70 })
-                .text("Amount", col4X + 5, tableTop + 8, { width: 80 });
-
-            // Table Rows
             let yPosition = tableTop + 30;
+
             doc.font("Helvetica").fontSize(9);
 
             invoice.items.forEach((item) => {
-                doc.text(item.description, col1X + 5, yPosition, { width: 240 });
-                doc.text(item.quantity.toString(), col2X + 5, yPosition, { width: 50 });
-                doc.text(`₹${item.unitPrice.toFixed(2)}`, col3X + 5, yPosition, { width: 70 });
-                doc.text(`₹${item.amount.toFixed(2)}`, col4X + 5, yPosition, {
-                    width: 80,
+                doc.text(item.description, col1X, yPosition, { width: col1Width });
+
+                doc.text(item.quantity.toString(), col2X, yPosition, {
+                    width: col2Width,
+                    align: "center",
+                });
+
+                doc.text(formatCurrency(item.unitPrice), col3X, yPosition, {
+                    width: col3Width,
                     align: "right",
                 });
+
+                doc.text(formatCurrency(item.amount), col4X, yPosition, {
+                    width: col4Width,
+                    align: "right",
+                });
+
+                // Row divider
+                doc.moveTo(col1X, yPosition + 18)
+                    .lineTo(545, yPosition + 18)
+                    .stroke("#e5e7eb");
+
                 yPosition += 25;
             });
 
-            // Totals
+            // ================= TOTALS =================
             yPosition += 10;
             const totalsX = 380;
 
             doc.font("Helvetica")
-                .text("Subtotal:", totalsX, yPosition)
-                .text(`₹${invoice.subtotal.toFixed(2)}`, totalsX + 80, yPosition, {
-                    align: "right",
+                .text("Subtotal:", totalsX, yPosition, { width: 80 })
+                .text(formatCurrency(invoice.subtotal), totalsX + 80, yPosition, {
                     width: 80,
+                    align: "right",
                 });
 
             yPosition += 20;
-            doc.text(`Tax (${invoice.taxRate}%):`, totalsX, yPosition).text(
-                `₹${invoice.tax.toFixed(2)}`,
+
+            doc.text(`Tax (${invoice.taxRate}%):`, totalsX, yPosition, { width: 80 }).text(
+                formatCurrency(invoice.tax),
                 totalsX + 80,
                 yPosition,
-                { align: "right", width: 80 },
+                {
+                    width: 80,
+                    align: "right",
+                },
             );
 
             if (invoice.discount > 0) {
                 yPosition += 20;
-                doc.text("Discount:", totalsX, yPosition).text(
-                    `-₹${invoice.discount.toFixed(2)}`,
+                doc.text("Discount:", totalsX, yPosition, { width: 80 }).text(
+                    `- ${formatCurrency(invoice.discount)}`,
                     totalsX + 80,
                     yPosition,
-                    { align: "right", width: 80 },
+                    {
+                        width: 80,
+                        align: "right",
+                    },
                 );
             }
 
             yPosition += 20;
+
             doc.fontSize(12)
                 .font("Helvetica-Bold")
-                .text("Total:", totalsX, yPosition)
-                .text(`₹${invoice.total.toFixed(2)}`, totalsX + 80, yPosition, {
-                    align: "right",
+                .text("Total:", totalsX, yPosition, { width: 80 })
+                .text(formatCurrency(invoice.total), totalsX + 80, yPosition, {
                     width: 80,
+                    align: "right",
                 });
 
-            // Notes
+            // ================= NOTES =================
             if (invoice.notes) {
                 doc.moveDown(2);
                 doc.fontSize(10).font("Helvetica-Bold").text("Notes:");
                 doc.font("Helvetica").fontSize(9).text(invoice.notes, { width: 495 });
             }
 
-            // Footer
+            // ================= FOOTER =================
             doc.fontSize(8).font("Helvetica").text("Thank you for your business!", 50, 750, {
                 align: "center",
                 width: 495,
             });
+
             doc.text("This is a computer-generated invoice and does not require a signature.", {
                 align: "center",
                 width: 495,
@@ -261,6 +306,160 @@ export class InvoiceService implements IInvoiceService {
             doc.end();
         });
     }
+    // async generateInvoicePDF(invoiceId: string): Promise<Buffer> {
+    //     const invoice = await this._invoiceRepository.findById(invoiceId);
+    //     if (!invoice) {
+    //         throw new ValidationError("Invoice not found", 404);
+    //     }
+
+    //     return new Promise((resolve, reject) => {
+    //         const doc = new PDFDocument({
+    //             size: "A4",
+    //             margin: 50,
+    //         });
+
+    //         const chunks: Buffer[] = [];
+    //         doc.on("data", (chunk) => chunks.push(chunk));
+    //         doc.on("end", () => resolve(Buffer.concat(chunks)));
+    //         doc.on("error", reject);
+
+    //         // Header
+    //         doc.fontSize(20).font("Helvetica-Bold").text("INVOICE", { align: "center" });
+    //         doc.moveDown(0.5);
+
+    //         // Company Logo/Name
+    //         doc.fontSize(16).font("Helvetica-Bold").text("CareerCraft", { align: "center" });
+    //         doc.fontSize(10).font("Helvetica").text("Job Portal Platform", { align: "center" });
+    //         doc.text("Email: support@careercraft.com", { align: "center" });
+    //         doc.text("Phone: +91-XXXXXXXXXX", { align: "center" });
+    //         doc.moveDown(1);
+
+    //         // Invoice Details
+    //         const invoiceY = doc.y;
+    //         doc.fontSize(10).font("Helvetica-Bold").text(`Invoice Number:`, 50, invoiceY);
+    //         doc.font("Helvetica").text(invoice.invoiceNumber, 150, invoiceY);
+
+    //         doc.font("Helvetica-Bold").text(`Issue Date:`, 50, invoiceY + 15);
+    //         doc.font("Helvetica").text(new Date(invoice.issueDate).toLocaleDateString("en-IN"), 150, invoiceY + 15);
+
+    //         doc.font("Helvetica-Bold").text(`Status:`, 50, invoiceY + 30);
+    //         doc.font("Helvetica")
+    //             .fillColor(invoice.status === InvoiceStatus.PAID ? "#16a34a" : "#dc2626")
+    //             .text(invoice.status.toUpperCase(), 150, invoiceY + 30)
+    //             .fillColor("#000000");
+
+    //         // Bill To
+    //         doc.moveDown(3);
+    //         doc.fontSize(12).font("Helvetica-Bold").text("Bill To:");
+    //         doc.fontSize(10).font("Helvetica").text(invoice.companyDetails.name);
+    //         doc.text(invoice.companyDetails.email);
+    //         if (invoice.companyDetails.phone) {
+    //             doc.text(invoice.companyDetails.phone);
+    //         }
+    //         if (invoice.companyDetails.address) {
+    //             const addr = invoice.companyDetails.address;
+    //             // if (addr.street) doc.text(addr.street);
+    //             doc.text(`${addr.city}, ${addr.state} - ${addr.postalCode}`);
+    //             doc.text(addr.country);
+    //         }
+    //         if (invoice.companyDetails.gstin) {
+    //             doc.text(`GSTIN: ${invoice.companyDetails.gstin}`);
+    //         }
+
+    //         doc.moveDown(2);
+
+    //         // Table Header
+    //         const tableTop = doc.y;
+    //         const col1X = 50;
+    //         const col2X = 300;
+    //         const col3X = 380;
+    //         const col4X = 460;
+
+    //         doc.fontSize(10)
+    //             .font("Helvetica-Bold")
+    //             .fillColor("#1f2937")
+    //             .rect(col1X, tableTop, 495, 25)
+    //             .fillAndStroke("#e5e7eb", "#d1d5db");
+
+    //         doc.fillColor("#000000")
+    //             .text("Description", col1X + 5, tableTop + 8, { width: 240 })
+    //             .text("Qty", col2X + 5, tableTop + 8, { width: 50 })
+    //             .text("Price", col3X + 5, tableTop + 8, { width: 70 })
+    //             .text("Amount", col4X + 5, tableTop + 8, { width: 80 });
+
+    //         // Table Rows
+    //         let yPosition = tableTop + 30;
+    //         doc.font("Helvetica").fontSize(9);
+
+    //         invoice.items.forEach((item) => {
+    //             doc.text(item.description, col1X + 5, yPosition, { width: 240 });
+    //             doc.text(item.quantity.toString(), col2X + 5, yPosition, { width: 50 });
+    //             doc.text(`₹${item.unitPrice.toFixed(2)}`, col3X + 5, yPosition, { width: 70 });
+    //             doc.text(`₹${item.amount.toFixed(2)}`, col4X + 5, yPosition, {
+    //                 width: 80,
+    //                 align: "right",
+    //             });
+    //             yPosition += 25;
+    //         });
+
+    //         // Totals
+    //         yPosition += 10;
+    //         const totalsX = 380;
+
+    //         doc.font("Helvetica")
+    //             .text("Subtotal:", totalsX, yPosition)
+    //             .text(`₹${invoice.subtotal.toFixed(2)}`, totalsX + 80, yPosition, {
+    //                 align: "right",
+    //                 width: 80,
+    //             });
+
+    //         yPosition += 20;
+    //         doc.text(`Tax (${invoice.taxRate}%):`, totalsX, yPosition).text(
+    //             `₹${invoice.tax.toFixed(2)}`,
+    //             totalsX + 80,
+    //             yPosition,
+    //             { align: "right", width: 80 },
+    //         );
+
+    //         if (invoice.discount > 0) {
+    //             yPosition += 20;
+    //             doc.text("Discount:", totalsX, yPosition).text(
+    //                 `-₹${invoice.discount.toFixed(2)}`,
+    //                 totalsX + 80,
+    //                 yPosition,
+    //                 { align: "right", width: 80 },
+    //             );
+    //         }
+
+    //         yPosition += 20;
+    //         doc.fontSize(12)
+    //             .font("Helvetica-Bold")
+    //             .text("Total:", totalsX, yPosition)
+    //             .text(`₹${invoice.total.toFixed(2)}`, totalsX + 80, yPosition, {
+    //                 align: "right",
+    //                 width: 80,
+    //             });
+
+    //         // Notes
+    //         if (invoice.notes) {
+    //             doc.moveDown(2);
+    //             doc.fontSize(10).font("Helvetica-Bold").text("Notes:");
+    //             doc.font("Helvetica").fontSize(9).text(invoice.notes, { width: 495 });
+    //         }
+
+    //         // Footer
+    //         doc.fontSize(8).font("Helvetica").text("Thank you for your business!", 50, 750, {
+    //             align: "center",
+    //             width: 495,
+    //         });
+    //         doc.text("This is a computer-generated invoice and does not require a signature.", {
+    //             align: "center",
+    //             width: 495,
+    //         });
+
+    //         doc.end();
+    //     });
+    // }
 
     /**
      * Upload invoice PDF to S3 and update invoice record
@@ -293,8 +492,7 @@ export class InvoiceService implements IInvoiceService {
      * Get invoice by subscription ID
      */
     async getInvoiceBySubscription(subscriptionId: string): Promise<IInvoice | null> {
-
-        console.log('subid:',subscriptionId)
+        console.log("subid:", subscriptionId);
         const invoice = await this._invoiceRepository.findBySubscriptionId(subscriptionId);
 
         if (!invoice) {
@@ -304,8 +502,7 @@ export class InvoiceService implements IInvoiceService {
         return invoice;
     }
     async getInvoiceById(invoiceId: string): Promise<IInvoice | null> {
-
-        console.log('invoice id:',invoiceId)
+        console.log("invoice id:", invoiceId);
         const invoice = await this._invoiceRepository.findById(invoiceId);
 
         if (!invoice) {

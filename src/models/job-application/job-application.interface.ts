@@ -107,6 +107,7 @@ export interface IJobApplicationDetails extends IJobApplication {
     education: IEducation[];
     applicantDetails: IApplicantDetails;
     jobDetails: IJobDetails;
+    applicantSkills:ISkill[]
 }
 
 export interface IJobDetails {

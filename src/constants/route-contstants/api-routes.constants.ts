@@ -6,7 +6,7 @@ export const API_ROUTES = {
     ADMIN: `/api/admin`,
     SKILLS: `/api/skills`,
     JOBS: `/api/jobs`,
-    CHATS: `api/conversations`,
+    CHATS: `/api/conversations`,
     NOTIFICATIONS: "/api/notifications",
     COMMON_ROUTES: "/api/auth",
     WEBHOOK_ROUTE: "api/webhook",

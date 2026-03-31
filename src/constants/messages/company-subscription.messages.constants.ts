@@ -22,4 +22,7 @@ export const COMPANY_SUBSCRIPTION_MESSAGES = {
     UPGRADE_PAYMENT_INITIATED: "Upgrade payment initiated successfully",
 
     PAYMENT_FETCH_SUCCESSFULL: "Payment document fetch successfull",
+
+    SUBSCRIPTION_ID_NOT_FOUND:'Subscription ID not found',
+
 } as const;

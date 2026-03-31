@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import { AppError } from "../../../errors-classes/app.error.";
 import { IJobApplication } from "../../../models/job-application/job-application.interface";
 import { IJob } from "../../../models/job/job.interface";
@@ -8,18 +7,19 @@ import { PaginationMeta } from "../../../utils/apiResponse.utils";
 import { IUserJobService } from "../interfaces/user-job.service.interface";
 import { IFileService } from "../../file-service/interfaces/file.service.interface";
 import { ValidationError } from "../../../errors-classes/validation.error";
+import mongoose from "mongoose";
 
 export class UserJobService implements IUserJobService {
     constructor(
         private _jobRepository: IJobRepository,
         private _applicationRepository: IJobApplicationRepository,
-        private _fileService: IFileService
+        private _fileService: IFileService,
     ) {}
 
     async searchJobs(
         filters: JobSearchFilters,
         page: number = 1,
-        limit: number = 10
+        limit: number = 10,
     ): Promise<{ jobs: IJob[]; paginationMeta: PaginationMeta }> {
         const searchFilters = {
             ...filters,
@@ -82,13 +82,14 @@ export class UserJobService implements IUserJobService {
 
         const signedUrl = await this._fileService.generateSignedUrl(key, 3600 * 24 * 6);
 
-        return{key,signedUrl}
+        return { key, signedUrl };
     }
 
     async applyForJob(userId: string, applicationData: IJobApplication): Promise<IJobApplication> {
+       
         const existingApplication = await this._applicationRepository.findByUserAndJob(
             userId,
-            applicationData.job.toString()
+            applicationData.job.toString(),
         );
 
         if (existingApplication) {

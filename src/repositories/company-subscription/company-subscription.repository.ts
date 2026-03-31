@@ -1,6 +1,7 @@
-import { Model, Types } from "mongoose";
+import mongoose, { Model, Types } from "mongoose";
 import {
     companySubscriptionUsageTypes,
+    IAddon,
     ICompanySubscription,
     SubscriptionStatus,
 } from "../../models/company-subscription/company-subscription.interface";
@@ -18,6 +19,7 @@ export class CompanySubscriptionRepository extends BaseRepository<ICompanySubscr
             .findOne({
                 companyId: new Types.ObjectId(companyId),
                 status: { $in: [SubscriptionStatus.ACTIVE, SubscriptionStatus.PENDING] },
+                isQueued: false,
                 startDate: { $lte: new Date() },
                 endDate: { $gte: new Date() },
             })
@@ -35,6 +37,7 @@ export class CompanySubscriptionRepository extends BaseRepository<ICompanySubscr
         return await this.model
             .find({
                 status: SubscriptionStatus.ACTIVE,
+                isQueued: false,
                 endDate: { $lt: new Date() },
             })
             .lean();
@@ -83,5 +86,45 @@ export class CompanySubscriptionRepository extends BaseRepository<ICompanySubscr
 
         subscription.usage[type] = currentUsage + 1;
         return await subscription.save();
+    }
+
+    async findQueuedByCompany(companyId: string): Promise<ICompanySubscription[]> {
+        return await this.model
+            .find({
+                companyId: new Types.ObjectId(companyId),
+                isQueued: true,
+                status: "queued",
+            })
+            .sort({ queuePosition: 1 })
+            .lean();
+    }
+
+    async findReadyToActivate(): Promise<ICompanySubscription[]> {
+        const now = new Date();
+        return await this.model
+            .find({
+                isQueued: true,
+                status: "queued",
+                scheduledStartDate: { $lte: now },
+            })
+            .sort({ queuePosition: 1 })
+            .lean();
+    }
+
+    async addAddon(subscriptionId: string, addon: IAddon): Promise<void> {
+        await this.model.updateOne(
+            { _id: new mongoose.Types.ObjectId(subscriptionId) },
+            {
+                $push: {
+                    addons: {
+                        ...addon,   
+                        purchasedAt: new Date(),
+                    },
+                },
+                $inc: {
+                    [`addonLimits.${addon.type}`]: addon.quantity,
+                },
+            },
+        );
     }
 }

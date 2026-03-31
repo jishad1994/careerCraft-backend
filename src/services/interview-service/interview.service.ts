@@ -59,7 +59,7 @@ export class InterviewService implements IInterviewService {
         });
 
         // Schedule reminder (15 min before)
-        await this.scheduleInterviewReminder(application.applicant._id.toString(), application, interview);
+        // await this.scheduleInterviewReminder(application.applicant._id.toString(), application, interview);
 
         return interview;
     }
@@ -302,22 +302,22 @@ export class InterviewService implements IInterviewService {
         });
     }
 
-    private async scheduleInterviewReminder(userId: string, application: any, interview: IInterview): Promise<void> {
-        // const scheduledTime = new Date(interview.scheduledAt!);
-        // const reminderTime = new Date(scheduledTime.getTime() - 15 * 60 * 1000);
-        // if (reminderTime > new Date()) {
-        //     await this.notificationService.scheduleNotification({
-        //         userId,
-        //         type: "INTERVIEW_REMINDER",
-        //         title: "Interview Starting Soon",
-        //         message: `Your ${interview.type} interview (Round ${interview.round}) starts in 15 minutes`,
-        //         priority: "urgent",
-        //         link:
-        //             interview.type === "video"
-        //                 ? `/video-interview/${application._id}/${interview.round}`
-        //                 : `/applications/${application._id}`,
-        //         scheduledFor: reminderTime,
-        //     });
-        // }
-    }
+    // private async scheduleInterviewReminder(userId: string, application: any, interview: IInterview): Promise<void> {
+    //     // const scheduledTime = new Date(interview.scheduledAt!);
+    //     // const reminderTime = new Date(scheduledTime.getTime() - 15 * 60 * 1000);
+    //     // if (reminderTime > new Date()) {
+    //     //     await this.notificationService.scheduleNotification({
+    //     //         userId,
+    //     //         type: "INTERVIEW_REMINDER",
+    //     //         title: "Interview Starting Soon",
+    //     //         message: `Your ${interview.type} interview (Round ${interview.round}) starts in 15 minutes`,
+    //     //         priority: "urgent",
+    //     //         link:
+    //     //             interview.type === "video"
+    //     //                 ? `/video-interview/${application._id}/${interview.round}`
+    //     //                 : `/applications/${application._id}`,
+    //     //         scheduledFor: reminderTime,
+    //     //     });
+    //     // }
+    // }
 }

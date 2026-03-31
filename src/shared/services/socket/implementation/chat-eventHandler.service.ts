@@ -2,7 +2,7 @@ import { Server, Socket } from "socket.io";
 import { IChatService } from "../../../../services/chat/chat.service.interface";
 import { IChatEventHandler } from "../interface/chat-eventHandler.interface";
 import { IUserSocketMapService } from "../interface/socket-map.service.interface";
-import { IMessage } from "../../../../models/chat/interfaces/message.interface";
+import { IMessage,  } from "../../../../models/chat/interfaces/message.interface";
 import logger from "../../../../utils/logger";
 
 export class ChatEventHandler implements IChatEventHandler {
@@ -78,10 +78,10 @@ export class ChatEventHandler implements IChatEventHandler {
             logger.info(`User ${userId} joined conversation ${conversationId}`);
 
             // Mark messages as delivered
-            const messages = await this._chatService.getMessages(conversationId, 1, 100);
+            const {messages} = await this._chatService.getMessages(conversationId, 1, 100);
             const undeliveredIds = messages
-                .filter((msg) => msg.receiverId.toString() === userId && msg.status === "sent")
-                .map((msg) => msg._id.toString());
+                .filter((msg:IMessage) => msg.receiverId.toString() === userId && msg.status === "sent")
+                .map((msg:IMessage) => msg._id.toString());
 
             if (undeliveredIds.length > 0) {
                 await this._chatService.markMessagesAsDelivered(undeliveredIds);

@@ -8,6 +8,8 @@ import { COMPANY_SUBSCRIPTION_MESSAGES } from "../../../constants/messages/compa
 import logger from "../../../utils/logger";
 import { AppError } from "../../../errors-classes/app.error.";
 import { HTTP_MESSAGES } from "../../../constants/messages/http.messages.constants";
+import { SUBSCRIPTION_PLAN_MESSAGES } from "../../../constants/messages/admin.messages";
+import { PAYMENT_MESSAGES } from "../../../constants/messages/payment.messages.constants";
 
 export class CompanySubscriptionPaymentController implements ICompanySubscriptionPaymentController {
     constructor(private readonly _subscriptionPaymentService: ISubscriptionPaymentService) {}
@@ -19,13 +21,13 @@ export class CompanySubscriptionPaymentController implements ICompanySubscriptio
         try {
             const companyId = req.user?.id;
             if (!companyId) {
-                throw new AuthError("Unauthorized access");
+                throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED, 401);
             }
 
             const { planId, isUpgrade } = req.body;
 
             if (!planId) {
-                throw new ValidationError("No plan Id found");
+                throw new ValidationError(SUBSCRIPTION_PLAN_MESSAGES.PLAN_NOT_FOUND);
             }
 
             const paymentIntentResponse = await this._subscriptionPaymentService.createPaymentIntentAndSubscribe(
@@ -47,13 +49,17 @@ export class CompanySubscriptionPaymentController implements ICompanySubscriptio
         try {
             const companyId = req.user?.id;
             if (!companyId) {
-                throw new AuthError("Unauthorized access");
+                throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
             }
 
             const { subscriptionId, paymentIntentId } = req.body;
 
-            if (!subscriptionId || !paymentIntentId) {
-                throw new AppError("Subscription ID and Payment Intent ID are required");
+            if (!subscriptionId) {
+                throw new ValidationError(COMPANY_SUBSCRIPTION_MESSAGES.SUBSCRIPTION_ID_NOT_FOUND);
+            }
+
+            if (!paymentIntentId) {
+                throw new ValidationError(PAYMENT_MESSAGES.PAYMENT_INTENT_ID_NOT_FOUND);
             }
 
             const result = await this._subscriptionPaymentService.confirmPaymentAndActivateSubscription(
@@ -115,13 +121,12 @@ export class CompanySubscriptionPaymentController implements ICompanySubscriptio
             const companyId = req.user?.id;
 
             if (!companyId) {
-                throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED, 403);
+                throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED, 401);
             }
             const { paymentId } = req.params;
 
-              console.log('paymentid:',paymentId)
             if (!paymentId) {
-                throw new ValidationError("Payment  ID is required", 404);
+                throw new ValidationError(PAYMENT_MESSAGES.PAYMENT_ID_NOT_FOUND);
             }
 
             const payment = await this._subscriptionPaymentService.getPaymentById(paymentId, companyId);

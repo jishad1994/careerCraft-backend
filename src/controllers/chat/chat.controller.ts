@@ -6,13 +6,13 @@ import { HTTP_MESSAGES } from "../../constants/messages/http.messages.constants"
 import { ApiResponse } from "../../utils/apiResponse.utils";
 import { ValidationError } from "../../errors-classes/validation.error";
 import { MessageType } from "../../models/chat/interfaces/message.interface";
+import { CHAT_MESSAGES } from "../../constants/messages/chat.messages.constants";
+import { USER_ROLES } from "../../interfaces/auth.interface";
 
 export class ChatController implements IChatController {
     constructor(private readonly _chatService: IChatService) {}
 
-    /**
-     * Get all conversations for logged-in user
-     */
+   
     async getConversations(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = req.user?.id;
@@ -21,16 +21,13 @@ export class ChatController implements IChatController {
             }
             const conversations = await this._chatService.getUserConversations(userId);
 
-            return ApiResponse.success(res, "Conversations fetch successfull", conversations);
+            return ApiResponse.success(res, CHAT_MESSAGES.CONVERSATION_FETCH_SUCCESS, conversations);
         } catch (error) {
             next(error);
         }
     }
 
-    /**
-     * Get or create conversation
-     * POST /api/chat/conversations
-     */
+   
     async createConversation(req: Request, res: Response, next: NextFunction) {
         try {
             const { otherUserId, jobId, applicationId } = req.body;
@@ -42,7 +39,7 @@ export class ChatController implements IChatController {
                 throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED, 401);
             }
 
-            const isCompany = currentUserRole === "company";
+            const isCompany = currentUserRole === USER_ROLES.COMPANY;
 
             const userId = isCompany ? otherUserId : currentUserId;
             const companyId = isCompany ? currentUserId : otherUserId;
@@ -55,15 +52,13 @@ export class ChatController implements IChatController {
                 applicationId,
             );
 
-            return ApiResponse.success(res, "Conversation created successfully", conversation);
+            return ApiResponse.success(res, CHAT_MESSAGES.CONVERSATION_CREATED_SUCCESSFULLY, conversation);
         } catch (error) {
             next(error);
         }
     }
 
-    /**
-     * Get conversation by ID
-     */
+    
     async getConversationById(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
@@ -76,7 +71,7 @@ export class ChatController implements IChatController {
             const conversation = await this._chatService.getConversationById(id);
 
             if (!conversation) {
-                throw new ValidationError("Conversation not found", 404);
+                throw new ValidationError(CHAT_MESSAGES.CONVERSATION_NOT_FOUND, 404);
             }
 
             const isParticipant = conversation.participants.some((p) => p.userId.toString() === userId);
@@ -85,15 +80,13 @@ export class ChatController implements IChatController {
                 throw new AuthError(HTTP_MESSAGES.FORBIDDEN, 403);
             }
 
-            return ApiResponse.success(res, "Conversation fetched successfully", conversation);
+            return ApiResponse.success(res, CHAT_MESSAGES.CONVERSATION_FETCH_SUCCESS, conversation);
         } catch (error) {
             next(error);
         }
     }
 
-    /**
-     * Get messages
-     */
+    
     async getMessages(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
@@ -108,7 +101,7 @@ export class ChatController implements IChatController {
             const conversation = await this._chatService.getConversationById(id);
 
             if (!conversation) {
-                throw new ValidationError("Conversation not found", 404);
+                throw new ValidationError(CHAT_MESSAGES.CONVERSATION_NOT_FOUND, 404);
             }
 
             const isParticipant = conversation.participants.some((p) => p.userId.toString() === userId);
@@ -119,15 +112,12 @@ export class ChatController implements IChatController {
 
             const { messages, paginationMeta } = await this._chatService.getMessages(id, page, limit);
 
-            return ApiResponse.success(res, "Messages fetched successfully", messages, 200, paginationMeta);
+            return ApiResponse.success(res, CHAT_MESSAGES.MESSAGES_FETCHED_SUCCESSFULLY, messages, 200, paginationMeta);
         } catch (error) {
             next(error);
         }
     }
 
-    /**
-     * Send message
-     */
     async sendMessage(req: Request, res: Response, next: NextFunction) {
         try {
             const { id: conversationId } = req.params;
@@ -143,7 +133,7 @@ export class ChatController implements IChatController {
             const conversation = await this._chatService.getConversationById(conversationId);
 
             if (!conversation) {
-                throw new ValidationError("Conversation not found", 404);
+                throw new ValidationError(CHAT_MESSAGES.CONVERSATION_NOT_FOUND, 404);
             }
 
             const otherParticipant = conversation.participants.find(
@@ -151,7 +141,7 @@ export class ChatController implements IChatController {
             );
 
             if (!otherParticipant) {
-                throw new ValidationError("Receiver not found", 400);
+                throw new ValidationError(CHAT_MESSAGES.RECIEVER_NOT_FOUND, 400);
             }
 
             const message = await this._chatService.sendMessage({
@@ -164,35 +154,31 @@ export class ChatController implements IChatController {
                 messageType: (messageType as MessageType) || MessageType.TEXT,
             });
 
-            return ApiResponse.success(res, "Message sent successfully", message);
+            return ApiResponse.success(res, CHAT_MESSAGES.MESSAGE_SENT_SUCCESS, message);
         } catch (error) {
             next(error);
         }
     }
 
-    /**
-     * Upload file
-     */
+   
     async uploadFile(req: Request, res: Response, next: NextFunction) {
         try {
             if (!req.file) {
-                throw new ValidationError("No file uploaded", 400);
+                throw new ValidationError(CHAT_MESSAGES.NO_FILE_FOUND, 400);
             }
 
             const { conversationId } = req.params;
             if (!conversationId) {
-                throw new ValidationError("No conversation id found", 400);
+                throw new ValidationError(CHAT_MESSAGES.NO_CONVERSATION_ID_FOUND, 400);
             }
             const attachment = await this._chatService.uploadAttachment(req.file, "chat", conversationId);
 
-            return ApiResponse.success(res, "File uploaded successfully", attachment);
+            return ApiResponse.success(res, CHAT_MESSAGES.FILE_UPLOAD_SUCCESS, attachment);
         } catch (error) {
             next(error);
         }
     }
-    /**
-     * Mark as read
-     */
+   
     async markAsRead(req: Request, res: Response, next: NextFunction) {
         try {
             const { id: conversationId } = req.params;
@@ -204,15 +190,13 @@ export class ChatController implements IChatController {
 
             await this._chatService.markMessagesAsRead(conversationId, userId);
 
-            return ApiResponse.success(res, "Messages marked as read");
+            return ApiResponse.success(res, CHAT_MESSAGES.MESSAGE_MARK_READ);
         } catch (error) {
             next(error);
         }
     }
 
-    /**
-     * Get unread count
-     */
+   
     async getUnreadCount(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = req.user?.id;
@@ -223,22 +207,20 @@ export class ChatController implements IChatController {
 
             const count = await this._chatService.getTotalUnreadCount(userId);
 
-            return ApiResponse.success(res, "Unread count fetched", { count });
+            return ApiResponse.success(res, CHAT_MESSAGES.MESSAGE_UNREAD_COUNT_FETCHED, { count });
         } catch (error) {
             next(error);
         }
     }
 
-    /**
-     * Delete message
-     */
+   
     async deleteMessage(req: Request, res: Response, next: NextFunction) {
         try {
             const { messageId } = req.params;
 
             const deleted = await this._chatService.deleteMessage(messageId);
 
-            return ApiResponse.success(res, "Message deleted successfully", { deleted });
+            return ApiResponse.success(res, CHAT_MESSAGES.MESSAGE_DELETED_SUCCESSFULLY, { deleted });
         } catch (error) {
             next(error);
         }

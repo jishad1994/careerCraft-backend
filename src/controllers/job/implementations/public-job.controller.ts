@@ -3,6 +3,7 @@ import { IPublicJobService } from "../../../services/job/interfaces/public-job.s
 import { IPublicJobController } from "../interfaces/public-job.controller.interface";
 import { JobSearchFilters } from "../../../repositories/job/job.repository.interface";
 import { ApiResponse } from "../../../utils/apiResponse.utils";
+import { COMPANY_JOB_MESSAGES } from "../../../constants/messages/company.messages.constants";
 
 export class PublicJobController implements IPublicJobController {
     constructor(private _publicJobService: IPublicJobService) {}
@@ -20,7 +21,7 @@ export class PublicJobController implements IPublicJobController {
 
             const { jobs, paginationMeta } = await this._publicJobService.getActiveJobs(page, limit, filters);
 
-            return ApiResponse.success(res, "Jobs fetched successfully", jobs, 200, paginationMeta);
+            return ApiResponse.success(res, COMPANY_JOB_MESSAGES.FETCH_SUCCESSFULL, jobs, 200, paginationMeta);
         } catch (error) {
             next(error);
         }
@@ -33,7 +34,13 @@ export class PublicJobController implements IPublicJobController {
 
             const { jobs, paginationMeta } = await this._publicJobService.getFeaturedJobs(page, limit);
 
-            return ApiResponse.success(res, "Featured jobs fetched successfully", jobs, 200, paginationMeta);
+            return ApiResponse.success(
+                res,
+                COMPANY_JOB_MESSAGES.FEATURED_JOBS_FETCH_SUCCESSFULL,
+                jobs,
+                200,
+                paginationMeta,
+            );
         } catch (error) {
             next(error);
         }

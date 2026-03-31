@@ -18,7 +18,7 @@ export interface IConversation {
     participants: IchatParticipant[];
     jobId?: Types.ObjectId;
     applicationId?: Types.ObjectId;
-    lastMessage?:ILastMessage;
+    lastMessage?: ILastMessage;
     initiatedBy: Types.ObjectId;
     status: "active" | "archived" | "blocked";
     createdAt: Date;

@@ -4,6 +4,7 @@ export const COMPANY_JOB_MESSAGES = {
     STATUS_UPDATED: "Job status updated successfully",
     DELETED: "Job deleted successfully",
     FETCH_SUCCESSFULL: "Jobs fetch successfull",
+    FEATURED_JOBS_FETCH_SUCCESSFULL: "Featured jobs fetched successfully",
     STATISTIC_FETCH_SUCCESSFULL: "Jobs statistics fetch successfull",
     JOB_NOT_FOUND: "Job not found",
 } as const;

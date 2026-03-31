@@ -10,9 +10,7 @@ import { INVOICE_MESSAGES } from "../../constants/messages/invoice.messages";
 export class InvoiceController implements IInvoiceController {
     constructor(private readonly _invoiceService: IInvoiceService) {}
 
-    /**
-     * Get invoice by subscription ID
-     */
+    
     async getInvoiceBySubscription(req: Request, res: Response, next: NextFunction) {
         try {
             const { subscriptionId } = req.params;
@@ -34,9 +32,7 @@ export class InvoiceController implements IInvoiceController {
         }
     }
 
-    /**
-     * Download invoice PDF
-     */
+    
     async downloadInvoicePDF(req: Request, res: Response, next: NextFunction) {
         try {
             const { invoiceId } = req.params;
@@ -68,9 +64,7 @@ export class InvoiceController implements IInvoiceController {
         }
     }
 
-    /**
-     * Get all invoices for company
-     */
+    
     async getCompanyInvoices(req: Request, res: Response, next: NextFunction) {
         try {
             const companyId = req.user?.id;
@@ -87,9 +81,7 @@ export class InvoiceController implements IInvoiceController {
         }
     }
 
-    /**
-     * View invoice PDF in browser
-     */
+    
     async viewInvoicePDF(req: Request, res: Response, next: NextFunction) {
         try {
             const { invoiceId } = req.params;
@@ -99,7 +91,7 @@ export class InvoiceController implements IInvoiceController {
             const invoice = await this._invoiceService.getInvoiceById(invoiceId);
 
             if (!invoice) {
-                throw new ValidationError("Invoice not found", 404);
+                throw new ValidationError(INVOICE_MESSAGES.NOT_FOUND, 404);
             }
 
             if (invoice.companyId.toString() !== companyId) {

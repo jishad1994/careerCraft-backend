@@ -1,6 +1,6 @@
 // company-subscription.schema.ts
 import mongoose, { Model, Schema } from "mongoose";
-import { ICompanySubscription, SubscriptionStatus } from "./company-subscription.interface";
+import { IAddon, ICompanySubscription, SubscriptionStatus } from "./company-subscription.interface";
 
 const usageSchema = new Schema(
     {
@@ -93,6 +93,44 @@ const snapShotSchema = new Schema(
     { _id: false },
 );
 
+const addonSchema = new Schema<IAddon>(
+    {
+        addonId: {
+            type: Schema.Types.ObjectId,
+            ref: "SubscriptionAddon",
+            required: true,
+        },
+        name: {
+            type: String,
+            required: true,
+        },
+        type: {
+            type: String,
+            enum: ["jobs", "resumeViews", "featuredJobs"],
+            required: true,
+        },
+        quantity: {
+            type: Number,
+            required: true,
+            min: 1,
+        },
+        price: {
+            type: Number,
+            required: true,
+            min: 0,
+        },
+        purchasedAt: {
+            type: Date,
+            default: Date.now,
+        },
+        paymentId: {
+            type: Schema.Types.ObjectId,
+            ref: "Payment",
+        },
+    },
+    { _id: true, timestamps: true },
+);
+
 export const companySubscriptionSchema = new Schema<ICompanySubscription>(
     {
         companyId: {
@@ -169,9 +207,56 @@ export const companySubscriptionSchema = new Schema<ICompanySubscription>(
             type: Boolean,
             default: false,
         },
+
+        //queue system
+
+        isQueued: {
+            type: Boolean,
+            default: false,
+            index: true,
+        },
+        queuePosition: {
+            type: Number,
+            default: 0,
+            index: true,
+        },
+        queuedAt: {
+            type: Date,
+        },
+        scheduledStartDate: {
+            type: Date,
+            index: true,
+        },
+        activatedAt: {
+            type: Date,
+        },
         previousSubscriptionId: {
             type: Schema.Types.ObjectId,
             ref: "CompanySubscription",
+            index: true,
+        },
+
+        // ADDON SYSTEM
+        addons: {
+            type: [addonSchema],
+            default: [],
+        },
+        addonLimits: {
+            jobs: {
+                type: Number,
+                default: 0,
+                min: 0,
+            },
+            resumeViews: {
+                type: Number,
+                default: 0,
+                min: 0,
+            },
+            featuredJobs: {
+                type: Number,
+                default: 0,
+                min: 0,
+            },
         },
     },
     {

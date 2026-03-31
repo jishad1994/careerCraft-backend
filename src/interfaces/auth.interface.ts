@@ -23,3 +23,9 @@ export interface IAuthUser {
     id: string;
     role: Role;
 }
+
+export enum USER_ROLES {
+    USER = "user",
+    COMPANY = "company",
+    ADMIN = "admin",
+} 

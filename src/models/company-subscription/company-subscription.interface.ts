@@ -1,5 +1,5 @@
 // company-subscription.interface.ts
-import mongoose, { Document } from "mongoose";
+import mongoose, { Document, Types } from "mongoose";
 
 export enum SubscriptionStatus {
     ACTIVE = "active",
@@ -7,9 +7,31 @@ export enum SubscriptionStatus {
     CANCELLED = "cancelled",
     PENDING = "pending",
     SUSPENDED = "suspended",
+    QUEUED = "queued",
 }
 
 export type companySubscriptionUsageTypes = "jobsPosted" | "resumesViewed" | "featuredUsed";
+
+export type AddonType = "jobs" | "resumeViews" | "featuredJobs";
+
+export interface IAddon {
+    _id?: Types.ObjectId;
+
+    addonId: Types.ObjectId;
+    name: string;
+
+    type: AddonType;
+
+    quantity: number;
+    price: number;
+
+    purchasedAt?: Date;
+
+    paymentId?: Types.ObjectId;
+
+    createdAt?: Date;
+    updatedAt?: Date;
+}
 
 export interface ISubscriptionUsage {
     jobsPosted: number;
@@ -46,6 +68,20 @@ export interface ICompanySubscription extends Document<mongoose.Types.ObjectId> 
     cancelReason?: string;
     snapShot: ISubscriptionSnapshot;
     autoRenew: boolean;
+
+    isQueued: boolean;
+    queuePosition: number;
+    queuedAt: Date;
+    scheduledStartDate: Date;
+    activatedAt: Date;
+
+    addons: IAddon[];
+    addonLimits: {
+        jobs: number;
+        resumeViews: number;
+        featuredJobs: number;
+    };
+
     previousSubscriptionId?: mongoose.Types.ObjectId;
     createdAt: Date;
     updatedAt: Date;
