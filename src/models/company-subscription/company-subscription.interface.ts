@@ -97,3 +97,34 @@ export interface ICompanySubscription extends Document<mongoose.Types.ObjectId> 
     };
     incrementUsage(type: keyof ISubscriptionUsage): Promise<void>;
 }
+
+
+export interface IQueuedSubscriptionDTO {
+    companyId: mongoose.Types.ObjectId;
+    planId: mongoose.Types.ObjectId;
+    status: SubscriptionStatus;
+    startDate: Date;
+    endDate: Date;
+    usage: ISubscriptionUsage;
+    paymentId: mongoose.Types.ObjectId;
+    cancelledAt?: Date;
+    cancelReason?: string;
+    snapShot: ISubscriptionSnapshot;
+    autoRenew: boolean;
+
+    isQueued: boolean;
+    queuePosition: number;
+    queuedAt: Date;
+    scheduledStartDate: Date;
+    activatedAt: Date;
+
+    addons: IAddon[];
+    addonLimits: {
+        jobs: number;
+        resumeViews: number;
+        featuredJobs: number;
+    };
+
+    previousSubscriptionId?: mongoose.Types.ObjectId;
+    daysUntilStart: number;
+}

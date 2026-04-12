@@ -76,6 +76,17 @@ import { Conversation } from "../models/chat/implementations/conversation.schema
 import { MessageRepository } from "../repositories/chat/implementations/message.repository";
 import { Message } from "../models/chat/implementations/message.schema";
 import { ChatController } from "../controllers/chat/chat.controller";
+import { SubscriptionAddonRepository } from "../repositories/subscription-addon/subscription-addon.repository";
+import { SubscriptionAddon } from "../models/subscription-add-on/addon.model";
+import { BullMQService } from "../shared/services/bullmq.service";
+import { SubscriptionCancellationQueueService } from "../services/subscription/implementations/subscription-cancellation.service";
+
+import { ResumeBuilderService } from "../services/user/implementations/resume.service";
+import { ResumeRepository } from "../repositories/resume/resume.repository";
+
+import { ResumeBuilderController } from "../controllers/user/implementations/user-resume-builder.controller";
+import { PdfGenerationService } from "../services/user/implementations/resume.pdf.service";
+import { ResumeModel } from "../models/resume/resume.model";
 
 //redis cache service instance
 const redisRepo = new RedisCacheRepo(process.env.REDIS_URL || "redis://localhost:6379");
@@ -196,6 +207,10 @@ const adminJobController = new AdminJobController(adminJobService);
 const companyJobController = new CompanyJobController(companyJobService, skillService);
 const publicJobController = new PublicJobController(publicJobService);
 
+//addon
+
+const addonRepository = new SubscriptionAddonRepository(SubscriptionAddon);
+
 //subscription
 const subscriptionPlanRepository = new SubscriptionPlanRepository(SubscriptionPlan);
 const subscriptionPlanService = new SubscriptionPlanService(subscriptionPlanRepository);
@@ -204,10 +219,12 @@ const subscriptionPlanController = new SubscriptionPlanController(subscriptionPl
 //comapany subscription
 
 const companySubscriptionRepository = new CompanySubscriptionRepository(CompanySubscription);
-const companySubscriptionService = new CompanySubscriptionService(companySubscriptionRepository);
+const companySubscriptionService = new CompanySubscriptionService(companySubscriptionRepository, addonRepository);
+const comanySubscriptionCancellationService = new SubscriptionCancellationQueueService(companySubscriptionRepository);
 const companySubscriptionController = new CompanySubscriptionController(
     companySubscriptionService,
     subscriptionPlanService,
+    comanySubscriptionCancellationService,
 );
 
 // stripe instance
@@ -238,6 +255,7 @@ const companySubscriptionPaymentService = new SubscriptionPaymentService(
     companySubscriptionRepository,
     paymentRepository,
     invoiceService,
+    addonRepository,
 );
 
 const companySubscriptionPaymentController = new CompanySubscriptionPaymentController(companySubscriptionPaymentService);
@@ -247,6 +265,17 @@ const companyCandidateController = new CompanyCandidateController(userProfileSer
 //chat
 
 const chatController = new ChatController(chatService);
+
+//bullmq service
+const bullMQService = new BullMQService(
+    companySubscriptionPaymentService,
+    companySubscriptionService,
+    process.env.redisUrl || "redis://localhost:6379",
+);
+const resumeRepository = new ResumeRepository(ResumeModel);
+const resumePdfService = new PdfGenerationService();
+const resumebuilderService = new ResumeBuilderService(userRepo,resumeRepository,resumePdfService,fileService);
+const resumeBuilderController = new ResumeBuilderController(resumebuilderService);
 
 export {
     cacheService,
@@ -276,4 +305,6 @@ export {
     companyCandidateController,
     invoiceController,
     chatController,
+    bullMQService,
+    resumeBuilderController,
 };

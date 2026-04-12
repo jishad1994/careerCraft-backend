@@ -10,4 +10,6 @@ export interface ICompanySubscriptionController {
     cancelSubscription(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
     upgradeSubscription(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+    
+    getAvailableAddons(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 }

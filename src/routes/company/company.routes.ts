@@ -6,6 +6,7 @@ import { companyAuthMiddleware } from "../../middlewares/company.auth.middleware
 import companySubscriptionRoutes from "./company.subscription.routes";
 import candidateRoutes from "./company.candidates.routes";
 import companyInvoiceRoutes from "./company.invoice.routes";
+import companyAddonRoutes from "./company.addons.routes";
 
 export const companyRoutes = express.Router();
 
@@ -21,5 +22,6 @@ companyRoutes.use("/candidates", candidateRoutes);
 
 companyRoutes.use("/invoices", companyInvoiceRoutes);
 
+companyRoutes.use("/addons", companyAddonRoutes);
 
 export default companyRoutes;

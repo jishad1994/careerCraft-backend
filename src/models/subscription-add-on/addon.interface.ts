@@ -11,3 +11,9 @@ export interface ISubscriptionAddon extends Document<mongoose.Types.ObjectId> {
     createdAt: Date;
     updatedAt: Date;
 }
+
+export interface ISubscriptionAddonWithUsage extends ISubscriptionAddon {
+  currentLimit: number;
+  currentAddonLimit: number;
+  currentUsage: number;
+}

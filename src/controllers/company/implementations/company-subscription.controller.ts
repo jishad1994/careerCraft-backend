@@ -9,11 +9,14 @@ import { HTTP_MESSAGES, HTTP_STATUS } from "../../../constants/messages/http.mes
 import { SUBSCRIPTION_PLAN_MESSAGES } from "../../../constants/messages/admin.messages";
 import { ICompanySubscriptionService } from "../../../services/subscription/interfaces/company-subscription.service.interface";
 import logger from "../../../utils/logger";
+import { ValidationError } from "../../../errors-classes/validation.error";
+import { ISubscriptionCancellationQueueService } from "../../../services/subscription/interfaces/subscritpion-cancellation.interface";
 
 export class CompanySubscriptionController implements ICompanySubscriptionController {
     constructor(
         private readonly _companySubscriptionService: ICompanySubscriptionService,
         private readonly _subscriptionPlanService: ISubscriptionPlanServce,
+        private readonly _subscriptioncCancellationService: ISubscriptionCancellationQueueService,
     ) {}
 
     /**
@@ -38,14 +41,14 @@ export class CompanySubscriptionController implements ICompanySubscriptionContro
             }
 
             const planId = req.params.planId;
-            console.log('planId:',planId)
+            console.log("planId:", planId);
             if (!planId) {
                 throw new AppError("No plan Id found");
             }
 
-            const plan =  await this._subscriptionPlanService.getPlanById(planId);
-console.log('plan',plan)
-            logger.info('plan:',plan)
+            const plan = await this._subscriptionPlanService.getPlanById(planId);
+            console.log("plan", plan);
+            logger.info("plan:", plan);
 
             return ApiResponse.success(res, SUBSCRIPTION_PLAN_MESSAGES.FETCH_SUCCESSFULL_BY_ID, plan);
         } catch (error) {
@@ -59,7 +62,6 @@ console.log('plan',plan)
      */
     async getActiveSubscription(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
-
             const companyId = req.user?.id;
 
             if (!companyId) {
@@ -118,12 +120,11 @@ console.log('plan',plan)
             }
             const { reason } = req.body;
 
+            const result = await this._subscriptioncCancellationService.cancelSubscriptionWithQueueManagement(companyId, {
+                reason,
+            });
 
-            const subscription = await this._companySubscriptionService.cancelSubscription(companyId, reason || "");
-
-
-            return ApiResponse.success(res, COMPANY_SUBSCRIPTION_MESSAGES.SUBSCRIPTION_CANCELLED_SUCCESSFULL, subscription);
-            
+            return ApiResponse.success(res, result.message, result);
         } catch (error) {
             next(error);
         }
@@ -154,13 +155,45 @@ console.log('plan',plan)
             // Get new plan
             const plan = await this._subscriptionPlanService.getPlanById(planId);
             if (!plan) {
-                throw new AppError("No plan found");
+                throw new ValidationError("No plan found", 404);
             }
 
             // TODO: Create payment intent/session for upgrade
             const paymentUrl = `${process.env.FRONTEND_URL}/payment/upgrade?planId=${planId}`;
 
             return ApiResponse.success(res, COMPANY_SUBSCRIPTION_MESSAGES.UPGRADE_PAYMENT_INITIATED, { paymentUrl });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getAvailableAddons(req: Request, res: Response, next: NextFunction) {
+        try {
+            const companyId = req.user?.id;
+            if (!companyId) {
+                throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
+            }
+
+            const addons = await this._companySubscriptionService.getAvailableAddons(companyId);
+
+            return ApiResponse.success(res, COMPANY_SUBSCRIPTION_MESSAGES.ADDON_FETCH_SUCCESSFULL, addons);
+        } catch (error) {
+            next(error);
+        }
+    }
+    async getSubscriptionQueue(req: Request, res: Response, next: NextFunction) {
+        try {
+            const companyId = req.user?.id;
+            if (!companyId) {
+                throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
+            }
+
+            const { active, queued } = await this._companySubscriptionService.getSubscriptionQueue(companyId);
+
+            return ApiResponse.success(res, COMPANY_SUBSCRIPTION_MESSAGES.SUBSCRIPTION_QUEUE_FETCH_SUCCESSFULL, {
+                active,
+                queued,
+            });
         } catch (error) {
             next(error);
         }

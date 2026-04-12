@@ -1,6 +1,14 @@
 export const COMPANY_SUBSCRIPTION_MESSAGES = {
     PLANS_FETCH_SUCCESSFULL: "Subscription plans retrieved successfully",
 
+    ADDON_FETCH_SUCCESSFULL: "Active addons fetch sucessfull",
+
+    ADDON_PURCHASE_INITIATED: "Add on purchase payment initiated ",
+    
+    ADDON_PURCHASE_PAYMENT_CONFIRMED: "Add on purchase payment confirmed ",
+
+    SUBSCRIPTION_QUEUE_FETCH_SUCCESSFULL: "Company Subscription queue fetch sucessfull",
+
     EXISTING_PLAN_FOUND: "Company already has an existing subscription plan",
 
     ACTIVE_SUBSCRIPTION_FETCH_SUCCESSFULL: "Active subscription retrieved successfully",
@@ -23,6 +31,5 @@ export const COMPANY_SUBSCRIPTION_MESSAGES = {
 
     PAYMENT_FETCH_SUCCESSFULL: "Payment document fetch successfull",
 
-    SUBSCRIPTION_ID_NOT_FOUND:'Subscription ID not found',
-
+    SUBSCRIPTION_ID_NOT_FOUND: "Subscription ID not found",
 } as const;

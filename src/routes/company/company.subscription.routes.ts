@@ -9,6 +9,11 @@ import { companyAuthMiddleware } from "../../middlewares/company.auth.middleware
 const companySubscriptionRoutes = express.Router();
 
 companySubscriptionRoutes.get(
+    "/queue",
+    companyAuthMiddleware,
+    companySubscriptionController.getSubscriptionQueue.bind(companySubscriptionController),
+);
+companySubscriptionRoutes.get(
     "/active",
     companyAuthMiddleware,
     companySubscriptionController.getActiveSubscription.bind(companySubscriptionController),
@@ -69,16 +74,10 @@ companySubscriptionRoutes.get(
     companySubscriptionPaymentController.getPaymentStatus.bind(companySubscriptionPaymentController),
 );
 
-
-
 companySubscriptionRoutes.post(
     "/upgrade",
     companyAuthMiddleware,
     companySubscriptionController.upgradeSubscription.bind(companySubscriptionController), //not using currently
 );
-
-
-
-
 
 export default companySubscriptionRoutes;

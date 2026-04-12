@@ -9,7 +9,7 @@ import { MongooseDatabase } from "./database/mongooseDatabase";
 import userAuthRoutes from "./routes/user.auth.routes";
 import companyAuthRoutes from "./routes/company.auth.routes";
 import commonRoutes from "./routes/common.routes";
-import { cacheService } from "./dependencies/container.dependency";
+import {  cacheService } from "./dependencies/container.dependency";
 import adminRoutes from "./routes/admin/admin.routes";
 import cookieParser from "cookie-parser";
 import logger from "./utils/logger";
@@ -33,9 +33,8 @@ app.use(
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
         credentials: true,
-        
-        optionsSuccessStatus: 200,
 
+        optionsSuccessStatus: 200,
     }),
 ); //cors
 app.use(cookieParser());
@@ -53,6 +52,9 @@ app.use(express.urlencoded({ extended: true }));
 
 const database = new MongooseDatabase();
 await database.connect();
+
+// await bullMQService.scheduleRecurring("0 * * * *");
+// logger.info(" BullMQ subscription queue initialized");
 
 //cache service connection
 await cacheService

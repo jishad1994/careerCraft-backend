@@ -32,7 +32,8 @@ export enum PaymentType {
     RENEWAL = "renewal",
     UPGRADE = "upgrade",
     DOWNGRADE = "downgrade",
-    ONE_TIME = "one_time"
+    ONE_TIME = "one_time",
+    ADDON='addon'
 }
 
 export interface IPaymentMetadata {
@@ -56,6 +57,7 @@ export interface IPayment extends Document<mongoose.Types.ObjectId> {
     companyId: mongoose.Types.ObjectId;
     subscriptionId: mongoose.Types.ObjectId;
     planId: mongoose.Types.ObjectId;
+    addonId?:mongoose.Types.ObjectId
     
     // Payment Details
     amount: number;

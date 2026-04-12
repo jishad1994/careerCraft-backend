@@ -17,7 +17,9 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
     ): Promise<T | null> {
         const query = this.model.findById(id).populate(populateFields);
 
-        return await query.lean<T>({ virtuals: true }).exec();
+        return await query
+            .lean<T>({ virtuals: true })
+            .exec();
     }
 
     //find by ID
@@ -80,7 +82,7 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
     //update by email
     async updateOneByFilter(filter: Partial<T>, update: Partial<T>): Promise<T | null> {
         try {
-            return await this.model.findOneAndUpdate({ filter }, update, { new: true });
+            return await this.model.findOneAndUpdate(filter as FilterQuery<T>, update, { new: true });
         } catch {
             throw new DataBaseError("db error while update oenby filter");
         }
@@ -137,13 +139,4 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
             throw new DataBaseError("db error while update many");
         }
     }
-
-    // async createMany(entities: Partial<T>[]): Promise<T[]> {
-    //     try {
-    //          const result = await this.model.insertMany(entities);
-    //     return result.map(doc => doc.toObject()) as T[];
-    //     } catch {
-    //         throw new DataBaseError("db error while create many");
-    //     }
-    // }
 }

@@ -64,6 +64,10 @@ export const paymentSchema = new Schema<IPayment>(
             required: [true, "Plan ID is required"],
             index: true,
         },
+        addonId: {
+            type: Schema.Types.ObjectId,
+            ref: "SubscriptionAddon",
+        },
 
         // Payment Details
         amount: {

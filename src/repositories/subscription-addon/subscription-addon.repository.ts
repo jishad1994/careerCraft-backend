@@ -10,7 +10,7 @@ export class SubscriptionAddonRepository extends BaseRepository<ISubscriptionAdd
     }
 
     async findActiveByType(type: string): Promise<ISubscriptionAddon[]> {
-        return this.model
+        return await this.model
             .find({
                 type,
                 isActive: true,
@@ -20,7 +20,7 @@ export class SubscriptionAddonRepository extends BaseRepository<ISubscriptionAdd
     }
 
     async findAllActive(): Promise<ISubscriptionAddon[]> {
-        return this.model
+        return await this.model
             .find({
                 isActive: true,
             })

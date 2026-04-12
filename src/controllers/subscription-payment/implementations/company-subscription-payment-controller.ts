@@ -97,6 +97,35 @@ export class CompanySubscriptionPaymentController implements ICompanySubscriptio
         }
     }
 
+    async purchaseAddon(req: Request, res: Response, next: NextFunction) {
+        try {
+            const companyId = req.user?.id;
+
+            if (!companyId) {
+                throw new AuthError("Unauthorized access");
+            }
+
+            const { addonId } = req.params;
+console.log('payment service:', this._subscriptionPaymentService);
+            const paymentIntentResponse = await this._subscriptionPaymentService.purchaseAddon(companyId, addonId);
+
+            return ApiResponse.success(res, COMPANY_SUBSCRIPTION_MESSAGES.ADDON_PURCHASE_INITIATED, paymentIntentResponse);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async confirmAddon(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { paymentId, paymentIntentId } = req.body;
+
+            const result = await this._subscriptionPaymentService.confirmAddonPurchase(paymentId, paymentIntentId);
+            return ApiResponse.success(res, COMPANY_SUBSCRIPTION_MESSAGES.ADDON_PURCHASE_PAYMENT_CONFIRMED, result);
+        } catch (error) {
+            next(error);
+        }
+    }
+
     /**
      * Get payment status
      */

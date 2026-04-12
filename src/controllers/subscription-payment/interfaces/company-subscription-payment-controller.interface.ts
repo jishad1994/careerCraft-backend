@@ -9,7 +9,11 @@ export interface ICompanySubscriptionPaymentController {
 
     getPaymentStatus(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
-    getPaymentById(req: Request, res: Response, next: NextFunction): Promise<Response | void>
+    getPaymentById(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+
+    purchaseAddon(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
     
+    confirmAddon(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+
     handleWebhook(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 }
