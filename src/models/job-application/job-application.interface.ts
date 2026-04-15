@@ -13,7 +13,7 @@ export const JOB_APPLICATION_STATUSES = {
     HIRED: "hired",
 } as const;
 
-export type JobApplicationStatus = (typeof JOB_APPLICATION_STATUSES)[keyof typeof JOB_APPLICATION_STATUSES];
+export type JobApplicationStatus = typeof JOB_APPLICATION_STATUSES[keyof typeof JOB_APPLICATION_STATUSES];
 
 export interface JobApplicationStatistics {
     total: number;
@@ -107,7 +107,8 @@ export interface IJobApplicationDetails extends IJobApplication {
     education: IEducation[];
     applicantDetails: IApplicantDetails;
     jobDetails: IJobDetails;
-    applicantSkills:ISkill[]
+    applicantSkills: ISkill[];
+    companyName: string;
 }
 
 export interface IJobDetails {

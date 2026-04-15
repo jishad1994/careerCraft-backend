@@ -13,7 +13,7 @@ const participantSchema = new Schema(
         },
         userType: {
             type: String,
-            enum: ["user", "company"],
+            enum: ["User", "Company"],
             required: true,
         },
         lastReadAt: {

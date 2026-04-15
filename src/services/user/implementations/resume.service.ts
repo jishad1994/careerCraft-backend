@@ -1,7 +1,7 @@
 
 
 import { Types } from "mongoose";
-import { IResumePDFService } from "../interfaces/resume.pdf.service.interface";
+import { IPdfGenerateService } from "../interfaces/PdfGeneration.service.interface";
 import { IUser } from "../../../models/user/user.interface";
 import { getAllTemplates } from "../../../utils/resume.templates";
 import { IProfileDataResponse, IResumeData, IResumeEducation, IResumeExperience, IResumeSkill, IResumeTemplate, ISavedResumeResponse } from "../../../models/resume/resume.interface";
@@ -17,7 +17,7 @@ export class ResumeBuilderService implements IResumeBuilderService{
     constructor(
         private readonly userRepository: IUserRepository,
         private readonly resumeRepository: IResumeRepository,
-        private readonly pdfService: IResumePDFService,
+        private readonly pdfService: IPdfGenerateService,
         private readonly fileUploadService: IFileService
     ) {}
 

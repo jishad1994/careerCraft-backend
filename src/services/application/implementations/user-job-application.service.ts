@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 import { ValidationError } from "../../../errors-classes/validation.error";
-import { JobApplicationStatus, IJobApplication, IJobApplicationDetails } from "../../../models/job-application/job-application.interface";
+import {
+    JobApplicationStatus,
+    IJobApplication,
+    IJobApplicationDetails,
+} from "../../../models/job-application/job-application.interface";
 import { IJobApplicationRepository } from "../../../repositories/application/job-application.repository.interface";
 import { IUserJobApplicationService } from "../interfaces/user-job-application.service.interface";
 import { AppError } from "../../../errors-classes/app.error.";
@@ -8,10 +12,7 @@ import { PaginationMeta } from "../../../utils/apiResponse.utils";
 import { IFileService } from "../../file-service/interfaces/file.service.interface";
 
 export class UserJobApplicationService implements IUserJobApplicationService {
-    constructor(
-        private _jobApplicationRepository: IJobApplicationRepository,
-        private _fileService: IFileService,
-    ) {}
+    constructor(private _jobApplicationRepository: IJobApplicationRepository, private _fileService: IFileService) {}
 
     async getApplicationStatus(
         userId: string,
@@ -32,7 +33,7 @@ export class UserJobApplicationService implements IUserJobApplicationService {
         if (!application) {
             throw new AppError("Application not found", 404);
         }
-
+        console.log("company Name", application.companyName);
         const resumeSignedURL = await this._fileService.generateSignedUrl(application.resume.fileKey);
 
         application.resume.signedURL = resumeSignedURL;

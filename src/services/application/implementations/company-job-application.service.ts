@@ -65,6 +65,7 @@ export class CompanyJobApplicationService implements ICompanyJobApplicationServi
         }
 
         const application = await this._applicationRepository.findApplicationDetailsById(applicationId);
+        
         if (!application) {
             throw new AppError("Application not found", 404);
         }

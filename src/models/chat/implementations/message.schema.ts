@@ -44,7 +44,7 @@ const messageSchema = new Schema<IMessage>(
         },
         senderType: {
             type: String,
-            enum: ['user', 'company'],
+            enum: ['User', 'Company'],
             required: true,
         },
         receiverId: {
@@ -54,7 +54,7 @@ const messageSchema = new Schema<IMessage>(
         },
         receiverType: {
             type: String,
-            enum: ['user', 'company'],
+            enum: ['User', 'Company'],
             required: true,
         },
         content: {

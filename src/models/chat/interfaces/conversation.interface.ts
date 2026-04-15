@@ -2,7 +2,7 @@ import { Types } from "mongoose";
 
 export interface IchatParticipant {
     userId: Types.ObjectId;
-    userType: "user" | "company";
+    userType: "User" | "Company";
     lastReadAt: Date;
     unreadCount: number;
 }

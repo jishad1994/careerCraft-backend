@@ -85,8 +85,13 @@ import { ResumeBuilderService } from "../services/user/implementations/resume.se
 import { ResumeRepository } from "../repositories/resume/resume.repository";
 
 import { ResumeBuilderController } from "../controllers/user/implementations/user-resume-builder.controller";
-import { PdfGenerationService } from "../services/user/implementations/resume.pdf.service";
+import { PdfGenerationService } from "../services/user/implementations/PdfGeneration.service";
 import { ResumeModel } from "../models/resume/resume.model";
+import { OfferLetterRepository } from "../repositories/offer-letter/offerLetter.repository";
+import { OfferLetterModel } from "../models/offer-letter/offerLetter.model";
+import { OfferLetterService } from "../shared/services/offerLetter-service/offerLetter.service";
+import { CandidateOfferLetterController } from "../controllers/offerLetter/implementations/candidate-offerLetter.controller";
+import { CompanyOfferLetterController } from "../controllers/offerLetter/implementations/company-offerLetter.controller";
 
 //redis cache service instance
 const redisRepo = new RedisCacheRepo(process.env.REDIS_URL || "redis://localhost:6379");
@@ -274,9 +279,22 @@ const bullMQService = new BullMQService(
 );
 const resumeRepository = new ResumeRepository(ResumeModel);
 const resumePdfService = new PdfGenerationService();
-const resumebuilderService = new ResumeBuilderService(userRepo,resumeRepository,resumePdfService,fileService);
+const resumebuilderService = new ResumeBuilderService(userRepo, resumeRepository, resumePdfService, fileService);
 const resumeBuilderController = new ResumeBuilderController(resumebuilderService);
 
+//offer letter
+
+const offerLetterRepository = new OfferLetterRepository(OfferLetterModel);
+const offerLetterService = new OfferLetterService(
+    offerLetterRepository,
+    jobApplicationRepository,
+    resumePdfService,
+    fileService,
+);
+
+const candidateOfferLetterController = new CandidateOfferLetterController(offerLetterService);
+
+const companyOfferLetterController = new CompanyOfferLetterController(offerLetterService);
 export {
     cacheService,
     emailService,
@@ -307,4 +325,6 @@ export {
     chatController,
     bullMQService,
     resumeBuilderController,
+    candidateOfferLetterController,
+    companyOfferLetterController,
 };

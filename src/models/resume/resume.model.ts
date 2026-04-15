@@ -8,7 +8,6 @@ import {
     IResumeSummary,
 } from "./resume.interface";
 
-// ---- Sub-schemas ----
 
 const resumePersonalInfoSchema = new Schema<IResumePersonalInfo>(
     {
@@ -63,7 +62,6 @@ const resumeSkillSchema = new Schema<IResumeSkill>(
     { _id: false },
 );
 
-// ---- Root schema ----
 
 const resumeSchema = new Schema<IResume>(
     {
@@ -71,7 +69,7 @@ const resumeSchema = new Schema<IResume>(
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: true,
-            unique: true, // one resume draft per user
+            unique: true, 
             index: true,
         },
         personalInfo: {

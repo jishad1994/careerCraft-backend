@@ -49,6 +49,17 @@ export class JobApplicationRepository extends BaseRepository<IJobApplication> im
                     as: "applicantSkills",
                 },
             },
+            
+            {
+
+    $lookup: {
+        from: "companies", 
+        localField: "company",
+        foreignField: "_id",
+        as: "companyDetails",
+    },
+},
+{ $unwind: "$companyDetails" },
         ];
 
         // Add computed fields
@@ -61,6 +72,7 @@ export class JobApplicationRepository extends BaseRepository<IJobApplication> im
                 experience: "$applicantDetails.totalExperienceYears",
                 skills: "$applicantSkills",
                 education: "$applicantDetails.education",
+                companyName:"$companyDetails.name"
             },
         });
 

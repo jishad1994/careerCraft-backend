@@ -12,10 +12,12 @@ import { USER_ROLES } from "../../interfaces/auth.interface";
 export class ChatController implements IChatController {
     constructor(private readonly _chatService: IChatService) {}
 
-   
     async getConversations(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = req.user?.id;
+
+            console.log("user role:", req.user?.role);
+            console.log("user id:", req.user?.id);
             if (!userId) {
                 throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED, 401);
             }
@@ -27,7 +29,6 @@ export class ChatController implements IChatController {
         }
     }
 
-   
     async createConversation(req: Request, res: Response, next: NextFunction) {
         try {
             const { otherUserId, jobId, applicationId } = req.body;
@@ -58,7 +59,6 @@ export class ChatController implements IChatController {
         }
     }
 
-    
     async getConversationById(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
@@ -86,7 +86,6 @@ export class ChatController implements IChatController {
         }
     }
 
-    
     async getMessages(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
@@ -147,7 +146,7 @@ export class ChatController implements IChatController {
             const message = await this._chatService.sendMessage({
                 conversationId,
                 senderId: userId,
-                senderType: userRole === "user" ? "user" : "company",
+                senderType: userRole === "user" ? "User" : "Company",
                 receiverId: otherParticipant.userId.toString(),
                 receiverType: otherParticipant.userType,
                 content,
@@ -160,7 +159,6 @@ export class ChatController implements IChatController {
         }
     }
 
-   
     async uploadFile(req: Request, res: Response, next: NextFunction) {
         try {
             if (!req.file) {
@@ -178,7 +176,7 @@ export class ChatController implements IChatController {
             next(error);
         }
     }
-   
+
     async markAsRead(req: Request, res: Response, next: NextFunction) {
         try {
             const { id: conversationId } = req.params;
@@ -196,7 +194,6 @@ export class ChatController implements IChatController {
         }
     }
 
-   
     async getUnreadCount(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = req.user?.id;
@@ -213,7 +210,6 @@ export class ChatController implements IChatController {
         }
     }
 
-   
     async deleteMessage(req: Request, res: Response, next: NextFunction) {
         try {
             const { messageId } = req.params;

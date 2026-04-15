@@ -24,10 +24,11 @@ export interface IMessage {
     _id: Types.ObjectId;
     conversationId: Types.ObjectId;
     senderId: Types.ObjectId;
-    senderType: 'user' | 'company';
+    senderType: 'User' | 'Company';
     receiverId: Types.ObjectId;
-    receiverType: 'user' | 'company';
+    receiverType: 'User' | 'Company';
     content: string;
+    
     messageType: MessageType;
     attachments: IAttachment[];
     status: MessageStatus;

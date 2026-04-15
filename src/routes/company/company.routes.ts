@@ -7,6 +7,7 @@ import companySubscriptionRoutes from "./company.subscription.routes";
 import candidateRoutes from "./company.candidates.routes";
 import companyInvoiceRoutes from "./company.invoice.routes";
 import companyAddonRoutes from "./company.addons.routes";
+import companyOfferLetterRoutes from "./company.offerLetter.routes";
 
 export const companyRoutes = express.Router();
 
@@ -23,5 +24,7 @@ companyRoutes.use("/candidates", candidateRoutes);
 companyRoutes.use("/invoices", companyInvoiceRoutes);
 
 companyRoutes.use("/addons", companyAddonRoutes);
+
+companyRoutes.use("/offers", companyOfferLetterRoutes);
 
 export default companyRoutes;

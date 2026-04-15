@@ -1,18 +1,33 @@
 import mongoose, { FilterQuery, Model } from "mongoose";
 import { IConversation, ILastMessage } from "../../../models/chat/interfaces/conversation.interface";
 import { IConversationRepository } from "../interfaces/conversation.repository.interface";
+import { PopulatedConversation } from "../../../dtos/chat.dto";
 
 export class ConversationRepository implements IConversationRepository {
     constructor(private readonly model: Model<IConversation>) {}
-    async create(data: Partial<IConversation>): Promise<IConversation> {
-        return this.model.create(data);
+    async create(data: Partial<IConversation>): Promise<PopulatedConversation> {
+        const doc = await this.model.create(data);
+
+        const populated = await doc.populate({
+            path: "participants.userId",
+            select: "firstName lastName profilePicture name",
+        });
+
+        return populated.toObject() as PopulatedConversation;
     }
 
-    async findById(id: string): Promise<IConversation | null> {
-        return await this.model.findById(id);
+    async findById(id: string): Promise<PopulatedConversation | null> {
+        return await this.model
+            .findById(id)
+            .populate({
+                path: "participants.userId",
+                select: "firstName lastName profilePicture name",
+            })
+            .sort({ updatedAt: -1 })
+            .lean();
     }
 
-    async findByParticipants(userId1: string, userId2: string, jobId?: string): Promise<IConversation | null> {
+    async findByParticipants(userId1: string, userId2: string, jobId?: string): Promise<PopulatedConversation | null> {
         const query: FilterQuery<IConversation> = {
             participants: {
                 $all: [{ $elemMatch: { userId: userId1 } }, { $elemMatch: { userId: userId2 } }],
@@ -25,16 +40,28 @@ export class ConversationRepository implements IConversationRepository {
             query.jobId = { $exists: false };
         }
 
-        return await this.model.findOne(query);
+        return await this.model
+            .findOne(query)
+            .populate({
+                path: "participants.userId",
+                select: "firstName lastName profilePicture name",
+            })
+            .sort({ updatedAt: -1 })
+            .lean();
     }
 
-    async findByUserId(userId: string, status: string = "active"): Promise<IConversation[]> {
+    async findByUserId(userId: string, status: string = "active"): Promise<PopulatedConversation[]> {
         return await this.model
             .find({
                 "participants.userId": userId,
                 status,
             })
-            .sort({ updatedAt: -1 });
+            .populate({
+                path: "participants.userId",
+                select: "firstName lastName profilePicture name",
+            })
+            .sort({ updatedAt: -1 })
+            .lean();
     }
 
     async update(id: string, data: Partial<IConversation>): Promise<IConversation | null> {

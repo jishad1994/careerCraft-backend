@@ -2,7 +2,7 @@ import { Server, Socket } from "socket.io";
 import { IChatService } from "../../../../services/chat/chat.service.interface";
 import { IChatEventHandler } from "../interface/chat-eventHandler.interface";
 import { IUserSocketMapService } from "../interface/socket-map.service.interface";
-import { IMessage,  } from "../../../../models/chat/interfaces/message.interface";
+import { IMessage } from "../../../../models/chat/interfaces/message.interface";
 import logger from "../../../../utils/logger";
 
 export class ChatEventHandler implements IChatEventHandler {
@@ -24,6 +24,8 @@ export class ChatEventHandler implements IChatEventHandler {
 
         // Send message
         socket.on("chat:sendMessage", async (data: IMessage) => {
+
+            console.log('chat message',data)
             await this.handleSendMessage(socket, io, data);
         });
 
@@ -78,10 +80,10 @@ export class ChatEventHandler implements IChatEventHandler {
             logger.info(`User ${userId} joined conversation ${conversationId}`);
 
             // Mark messages as delivered
-            const {messages} = await this._chatService.getMessages(conversationId, 1, 100);
+            const { messages } = await this._chatService.getMessages(conversationId, 1, 100);
             const undeliveredIds = messages
-                .filter((msg:IMessage) => msg.receiverId.toString() === userId && msg.status === "sent")
-                .map((msg:IMessage) => msg._id.toString());
+                .filter((msg: IMessage) => msg.receiverId.toString() === userId && msg.status === "sent")
+                .map((msg: IMessage) => msg._id.toString());
 
             if (undeliveredIds.length > 0) {
                 await this._chatService.markMessagesAsDelivered(undeliveredIds);
@@ -133,10 +135,12 @@ export class ChatEventHandler implements IChatEventHandler {
         try {
             const { conversationId, content, messageType, attachments } = data;
             const userId = socket.data.userId;
-            const userType = socket.data.role === "user" ? "user" : "company";
+            const userType = socket.data.role === "user" ? "User" : "Company";
 
             // Get conversation to find receiver
             const conversation = await this._chatService.getConversationById(conversationId.toString());
+
+        
             if (!conversation) {
                 socket.emit("error", { message: "Conversation not found" });
                 return;
@@ -144,6 +148,8 @@ export class ChatEventHandler implements IChatEventHandler {
             const otherParticipant = conversation.participants.find(
                 (participant) => participant.userId.toString() != userId,
             );
+
+            console.log('other participant',otherParticipant)
             // const otherParticipant = this._conversationRepository.getOtherParticipant(userId);
             if (!otherParticipant) {
                 socket.emit("error", { message: "Receiver not found" });
@@ -156,7 +162,7 @@ export class ChatEventHandler implements IChatEventHandler {
                 senderId: userId,
                 senderType: userType,
                 receiverId: otherParticipant.userId.toString(),
-                receiverType: otherParticipant.userType as "user" | "company",
+                receiverType: otherParticipant.userType as "User" | "Company",
                 content,
                 messageType: messageType || "text",
                 attachments: attachments || [],
@@ -181,7 +187,7 @@ export class ChatEventHandler implements IChatEventHandler {
             logger.info(`Message sent in conversation ${conversationId}`);
         } catch (error) {
             logger.error("Error sending message:", error);
-            socket.emit("error", { message: "Failed to send message" });
+            socket.emit("error", { message: "Failed to send the new message" });
         }
     }
 

@@ -4,6 +4,7 @@ import userJobRoutes from "./user.jobs.routes";
 import userJobApplicationRoutes from "./user.job-application.routes";
 import { userAuthMiddleware } from "../../middlewares/user.auth.middleware";
 import resumeBuilderRouter from "./resume.builder.routes";
+import candidateOfferLetterRoutes from "./candiate.offerLetter.routes";
 
 const userRoutes = express.Router();
 
@@ -11,5 +12,6 @@ userRoutes.use("/me", userAuthMiddleware, userProfileRoutes);
 userRoutes.use("/jobs", userAuthMiddleware, userJobRoutes);
 userRoutes.use("/applications", userAuthMiddleware, userJobApplicationRoutes);
 userRoutes.use("/resume", resumeBuilderRouter);
+userRoutes.use("/offers", candidateOfferLetterRoutes);
 
 export default userRoutes;

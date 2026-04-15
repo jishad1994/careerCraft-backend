@@ -1,19 +1,18 @@
-import { CreateConversationDTO, SendMessageDTO } from "../../dtos/chat.dto";
-import { IConversation } from "../../models/chat/interfaces/conversation.interface";
+import { Conversation, CreateConversationDTO, SendMessageDTO } from "../../dtos/chat.dto";
 import { IMessage } from "../../models/chat/interfaces/message.interface";
 import { PaginationMeta } from "../../utils/apiResponse.utils";
 
 export interface IChatService {
-    createConversation(data: CreateConversationDTO): Promise<IConversation>;
+    createConversation(data: CreateConversationDTO): Promise<Conversation>;
     getOrCreateConversation(
         userId: string,
         companyId: string,
         initiatedBy: string,
         jobId?: string,
         applicationId?: string,
-    ): Promise<IConversation>;
-    getConversationById(id: string): Promise<IConversation | null>;
-    getUserConversations(userId: string): Promise<IConversation[]>;
+    ): Promise<Conversation>;
+    getConversationById(id: string): Promise<Conversation | null>;
+    getUserConversations(userId: string): Promise<Conversation[]>;
     getTotalUnreadCount(userId: string): Promise<number>;
     sendMessage(data: SendMessageDTO): Promise<IMessage>;
     getMessages(

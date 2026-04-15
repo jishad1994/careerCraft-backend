@@ -1,6 +1,5 @@
 import { Types } from "mongoose";
-import { CreateConversationDTO, SendMessageDTO } from "../../dtos/chat.dto";
-import { IConversation } from "../../models/chat/interfaces/conversation.interface";
+import { Conversation, CreateConversationDTO, SendMessageDTO } from "../../dtos/chat.dto";
 import { IConversationRepository } from "../../repositories/chat/interfaces/conversation.repository.interface";
 import { IMessageRepository } from "../../repositories/chat/interfaces/message.repository.interface";
 import { IFileService } from "../file-service/interfaces/file.service.interface";
@@ -10,6 +9,7 @@ import { IMessage, MessageStatus, MessageType } from "../../models/chat/interfac
 import { ValidationError } from "../../errors-classes/validation.error";
 import { getFileLocation } from "../../utils/s3-bucket.utils";
 import { PaginationMeta } from "../../utils/apiResponse.utils";
+import { ConversationMapper } from "../../mappers/chat.mapper";
 
 export class ChatService implements IChatService {
     constructor(
@@ -19,16 +19,18 @@ export class ChatService implements IChatService {
         private readonly _notificationService: INotificationService,
     ) {}
 
-    async createConversation(data: CreateConversationDTO): Promise<IConversation> {
+    async createConversation(data: CreateConversationDTO): Promise<Conversation> {
         const existing = await this._conversationRepository.findByParticipants(
             data.participant1.userId,
             data.participant2.userId,
             data.jobId,
         );
 
-        if (existing) return existing;
+        if (existing) {
+            return ConversationMapper.toConversation(existing);
+        }
 
-        return await this._conversationRepository.create({
+        const newConversation = await this._conversationRepository.create({
             participants: [
                 {
                     userId: new Types.ObjectId(data.participant1.userId),
@@ -48,6 +50,8 @@ export class ChatService implements IChatService {
             applicationId: data.applicationId ? new Types.ObjectId(data.applicationId) : undefined,
             status: "active",
         });
+
+        return ConversationMapper.toConversation(newConversation);
     }
 
     async getOrCreateConversation(
@@ -56,25 +60,32 @@ export class ChatService implements IChatService {
         initiatedBy: string,
         jobId?: string,
         applicationId?: string,
-    ): Promise<IConversation> {
+    ): Promise<Conversation> {
         const existing = await this._conversationRepository.findByParticipants(userId, companyId, jobId);
-        if (existing) return existing;
-
+        if (existing) {
+            return ConversationMapper.toConversation(existing);
+        }
         return await this.createConversation({
-            participant1: { userId, userType: "user" },
-            participant2: { userId: companyId, userType: "company" },
+            participant1: { userId, userType: "User" },
+            participant2: { userId: companyId, userType: "Company" },
             initiatedBy,
             jobId,
             applicationId,
         });
     }
 
-    async getConversationById(id: string): Promise<IConversation | null> {
-        return await this._conversationRepository.findById(id);
+    async getConversationById(id: string): Promise<Conversation | null> {
+        const populatedConverstion = await this._conversationRepository.findById(id);
+
+        if (!populatedConverstion) {
+            throw new ValidationError("conversation not found");
+        }
+        return ConversationMapper.toConversation(populatedConverstion);
     }
 
-    async getUserConversations(userId: string): Promise<IConversation[]> {
-        return await this._conversationRepository.findByUserId(userId, "active");
+    async getUserConversations(userId: string): Promise<Conversation[]> {
+        const conversations = await this._conversationRepository.findByUserId(userId, "active");
+        return ConversationMapper.toConversationList(conversations);
     }
 
     async getTotalUnreadCount(userId: string): Promise<number> {
@@ -82,12 +93,18 @@ export class ChatService implements IChatService {
     }
 
     async sendMessage(data: SendMessageDTO): Promise<IMessage> {
+
+        console.log('message recieved in the backend',data)
         const conversation = await this._conversationRepository.findById(data.conversationId);
         if (!conversation) {
             throw new ValidationError("Conversation not found", 404);
         }
 
-        const isParticipant = conversation.participants.some((p) => p.userId.toString() === data.senderId);
+        const isParticipant = conversation.participants.some((p) => p.userId._id.toString() === data.senderId);
+        
+        console.log("isParticipant", isParticipant);
+
+
         if (!isParticipant) {
             throw new ValidationError("Sender is not a participant", 403);
         }
