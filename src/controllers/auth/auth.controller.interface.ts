@@ -1,25 +1,15 @@
-import { NextFunction, Request, Response } from "express";
+import { RequestHandler } from "express";
 
 export interface IAuthController {
-    refresh(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-
-    google(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-
-    login(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-
-    signup(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-
-    logout(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-
-    checkUserPhoneOrEmailExists(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-
-    requestOTP(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-
-    resendOTP(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-
-    verifyOTP(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-
-    forgotPassword(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-
-    resetPassword(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+    refresh: RequestHandler;
+    google: RequestHandler;
+    login: RequestHandler;
+    signup: RequestHandler;
+    logout: RequestHandler;
+    checkUserPhoneOrEmailExists: RequestHandler;
+    requestOTP: RequestHandler;
+    resendOTP: RequestHandler;
+    verifyOTP: RequestHandler;
+    forgotPassword: RequestHandler;
+    resetPassword: RequestHandler;
 }
