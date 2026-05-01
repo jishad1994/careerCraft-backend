@@ -2,7 +2,7 @@ import { Server, Socket } from "socket.io";
 import { IChatService } from "../../../../services/chat/chat.service.interface";
 import { IChatEventHandler } from "../interface/chat-eventHandler.interface";
 import { IUserSocketMapService } from "../interface/socket-map.service.interface";
-import { IMessage } from "../../../../models/chat/interfaces/message.interface";
+import { IMessage, MessageType } from "../../../../models/chat/interfaces/message.interface";
 import logger from "../../../../utils/logger";
 
 export class ChatEventHandler implements IChatEventHandler {
@@ -164,7 +164,7 @@ export class ChatEventHandler implements IChatEventHandler {
                 receiverId: otherParticipant.userId.toString(),
                 receiverType: otherParticipant.userType as "User" | "Company",
                 content,
-                messageType: messageType || "text",
+                messageType: messageType || MessageType.TEXT,
                 attachments: attachments || [],
             });
 

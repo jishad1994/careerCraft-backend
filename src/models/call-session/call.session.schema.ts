@@ -1,4 +1,4 @@
-// Backend: src/models/call-session/call-session.model.ts
+
 
 import mongoose, { Model, Schema } from 'mongoose';
 import { ICallParticipant, ICallSession } from './call.session.interface';

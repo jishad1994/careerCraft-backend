@@ -1,6 +1,7 @@
 import { UserProfileDTO } from "../../../dtos/userProfile.dto";
 import { AppError } from "../../../errors-classes/app.error.";
 import { AuthError } from "../../../errors-classes/auth.error";
+import { ValidationError } from "../../../errors-classes/validation.error";
 import { IUserProfileService } from "../../../services/user/interfaces/profile.service.interface";
 import { ApiResponse } from "../../../utils/apiResponse.utils";
 import { IUserProfileController } from "../interfaces/profile.controller.interface";
@@ -72,6 +73,10 @@ export class UserProfileController implements IUserProfileController {
             }
 
             const skillId = req.params.id;
+
+            if (!skillId || typeof skillId !== "string") {
+                throw new ValidationError("Invalid skillId");
+            }
 
             const updatedUser = await this._userProfileService.removeUserSkill(user.id, skillId);
 

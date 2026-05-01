@@ -42,8 +42,8 @@ export class CompanySubscriptionController implements ICompanySubscriptionContro
 
             const planId = req.params.planId;
             console.log("planId:", planId);
-            if (!planId) {
-                throw new AppError("No plan Id found");
+            if (!planId || typeof planId !== "string") {
+                throw new ValidationError("Invalid planId");
             }
 
             const plan = await this._subscriptionPlanService.getPlanById(planId);

@@ -1,7 +1,6 @@
-import { Document, ObjectId } from "mongoose";
+import mongoose, { Document,} from "mongoose";
 
-export interface ISkill extends Document {
-    _id: ObjectId;
+export interface ISkill extends Document<mongoose.Types.ObjectId> {
     name: string;
     description?: string;
     blocked: boolean;

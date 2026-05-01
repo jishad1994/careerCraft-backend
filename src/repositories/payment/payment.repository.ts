@@ -12,14 +12,14 @@ export class PaymentRepository extends BaseRepository<IPayment> implements IPaym
         return await this.model
             .find({ subscriptionId: new Types.ObjectId(subscriptionId) })
             .sort({ createdAt: -1 })
-            .lean();
+            
     }
 
     async findByCompany(companyId: string): Promise<IPayment[]> {
         return await this.model
             .find({ companyId: new Types.ObjectId(companyId) })
             .sort({ createdAt: -1 })
-            .lean();
+           
     }
 
     async updateStatus(id: string, status: PaymentStatus, additionalData?: Partial<IPayment>): Promise<IPayment | null> {
@@ -39,7 +39,7 @@ export class PaymentRepository extends BaseRepository<IPayment> implements IPaym
                 subscriptionId: new Types.ObjectId(subscriptionId),
                 status: { $in: [PaymentStatus.PENDING, PaymentStatus.PROCESSING] },
             })
-            .lean();
+            
     }
 
     async findByInvoiceNumber(invoiceNumber: string): Promise<IPayment | null> {

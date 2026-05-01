@@ -64,7 +64,7 @@ export class CompanyRepository extends BaseRepository<ICompany> implements IComp
         }
 
         const [companies, total] = await Promise.all([
-            this.model.find(filter).lean().skip(skip).limit(limit),
+            this.model.find(filter).skip(skip).limit(limit),
             this.model.countDocuments(filter),
         ]);
 

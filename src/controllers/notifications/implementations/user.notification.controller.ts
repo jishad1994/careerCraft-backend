@@ -1,5 +1,6 @@
 import { NOTIFICATION_MESSAGES } from "../../../constants/messages/notification.messages";
 import { AppError } from "../../../errors-classes/app.error.";
+import { ValidationError } from "../../../errors-classes/validation.error";
 import { NotificationQueryParams } from "../../../interfaces/notification-interfaces";
 import { INotificationService } from "../../../services/notification/interface/notification.service.interface";
 import { ApiResponse } from "../../../utils/apiResponse.utils";
@@ -84,6 +85,9 @@ export class UserNotificationController implements IUserNotificationController {
 
             const { id } = req.params;
 
+            if (!id || typeof id !== "string") {
+                throw new ValidationError("Invalid id");
+            }
             const notification = await this._notificationService.markAsRead(id, userId);
 
             return ApiResponse.success(res, NOTIFICATION_MESSAGES.NOTIFICATION_MARKED_AS_READ, notification, 200);
@@ -123,7 +127,9 @@ export class UserNotificationController implements IUserNotificationController {
             }
 
             const { id } = req.params;
-
+            if (!id || typeof id !== "string") {
+                throw new ValidationError("Invalid id");
+            }
             await this._notificationService.deleteNotification(id, userId);
 
             return ApiResponse.success(res, NOTIFICATION_MESSAGES.NOTIFICATION_DELETED, null, 200);

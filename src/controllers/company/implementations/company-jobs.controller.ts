@@ -8,6 +8,7 @@ import { ISkillServivce } from "../../../services/skills/interfaces/skills.servi
 import { JobSearchFilters } from "../../../repositories/job/job.repository.interface";
 import { HTTP_MESSAGES } from "../../../constants/messages/http.messages.constants";
 import { COMPANY_JOB_MESSAGES, COMPANY_SKILL_MESSAGES } from "../../../constants/messages/company.messages.constants";
+import { ValidationError } from "../../../errors-classes/validation.error";
 
 export class CompanyJobController implements ICompanyJobController {
     constructor(private _companyJobService: ICompanyJobService, private _skillService: ISkillServivce) {}
@@ -77,6 +78,10 @@ export class CompanyJobController implements ICompanyJobController {
 
             const { jobId } = req.params;
 
+            if (!jobId || typeof jobId !== "string") {
+                throw new ValidationError("Invalid jobId");
+            }
+
             const job = await this._companyJobService.getJobById(company.id, jobId);
 
             return ApiResponse.success(res, COMPANY_JOB_MESSAGES.FETCH_SUCCESSFULL, job);
@@ -91,6 +96,9 @@ export class CompanyJobController implements ICompanyJobController {
             if (!company) throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
 
             const { jobId } = req.params;
+            if (!jobId || typeof jobId !== "string") {
+                throw new ValidationError("Invalid jobId");
+            }
 
             const updates = req.body;
 
@@ -108,6 +116,10 @@ export class CompanyJobController implements ICompanyJobController {
             if (!company) throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
 
             const { jobId } = req.params;
+            if (!jobId || typeof jobId !== "string") {
+                throw new ValidationError("Invalid jobId");
+            }
+
             const { status } = req.body;
 
             if (!status) {
@@ -128,6 +140,9 @@ export class CompanyJobController implements ICompanyJobController {
             if (!company) throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
 
             const { jobId } = req.params;
+            if (!jobId || typeof jobId !== "string") {
+                throw new ValidationError("Invalid jobId");
+            }
 
             await this._companyJobService.deleteJob(company.id, jobId);
 

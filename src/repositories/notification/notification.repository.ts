@@ -25,7 +25,7 @@ export class NotificationRepository extends BaseRepository<INotification> implem
         }
 
         const [notifications, total] = await Promise.all([
-            this.model.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+            this.model.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
             this.model.countDocuments(query),
         ]);
         return [notifications, total];

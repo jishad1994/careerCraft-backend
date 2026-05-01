@@ -4,6 +4,7 @@ import { IOfferLetterService } from "../../../shared/services/offerLetter-servic
 import { ICreateOfferLetterDto } from "../../../models/offer-letter/offerLetter.interface";
 import { ApiResponse } from "../../../utils/apiResponse.utils";
 import { ICompanyOfferLetterController } from "../interfaces/company-offerLetter.controller.interface";
+import { ValidationError } from "../../../errors-classes/validation.error";
 
 export class CompanyOfferLetterController implements ICompanyOfferLetterController {
     constructor(private readonly offerService: IOfferLetterService) {}
@@ -55,8 +56,11 @@ export class CompanyOfferLetterController implements ICompanyOfferLetterControll
     async getOffer(req: Request, res: Response, next: NextFunction): Promise<void | Response> {
         try {
             const companyId = this.getCompanyId(req);
-
-            const offer = await this.offerService.getOfferForCompany(req.params.id, companyId);
+            const id = req.params.id;
+            if (!id || typeof id !== "string") {
+                throw new ValidationError("Invalid id");
+            }
+            const offer = await this.offerService.getOfferForCompany(id, companyId);
 
             return ApiResponse.success(res, "Offer fetched successfully", offer);
         } catch (error) {
@@ -68,8 +72,11 @@ export class CompanyOfferLetterController implements ICompanyOfferLetterControll
         try {
             const companyId = this.getCompanyId(req);
             const verifiedBy = req.user?.id ?? companyId;
-
-            const offer = await this.offerService.verifyOffer(req.params.id, companyId, verifiedBy);
+            const id = req.params.id;
+            if (!id || typeof id !== "string") {
+                throw new ValidationError("Invalid id");
+            }
+            const offer = await this.offerService.verifyOffer(id, companyId, verifiedBy);
 
             return ApiResponse.success(res, "Offer verified successfully", offer);
         } catch (error) {
@@ -80,8 +87,11 @@ export class CompanyOfferLetterController implements ICompanyOfferLetterControll
     async downloadPdf(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const companyId = this.getCompanyId(req);
-
-            const buffer = await this.offerService.generateOfferPdf(req.params.id, companyId, "company");
+            const id = req.params.id;
+            if (!id || typeof id !== "string") {
+                throw new ValidationError("Invalid id");
+            }
+            const buffer = await this.offerService.generateOfferPdf(id, companyId, "company");
 
             res.setHeader("Content-Type", "application/pdf");
             res.setHeader("Content-Disposition", "attachment; filename=offer-letter.pdf");
@@ -95,8 +105,11 @@ export class CompanyOfferLetterController implements ICompanyOfferLetterControll
     async getSignedDocument(req: Request, res: Response, next: NextFunction): Promise<void | Response> {
         try {
             const companyId = this.getCompanyId(req);
-
-            const url = await this.offerService.getSignedDocumentUrl(req.params.id, companyId);
+            const id = req.params.id;
+            if (!id || typeof id !== "string") {
+                throw new ValidationError("Invalid id");
+            }
+            const url = await this.offerService.getSignedDocumentUrl(id, companyId);
 
             return ApiResponse.success(res, "Signed document fetched successfully", { url });
         } catch (error) {

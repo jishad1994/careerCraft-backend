@@ -73,7 +73,7 @@ export class UserRepository extends BaseRepository<IUser> implements IUserReposi
         const [data, total] = await Promise.all([
             this.model
                 .find(filter, { firstName: 1, lastName: 1, email: 1, role: 1, isBlocked: 1 })
-                .lean()
+               
                 .skip(skip)
                 .limit(limit),
             this.model.countDocuments(filter),

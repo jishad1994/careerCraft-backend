@@ -10,10 +10,13 @@ import { INVOICE_MESSAGES } from "../../constants/messages/invoice.messages";
 export class InvoiceController implements IInvoiceController {
     constructor(private readonly _invoiceService: IInvoiceService) {}
 
-    
     async getInvoiceBySubscription(req: Request, res: Response, next: NextFunction) {
         try {
             const { subscriptionId } = req.params;
+
+            if (!subscriptionId || typeof subscriptionId !== "string") {
+                throw new ValidationError("Invalid subscriptionId");
+            }
             const companyId = req.user?.id;
 
             const invoice = await this._invoiceService.getInvoiceBySubscription(subscriptionId);
@@ -32,10 +35,13 @@ export class InvoiceController implements IInvoiceController {
         }
     }
 
-    
     async downloadInvoicePDF(req: Request, res: Response, next: NextFunction) {
         try {
             const { invoiceId } = req.params;
+
+            if (!invoiceId || typeof invoiceId !== "string") {
+                throw new ValidationError("Invalid invoiceId");
+            }
             const companyId = req.user?.id;
 
             const invoice = await this._invoiceService.getInvoiceById(invoiceId);
@@ -48,8 +54,9 @@ export class InvoiceController implements IInvoiceController {
                 throw new AuthError(HTTP_MESSAGES.FORBIDDEN, 403);
             }
 
-            const { stream, fileName, contentType, contentLength } =
-                await this._invoiceService.downloadInvoicePDF(invoiceId);
+            const { stream, fileName, contentType, contentLength } = await this._invoiceService.downloadInvoicePDF(
+                invoiceId,
+            );
 
             res.setHeader("Content-Type", contentType);
             res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
@@ -64,7 +71,6 @@ export class InvoiceController implements IInvoiceController {
         }
     }
 
-    
     async getCompanyInvoices(req: Request, res: Response, next: NextFunction) {
         try {
             const companyId = req.user?.id;
@@ -81,11 +87,12 @@ export class InvoiceController implements IInvoiceController {
         }
     }
 
-    
     async viewInvoicePDF(req: Request, res: Response, next: NextFunction) {
         try {
             const { invoiceId } = req.params;
-
+            if (!invoiceId || typeof invoiceId !== "string") {
+                throw new ValidationError("Invalid invoiceId");
+            }
             const companyId = req.user?.id;
 
             const invoice = await this._invoiceService.getInvoiceById(invoiceId);
@@ -98,8 +105,9 @@ export class InvoiceController implements IInvoiceController {
                 throw new AuthError(HTTP_MESSAGES.FORBIDDEN, 403);
             }
 
-            const { stream, fileName, contentType, contentLength } =
-                await this._invoiceService.downloadInvoicePDF(invoiceId);
+            const { stream, fileName, contentType, contentLength } = await this._invoiceService.downloadInvoicePDF(
+                invoiceId,
+            );
 
             res.setHeader("Content-Type", contentType);
             res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);

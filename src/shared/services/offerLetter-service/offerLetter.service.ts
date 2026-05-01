@@ -82,7 +82,7 @@ export class OfferLetterService implements IOfferLetterService {
         });
 
         // 6. Return populated
-        const populated = await this.offerRepo.findByIdPopulated(offer._id as string);
+        const populated = await this.offerRepo.findByIdPopulated(offer._id.toString() );
         if (!populated) {
             throw new AppError("Failed to retrieve created offer");
         }

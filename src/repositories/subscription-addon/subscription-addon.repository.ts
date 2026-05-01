@@ -16,7 +16,7 @@ export class SubscriptionAddonRepository extends BaseRepository<ISubscriptionAdd
                 isActive: true,
             })
             .sort({ quantity: 1, price: 1 })
-            .lean();
+            
     }
 
     async findAllActive(): Promise<ISubscriptionAddon[]> {

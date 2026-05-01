@@ -4,6 +4,7 @@ import { JobSearchFilters } from "../../../repositories/job/job.repository.inter
 import { ApiResponse } from "../../../utils/apiResponse.utils";
 import { IUserJobController } from "../interfaces/user-job.controller.interface";
 import { AppError } from "../../../errors-classes/app.error.";
+import { ValidationError } from "../../../errors-classes/validation.error";
 
 export class UserJobController implements IUserJobController {
     constructor(private _userJobService: IUserJobService) {}
@@ -36,7 +37,9 @@ export class UserJobController implements IUserJobController {
     async getJobById(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const { jobId } = req.params;
-
+            if (!jobId || typeof jobId !== "string") {
+                throw new ValidationError("Invalid jobId");
+            }
             const job = await this._userJobService.getJobById(jobId);
 
             return ApiResponse.success(res, "Job fetched successfully", job);
@@ -48,7 +51,9 @@ export class UserJobController implements IUserJobController {
     async getJobBySlug(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const { slug } = req.params;
-
+            if (!slug || typeof slug !== "string") {
+                throw new ValidationError("Invalid slug");
+            }
             const job = await this._userJobService.getJobBySlug(slug);
 
             return ApiResponse.success(res, "Job fetched successfully", job);
@@ -62,8 +67,6 @@ export class UserJobController implements IUserJobController {
             const user = req.user;
             if (!user) throw new AppError("User not found", 401);
 
-            console.log("formdata", req.body);
-            // console.log("cover letter file", req.file);
 
             // const {
             //     job,

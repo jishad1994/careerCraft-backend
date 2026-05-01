@@ -106,7 +106,11 @@ export class CompanySubscriptionPaymentController implements ICompanySubscriptio
             }
 
             const { addonId } = req.params;
-console.log('payment service:', this._subscriptionPaymentService);
+
+            if (!addonId || typeof addonId !== "string") {
+                throw new ValidationError("Invalid addonId");
+            }
+
             const paymentIntentResponse = await this._subscriptionPaymentService.purchaseAddon(companyId, addonId);
 
             return ApiResponse.success(res, COMPANY_SUBSCRIPTION_MESSAGES.ADDON_PURCHASE_INITIATED, paymentIntentResponse);
@@ -133,8 +137,8 @@ console.log('payment service:', this._subscriptionPaymentService);
         try {
             const { intentId } = req.params;
 
-            if (!intentId) {
-                throw new AppError("Payment intent ID is required");
+            if (!intentId || typeof intentId !== "string") {
+                throw new ValidationError("Invalid intentId");
             }
 
             const status = await this._subscriptionPaymentService.getPaymentStatus(intentId);
@@ -154,8 +158,8 @@ console.log('payment service:', this._subscriptionPaymentService);
             }
             const { paymentId } = req.params;
 
-            if (!paymentId) {
-                throw new ValidationError(PAYMENT_MESSAGES.PAYMENT_ID_NOT_FOUND);
+            if (!paymentId || typeof paymentId !== "string") {
+                throw new ValidationError("Invalid paymentId");
             }
 
             const payment = await this._subscriptionPaymentService.getPaymentById(paymentId, companyId);

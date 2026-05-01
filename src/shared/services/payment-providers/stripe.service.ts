@@ -4,7 +4,7 @@ export class StripeService implements IPaymentProvider {
     private readonly stripe: Stripe;
 
     constructor(private readonly stripeSecretKey: string) {
-        this.stripe = new Stripe(this.stripeSecretKey, { apiVersion: "2026-01-28.clover" });
+        this.stripe = new Stripe(this.stripeSecretKey, { apiVersion: "2026-02-25.clover" });
     }
 
     async createPaymentIntent(

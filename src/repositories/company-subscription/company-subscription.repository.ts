@@ -23,14 +23,14 @@ export class CompanySubscriptionRepository extends BaseRepository<ICompanySubscr
                 startDate: { $lte: new Date() },
                 endDate: { $gte: new Date() },
             })
-            .lean();
+           
     }
 
     async findByCompany(companyId: string): Promise<ICompanySubscription[]> {
         return await this.model
             .find({ companyId: new Types.ObjectId(companyId) })
             .sort({ createdAt: -1 })
-            .lean();
+           
     }
 
     async findExpired(): Promise<ICompanySubscription[]> {
@@ -40,7 +40,7 @@ export class CompanySubscriptionRepository extends BaseRepository<ICompanySubscr
                 isQueued: false,
                 endDate: { $lt: new Date() },
             })
-            .lean();
+          
     }
 
     async create(data: Partial<ICompanySubscription>): Promise<ICompanySubscription> {
@@ -49,7 +49,7 @@ export class CompanySubscriptionRepository extends BaseRepository<ICompanySubscr
     }
 
     async updateStatus(id: string, status: SubscriptionStatus): Promise<ICompanySubscription | null> {
-        return await this.model.findByIdAndUpdate(id, { status }, { new: true, runValidators: true }).lean();
+        return await this.model.findByIdAndUpdate(id, { status }, { new: true, runValidators: true })
     }
 
     async cancel(id: string, reason: string): Promise<ICompanySubscription | null> {
@@ -63,7 +63,7 @@ export class CompanySubscriptionRepository extends BaseRepository<ICompanySubscr
                 },
                 { new: true },
             )
-            .lean();
+         
     }
 
     async incrementUsage(id: string, type: companySubscriptionUsageTypes): Promise<ICompanySubscription | null> {
@@ -96,7 +96,7 @@ export class CompanySubscriptionRepository extends BaseRepository<ICompanySubscr
                 status: "queued",
             })
             .sort({ queuePosition: 1 })
-            .lean();
+            
     }
 
     async findReadyToActivate(): Promise<ICompanySubscription[]> {
@@ -108,7 +108,7 @@ export class CompanySubscriptionRepository extends BaseRepository<ICompanySubscr
                 scheduledStartDate: { $lte: now },
             })
             .sort({ queuePosition: 1 })
-            .lean();
+          
     }
 
     async addAddon(subscriptionId: string, addon: IAddon): Promise<void> {

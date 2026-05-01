@@ -159,16 +159,16 @@ export class AuthService implements IAuthService {
                           lastName: googleData.familyName,
                           provider: "google",
                           googleId: googleData.sub,
-                          profilePicture: googleData.picture,
-                      } as IUser)
+                        //   profilePicture: {key:location:googleData.picture},
+                      } )
                     : await this._companyRepository.createCompany({
                           email: googleData.email,
                           name: googleData.givenName || googleData.email.split("@")[0],
                           role,
                           provider: "google",
                           googleId: googleData.sub,
-                          bannerImage: googleData.picture,
-                      } as ICompany);
+                        //   bannerImage: googleData.picture,
+                      } );
         }
         const accessToken = createAccessToken(String(entity!._id), role);
         const { token: refreshToken, jti } = createRefreshToken(String(entity._id), role);

@@ -7,6 +7,7 @@ import { IJob, JobStatus } from "../../../models/job/job.interface";
 import { ApiResponse } from "../../../utils/apiResponse.utils";
 import { ADMIN_JOB_MESSAGES } from "../../../constants/messages/admin.messages";
 import { HTTP_MESSAGES } from "../../../constants/messages/http.messages.constants";
+import { AppError } from "../../../errors-classes/app.error.";
 
 export class AdminJobController implements IAdminJobController {
     constructor(private _adminJobService: IAdminJobService) {}
@@ -70,6 +71,10 @@ export class AdminJobController implements IAdminJobController {
 
             const { jobId } = req.params;
 
+            if (!jobId || typeof jobId !== "string") {
+                throw new AppError("Invalid jobId");
+            }
+
             const job = await this._adminJobService.verifyJob(jobId);
 
             return ApiResponse.success(res, ADMIN_JOB_MESSAGES.VERIFIED, job);
@@ -84,7 +89,9 @@ export class AdminJobController implements IAdminJobController {
             if (!admin) throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
 
             const { jobId } = req.params;
-
+            if (!jobId || typeof jobId !== "string") {
+                throw new AppError("Invalid jobId");
+            }
             const job = await this._adminJobService.blockJob(jobId);
 
             return ApiResponse.success(res, ADMIN_JOB_MESSAGES.BLOCKED, job);
@@ -99,7 +106,9 @@ export class AdminJobController implements IAdminJobController {
             if (!admin) throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
 
             const { jobId } = req.params;
-
+            if (!jobId || typeof jobId !== "string") {
+                throw new AppError("Invalid jobId");
+            }
             const job = await this._adminJobService.unblockJob(jobId);
 
             return ApiResponse.success(res, ADMIN_JOB_MESSAGES.UNBLOCKED, job);
@@ -114,7 +123,9 @@ export class AdminJobController implements IAdminJobController {
             if (!admin) throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED);
 
             const { jobId } = req.params;
-
+            if (!jobId || typeof jobId !== "string") {
+                throw new AppError("Invalid jobId");
+            }
             await this._adminJobService.deleteJob(jobId);
 
             return ApiResponse.success(res, ADMIN_JOB_MESSAGES.DELETED, null);

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { IDatabase } from "./database.interface";
+import { IDatabase } from "./database.interface.js";
 
 export class MongooseDatabase implements IDatabase {
     async connect(): Promise<void> {

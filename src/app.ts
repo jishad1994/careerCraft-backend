@@ -4,26 +4,25 @@ import express, { Application } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
-import { errorHandler } from "./middlewares/error.middleware";
-import { MongooseDatabase } from "./database/mongooseDatabase";
-import userAuthRoutes from "./routes/user.auth.routes";
-import companyAuthRoutes from "./routes/company.auth.routes";
-import commonRoutes from "./routes/common.routes";
-import {  cacheService } from "./dependencies/container.dependency";
-import adminRoutes from "./routes/admin/admin.routes";
+import { errorHandler } from "./middlewares/error.middleware.js";
+import { MongooseDatabase } from "./database/mongooseDatabase.js";
+import userAuthRoutes from "./routes/user.auth.routes.js";
+import companyAuthRoutes from "./routes/company.auth.routes.js";
+import commonRoutes from "./routes/common.routes.js";
+import { bullMQService, cacheService } from "./dependencies/container.dependency.js";
+import adminRoutes from "./routes/admin/admin.routes.js";
 import cookieParser from "cookie-parser";
-import logger from "./utils/logger";
 
-import skillsRoutes from "./routes/skills/skills.routes";
-import { API_ROUTES } from "./constants/route-contstants/api-routes.constants";
-import companyRoutes from "./routes/company/company.routes";
-import publicJobRoutes from "./routes/jobs/jobs.public.routes";
-import userRoutes from "./routes/user/user.routes";
-import requestLogger from "./middlewares/requestLogger.middleware";
-import { notificationRoutes } from "./routes/notification.routes";
-import { notificationAuthMiddleware } from "./middlewares/notification-auth.middlware";
-import webhookRoutes from "./routes/webhook.routes";
-import chatRoutes from "./routes/chat.routes";
+import skillsRoutes from "./routes/skills/skills.routes.js";
+import { API_ROUTES } from "./constants/route-contstants/api-routes.constants.js";
+import companyRoutes from "./routes/company/company.routes.js";
+import publicJobRoutes from "./routes/jobs/jobs.public.routes.js";
+import userRoutes from "./routes/user/user.routes.js";
+import requestLogger from "./middlewares/requestLogger.middleware.js";
+import { notificationRoutes } from "./routes/notification.routes.js";
+import { notificationAuthMiddleware } from "./middlewares/notification-auth.middlware.js";
+import webhookRoutes from "./routes/webhook.routes.js";
+import chatRoutes from "./routes/chat.routes.js";
 
 const app: Application = express();
 
@@ -51,20 +50,17 @@ app.use(express.urlencoded({ extended: true }));
 //db connection
 
 const database = new MongooseDatabase();
-await database.connect();
+async function startApp() {
+    await database.connect();
+    await cacheService.connect();
+    await bullMQService.scheduleRecurring("0 * * * *");
+}
 
-// await bullMQService.scheduleRecurring("0 * * * *");
+startApp();
+
 // logger.info(" BullMQ subscription queue initialized");
 
 //cache service connection
-await cacheService
-    .connect()
-    .then(() => logger.info("cache service connected"))
-    .catch((err) => {
-        if (err) {
-            logger.error("cache error", err.message);
-        }
-    });
 
 app.use(requestLogger);
 

@@ -68,6 +68,10 @@ export class ChatController implements IChatController {
                 throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED, 401);
             }
 
+            if (!id || typeof id !== "string") {
+                throw new ValidationError("Invalid conversationId");
+            }
+
             const conversation = await this._chatService.getConversationById(id);
 
             if (!conversation) {
@@ -96,7 +100,9 @@ export class ChatController implements IChatController {
             if (!userId) {
                 throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED, 401);
             }
-
+            if (!id || typeof id !== "string") {
+                throw new ValidationError("Invalid conversationId");
+            }
             const conversation = await this._chatService.getConversationById(id);
 
             if (!conversation) {
@@ -127,6 +133,10 @@ export class ChatController implements IChatController {
 
             if (!userId || !userRole) {
                 throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED, 401);
+            }
+
+            if (!conversationId || typeof conversationId !== "string") {
+                throw new ValidationError("Invalid conversationId");
             }
 
             const conversation = await this._chatService.getConversationById(conversationId);
@@ -166,8 +176,8 @@ export class ChatController implements IChatController {
             }
 
             const { conversationId } = req.params;
-            if (!conversationId) {
-                throw new ValidationError(CHAT_MESSAGES.NO_CONVERSATION_ID_FOUND, 400);
+            if (!conversationId || typeof conversationId !== "string") {
+                throw new ValidationError("Invalid conversationId");
             }
             const attachment = await this._chatService.uploadAttachment(req.file, "chat", conversationId);
 
@@ -184,6 +194,9 @@ export class ChatController implements IChatController {
 
             if (!userId) {
                 throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED, 401);
+            }
+            if (!conversationId || typeof conversationId !== "string") {
+                throw new ValidationError("Invalid conversationId");
             }
 
             await this._chatService.markMessagesAsRead(conversationId, userId);
@@ -213,7 +226,9 @@ export class ChatController implements IChatController {
     async deleteMessage(req: Request, res: Response, next: NextFunction) {
         try {
             const { messageId } = req.params;
-
+            if (!messageId || typeof messageId !== "string") {
+                throw new ValidationError("Invalid messageId");
+            }
             const deleted = await this._chatService.deleteMessage(messageId);
 
             return ApiResponse.success(res, CHAT_MESSAGES.MESSAGE_DELETED_SUCCESSFULLY, { deleted });

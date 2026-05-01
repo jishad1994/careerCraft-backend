@@ -4,6 +4,7 @@ import { ApiResponse } from "../../../utils/apiResponse.utils";
 import { AppError } from "../../../errors-classes/app.error.";
 import { ICandidateRespondDto } from "../../../models/offer-letter/offerLetter.interface";
 import { ICandidateOfferLetterController } from "../interfaces/candidate-offerLetter.controller.interface";
+import { ValidationError } from "../../../errors-classes/validation.error";
 
 export class CandidateOfferLetterController implements ICandidateOfferLetterController {
     constructor(private readonly offerService: IOfferLetterService) {}
@@ -33,7 +34,11 @@ export class CandidateOfferLetterController implements ICandidateOfferLetterCont
         try {
             const userId = this.getUserId(req);
 
-            const offer = await this.offerService.getOfferForCandidate(req.params.id, userId);
+            const id = req.params.id;
+            if (!id || typeof id !== "string") {
+                throw new ValidationError("Invalid id");
+            }
+            const offer = await this.offerService.getOfferForCandidate(id, userId);
 
             return ApiResponse.success(res, "Offer fetched successfully", offer);
         } catch (error) {
@@ -50,7 +55,12 @@ export class CandidateOfferLetterController implements ICandidateOfferLetterCont
                 throw new AppError("action must be 'accept' or 'reject'");
             }
 
-            const offer = await this.offerService.respondToOffer(req.params.id, userId, dto);
+            const id = req.params.id;
+            if (!id || typeof id !== "string") {
+                throw new ValidationError("Invalid id");
+            }
+
+            const offer = await this.offerService.respondToOffer(id, userId, dto);
 
             const message = dto.action === "accept" ? "Offer accepted successfully" : "Offer rejected successfully";
 
@@ -74,8 +84,11 @@ export class CandidateOfferLetterController implements ICandidateOfferLetterCont
             if (file.size > 5 * 1024 * 1024) {
                 throw new AppError("File size must be less than 5MB");
             }
-
-            const offer = await this.offerService.uploadSignedDocument(req.params.id, userId, file);
+            const id = req.params.id;
+            if (!id || typeof id !== "string") {
+                throw new ValidationError("Invalid id");
+            }
+            const offer = await this.offerService.uploadSignedDocument(id, userId, file);
 
             return ApiResponse.success(res, "Signed document uploaded successfully", offer);
         } catch (error) {
@@ -86,8 +99,11 @@ export class CandidateOfferLetterController implements ICandidateOfferLetterCont
     async downloadPdf(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const userId = this.getUserId(req);
-
-            const buffer = await this.offerService.generateOfferPdf(req.params.id, userId, "candidate");
+            const id = req.params.id;
+            if (!id || typeof id !== "string") {
+                throw new ValidationError("Invalid id");
+            }
+            const buffer = await this.offerService.generateOfferPdf(id, userId, "candidate");
 
             res.setHeader("Content-Type", "application/pdf");
             res.setHeader("Content-Disposition", "attachment; filename=offer-letter.pdf");

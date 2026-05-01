@@ -12,7 +12,7 @@ export class JobRepository extends BaseRepository<IJob> implements IJobRepositor
             .findOne({ slug })
             .populate("company", "name email location")
             .populate("skills", "name")
-            .lean();
+          
     }
 
     async findByCompany(
@@ -61,7 +61,7 @@ export class JobRepository extends BaseRepository<IJob> implements IJobRepositor
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(limit)
-                .lean(),
+            ,
             this.model.countDocuments(query),
         ]);
 
@@ -76,7 +76,7 @@ export class JobRepository extends BaseRepository<IJob> implements IJobRepositor
             })
             .populate("company", "name email")
             .populate("skills", "name")
-            .lean();
+            
     }
 
     async softDelete(id: string): Promise<boolean> {
@@ -145,7 +145,7 @@ export class JobRepository extends BaseRepository<IJob> implements IJobRepositor
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(limit)
-                .lean(),
+                ,
             this.model.countDocuments(query),
         ]);
 
@@ -164,7 +164,7 @@ export class JobRepository extends BaseRepository<IJob> implements IJobRepositor
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(limit)
-                .lean(),
+                ,
             this.model.countDocuments(query as FilterQuery<IJob>),
         ]);
 

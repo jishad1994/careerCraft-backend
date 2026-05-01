@@ -8,7 +8,7 @@ export interface SendMessageDTO {
     receiverId: string;
     receiverType: "User" | "Company";
     content: string;
-    messageType?: MessageType;
+    messageType?: MessageType ;
     attachments?: IAttachment[];
 }
 

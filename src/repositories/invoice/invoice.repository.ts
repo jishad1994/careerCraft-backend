@@ -27,7 +27,7 @@ export class InvoiceRepository implements IInvoiceRepository {
     }
 
     async findByCompanyId(companyId: string): Promise<IInvoice[]> {
-        return await this.model.find({ companyId }).sort({ createdAt: -1 }).lean();
+        return await this.model.find({ companyId }).sort({ createdAt: -1 })
     }
 
     async update(id: string, data: Partial<IInvoice>): Promise<IInvoice | null> {

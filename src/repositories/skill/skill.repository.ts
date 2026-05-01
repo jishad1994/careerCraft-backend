@@ -18,7 +18,7 @@ export class SkillRepository extends BaseRepository<ISkill> implements ISkillRep
         const skip = (page - 1) * limit;
 
         const [skills, total] = await Promise.all([
-            this.model.find(filter).lean().skip(skip).limit(limit).sort({ createdAt: -1 }),
+            this.model.find(filter).skip(skip).limit(limit).sort({ createdAt: -1 }),
             this.model.countDocuments(filter),
         ]);
 

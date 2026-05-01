@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import { ISubscriptionPlanServce } from "../../../services/subscription-plan/interfaces/subscription-plan.service.interface";
 import { ApiResponse } from "../../../utils/apiResponse.utils";
 import { SUBSCRIPTION_PLAN_MESSAGES } from "../../../constants/messages/admin.messages";
+import { AppError } from "../../../errors-classes/app.error.";
 
 export class SubscriptionPlanController {
     constructor(private _subscriptionPlanService: ISubscriptionPlanServce) {}
@@ -13,7 +14,6 @@ export class SubscriptionPlanController {
 
             return ApiResponse.success(res, SUBSCRIPTION_PLAN_MESSAGES.CREATED, plan);
         } catch (error) {
-
             next(error);
         }
     }
@@ -39,6 +39,11 @@ export class SubscriptionPlanController {
     async getPlanById(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
+
+            if (!id || typeof id !== "string") {
+                throw new AppError("Invalid planId");
+            }
+
             const plan = await this._subscriptionPlanService.getPlanById(id);
             return ApiResponse.success(res, SUBSCRIPTION_PLAN_MESSAGES.FETCH_SUCCESSFULL_BY_ID, plan);
         } catch (error) {
@@ -49,6 +54,10 @@ export class SubscriptionPlanController {
     async updatePlan(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
+
+            if (!id || typeof id !== "string") {
+                throw new AppError("Invalid planId");
+            }
             const plan = await this._subscriptionPlanService.updatePlan(id, req.body);
             return ApiResponse.success(res, SUBSCRIPTION_PLAN_MESSAGES.UPDATED, plan);
         } catch (error) {
@@ -59,6 +68,10 @@ export class SubscriptionPlanController {
     async deletePlan(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
+
+            if (!id || typeof id !== "string") {
+                throw new AppError("Invalid planId");
+            }
             await this._subscriptionPlanService.deletePlan(id);
             return ApiResponse.success(res, SUBSCRIPTION_PLAN_MESSAGES.DELETED);
         } catch (error) {
@@ -69,6 +82,10 @@ export class SubscriptionPlanController {
     async togglePlanStatus(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
+
+            if (!id || typeof id !== "string") {
+                throw new AppError("Invalid planId");
+            }
             const plan = await this._subscriptionPlanService.togglePlanStatus(id);
             return ApiResponse.success(res, SUBSCRIPTION_PLAN_MESSAGES.TOGGLE_STATUS, plan);
         } catch (error) {
@@ -89,6 +106,9 @@ export class SubscriptionPlanController {
     async updatePlanLimits(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
+            if (!id || typeof id !== "string") {
+                throw new AppError("Invalid planId");
+            }
             const plan = await this._subscriptionPlanService.updatePlanLimits(id, req.body);
             return ApiResponse.success(res, SUBSCRIPTION_PLAN_MESSAGES.UPDATED, plan);
         } catch (error) {
@@ -99,6 +119,9 @@ export class SubscriptionPlanController {
     async updatePlanFeatures(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
+            if (!id || typeof id !== "string") {
+                throw new AppError("Invalid planId");
+            }
             const plan = await this._subscriptionPlanService.updatePlanFeatures(id, req.body);
             return ApiResponse.success(res, SUBSCRIPTION_PLAN_MESSAGES.UPDATED, plan);
         } catch (error) {

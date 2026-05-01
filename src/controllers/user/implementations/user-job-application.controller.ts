@@ -24,7 +24,9 @@ export class UserJobApplicationController implements IUserJobApplicationControll
             if (!user) throw new AppError("User not found", 401);
 
             const jobId = req.params.jobId;
-            if (!jobId) throw new AppError("Job ID is required", 400);
+           if (!jobId || typeof jobId !== "string") {
+                throw new ValidationError("Invalid jobId");
+            }
 
             const result = await this._userApplicationService.checkApplicationStatus(jobId, user.id);
 
@@ -37,7 +39,9 @@ export class UserJobApplicationController implements IUserJobApplicationControll
     async getApplicationById(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const applicationId = req.params.id;
-            if (!applicationId) throw new AppError("Application ID is required", 400);
+           if (!applicationId || typeof applicationId !== "string") {
+                throw new ValidationError("Invalid applicationId");
+            }
 
             const application = await this._userApplicationService.getApplicationById(applicationId);
 
@@ -75,7 +79,9 @@ export class UserJobApplicationController implements IUserJobApplicationControll
             if (!user) throw new AppError("User not found", 401);
 
             const applicationId = req.params.id;
-            if (!applicationId) throw new AppError("Application ID is required", 400);
+            if (!applicationId || typeof applicationId !== "string") {
+                throw new ValidationError("Invalid applicationId");
+            }
 
             const updatedApplication = await this._userApplicationService.withdrawApplication(applicationId, user.id);
 
@@ -123,8 +129,8 @@ export class UserJobApplicationController implements IUserJobApplicationControll
 
             const { interviewId } = req.params;
 
-            if (!interviewId) {
-                throw new AppError("Interview ID is required", 400);
+            if (!interviewId || typeof interviewId !== "string") {
+                throw new ValidationError("Invalid interviewId");
             }
 
             const interview = await this._interviewService.getPopulatedInterviewById(interviewId);

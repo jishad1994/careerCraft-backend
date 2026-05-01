@@ -25,7 +25,10 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
     async getApplicationById(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const applicationId = req.params.id;
-            if (!applicationId) throw new AppError("Application ID is required", 400);
+
+            if (!applicationId || typeof applicationId !== "string") {
+                throw new ValidationError("Invalid applicationId");
+            }
 
             const application = await this._applicationService.getApplicationDetailsById(applicationId);
 
@@ -130,7 +133,9 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
             if (!company) throw new AppError("User not found", 401);
 
             const jobId = req.params.jobId;
-            if (!jobId) throw new AppError("Job ID is required", 400);
+            if (!jobId || typeof jobId !== "string") {
+                throw new ValidationError("Invalid jobId");
+            }
 
             const page = parseInt(req.query.page as string) || 1;
             const limit = parseInt(req.query.limit as string) || 10;
@@ -161,9 +166,12 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
             if (!company) throw new AppError("User not found", 401);
 
             const applicationId = req.params.id;
+
+            if (!applicationId || typeof applicationId !== "string") {
+                throw new ValidationError("Invalid applicationId");
+            }
             const { status, notes } = req.body;
 
-            if (!applicationId) throw new AppError("Application ID is required", 400);
             if (!status) throw new AppError("Status is required", 400);
 
             const updatedApplication = await this._applicationService.updateApplicationStatus(
@@ -185,7 +193,9 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
             if (!company) throw new AppError("User not found", 401);
 
             const applicationId = req.params.id;
-            if (!applicationId) throw new AppError("Application ID is required", 400);
+            if (!applicationId || typeof applicationId !== "string") {
+                throw new ValidationError("Invalid applicationId");
+            }
 
             const updatedApplication = await this._applicationService.markApplicationAsViewed(applicationId, company.id);
 
@@ -201,9 +211,12 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
             if (!company) throw new AppError("User not found", 401);
 
             const applicationId = req.params.id;
+
             const { notes } = req.body;
 
-            if (!applicationId) throw new AppError("Application ID is required", 400);
+            if (!applicationId || typeof applicationId !== "string") {
+                throw new ValidationError("Invalid applicationId");
+            }
             if (!notes) throw new AppError("Notes are required", 400);
 
             const updatedApplication = await this._applicationService.addNotes(applicationId, notes);
@@ -230,6 +243,10 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
     async rejectApplication(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const { applicationId } = req.params;
+
+            if (!applicationId || typeof applicationId !== "string") {
+                throw new ValidationError("Invalid applicationId");
+            }
             const { feedback } = req.body;
 
             const updatedApplication = await this._applicationService.updateApplicationStatus(
@@ -248,6 +265,10 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
     async toggleFlag(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const { applicationId } = req.params;
+
+            if (!applicationId || typeof applicationId !== "string") {
+                throw new ValidationError("Invalid applicationId");
+            }
             const { isStarred } = req.body;
 
             const updatedApplication = await this._applicationService.toggleStarApplication(applicationId, isStarred);
@@ -269,7 +290,9 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
             if (!company) throw new AppError("User not found", 401);
             const applicationId = req.params.id;
 
-            if (!applicationId) throw new AppError("Application ID is required", 400);
+            if (!applicationId || typeof applicationId !== "string") {
+                throw new ValidationError("Invalid applicationId");
+            }
 
             const mode = (req.query.mode as string) || "view";
 
@@ -298,9 +321,8 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
             }
 
             const { applicationId } = req.params;
-
-            if (!applicationId) {
-                throw new AppError("Application id not found", 401);
+            if (!applicationId || typeof applicationId !== "string") {
+                throw new ValidationError("Invalid applicationId");
             }
 
             const interview = await this._interviewService.scheduleInterview(applicationId, req.body, companyId);
@@ -314,6 +336,13 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
     async rescheduleInterview(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const { applicationId, interviewId } = req.params;
+
+            if (!applicationId || typeof applicationId !== "string") {
+                throw new ValidationError("Invalid applicationId");
+            }
+            if (!interviewId || typeof interviewId !== "string") {
+                throw new ValidationError("Invalid interviewId");
+            }
 
             const { scheduledAt, round, reason } = req.body;
 
@@ -334,6 +363,13 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
     async cancelInterview(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const { applicationId, interviewId } = req.params;
+
+            if (!applicationId || typeof applicationId !== "string") {
+                throw new ValidationError("Invalid applicationId");
+            }
+            if (!interviewId || typeof interviewId !== "string") {
+                throw new ValidationError("Invalid interviewId");
+            }
             const { reason, round } = req.body;
 
             const interview = await this._interviewService.cancelInterview(
@@ -352,6 +388,13 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
     async completeInterview(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const { applicationId, interviewId } = req.params;
+
+            if (!applicationId || typeof applicationId !== "string") {
+                throw new ValidationError("Invalid applicationId");
+            }
+            if (!interviewId || typeof interviewId !== "string") {
+                throw new ValidationError("Invalid interviewId");
+            }
             const { feedback, rating, round } = req.body;
 
             const interview = await this._interviewService.completeInterview(
@@ -374,6 +417,13 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
     async updateInterview(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const { applicationId, interviewId } = req.params;
+
+            if (!applicationId || typeof applicationId !== "string") {
+                throw new ValidationError("Invalid applicationId");
+            }
+            if (!interviewId || typeof interviewId !== "string") {
+                throw new ValidationError("Invalid interviewId");
+            }
             const { updateData } = req.body;
 
             const interview = await this._interviewService.updateInterview(applicationId, interviewId, updateData);
@@ -437,6 +487,10 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
     async getPopulatedInterviewById(req: Request, res: Response, next: NextFunction) {
         try {
             const { interviewId } = req.params;
+
+            if (!interviewId || typeof interviewId !== "string") {
+                throw new ValidationError("Invalid interviewId");
+            }
 
             if (!interviewId) {
                 throw new AppError("Interview ID is required", 400);

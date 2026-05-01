@@ -18,9 +18,10 @@ export class CompanyCandidateController implements ICompanyCandidatesController 
             }
 
             const { candidateId } = req.params;
-            if (!candidateId) {
-                throw new ValidationError("No candidate id found");
+            if (!candidateId || typeof candidateId !== "string") {
+                throw new ValidationError("Invalid candidateId");
             }
+
             const profile = await this._userProfileService.getUserProfile(candidateId);
             return ApiResponse.success(res, COMPANY_CANDIDATES_MESSAGE.CANDIDATE_PROFILE_FETCH_SUCCESSFULL, profile);
         } catch (error) {
@@ -37,11 +38,16 @@ export class CompanyCandidateController implements ICompanyCandidatesController 
 
             const { candidateId } = req.params;
 
+            if (!candidateId || typeof candidateId !== "string") {
+                throw new ValidationError("Invalid candidateId");
+            }
+
+
             const mode = req.query.mode || "view";
             const resumeKey = req.query.resumeKey?.toString();
 
-            if (!candidateId || !resumeKey) {
-                throw new ValidationError("No candidate id or resume key found");
+            if ( !resumeKey) {
+                throw new ValidationError("No  resume key found");
             }
 
             const fileStream = await this._userProfileService.getResumeByResumeKey(candidateId, resumeKey);

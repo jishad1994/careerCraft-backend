@@ -115,7 +115,7 @@ export class JobApplicationRepository extends BaseRepository<IJobApplication> im
                 .sort({ appliedAt: -1 })
                 .skip(skip)
                 .limit(limit)
-                .lean(),
+                ,
             this.model.countDocuments(query),
         ]);
 
@@ -149,7 +149,7 @@ export class JobApplicationRepository extends BaseRepository<IJobApplication> im
                 .sort({ appliedAt: -1 })
                 .skip(skip)
                 .limit(limit)
-                .lean(),
+                ,
             this.model.countDocuments(query),
         ]);
 
@@ -175,7 +175,7 @@ export class JobApplicationRepository extends BaseRepository<IJobApplication> im
                 .sort({ appliedAt: -1 })
                 .skip(skip)
                 .limit(limit)
-                .lean(),
+                ,
             this.model.countDocuments(query),
         ]);
 
@@ -190,7 +190,7 @@ export class JobApplicationRepository extends BaseRepository<IJobApplication> im
             })
             .populate("applicant", "name email phone profilePicture")
             .populate("job", "title slug company location")
-            .lean();
+            ;
     }
 
     async getApplicationStats(companyId: string): Promise<Array<{ status: string; count: number }>> {
@@ -475,7 +475,7 @@ export class JobApplicationRepository extends BaseRepository<IJobApplication> im
             .populate("applicant")
             .populate("job")
             .populate("company")
-            .lean();
+            ;
     }
 
     /**
@@ -509,7 +509,7 @@ export class JobApplicationRepository extends BaseRepository<IJobApplication> im
             .populate("applicant")
             .populate("job")
             .populate("company")
-            .lean();
+            
     }
 
     /**
@@ -528,7 +528,7 @@ export class JobApplicationRepository extends BaseRepository<IJobApplication> im
             .populate("applicant")
             .populate("job")
             .populate("company")
-            .lean();
+           
     }
 
     async findPopulatedInterviewById(interviewId: string): Promise<InterviewWithPopulated | null> {

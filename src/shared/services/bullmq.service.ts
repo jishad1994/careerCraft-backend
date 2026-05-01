@@ -1,4 +1,4 @@
-import IORedis from "ioredis";
+import { Redis } from "ioredis";
 import { Queue, Worker, QueueEvents } from "bullmq";
 import { ISubscriptionPaymentService } from "../../services/subscription-payment-service/subscription-payment.service.interface";
 import { ICompanySubscriptionService } from "../../services/subscription/interfaces/company-subscription.service.interface";
@@ -12,15 +12,20 @@ export class BullMQService {
     private queue: Queue<QueueJob>;
     private worker: Worker<QueueJob>;
     private queueEvents: QueueEvents;
-    private connection: IORedis;
+    private connection: Redis;
 
     constructor(
         private readonly _subscriptionPaymentService: ISubscriptionPaymentService,
         private readonly _subscriptionService: ICompanySubscriptionService,
-        redisUrl: string = process.env.REDIS_URL || "redis://localhost:6379",
     ) {
+        const redisUrl = process.env.REDIS_URL;
+
+        if (!redisUrl) {
+            throw new Error("REDIS_URL is missing in environment");
+        }
+
         // Create Redis connection
-        this.connection = new IORedis(redisUrl, {
+        this.connection = new Redis(redisUrl, {
             maxRetriesPerRequest: null,
             enableReadyCheck: false,
         });
@@ -98,9 +103,6 @@ export class BullMQService {
 
         this.setupEventListeners();
     }
-
-
-    
 
     /**
      * Setup event listeners for monitoring
@@ -448,28 +450,27 @@ export class BullMQService {
     }
 }
 
-
 // Admin endpoints (optional)
 // app.get('/admin/queue/stats', async (req, res) => {
 //     const stats = await bullMQService.getStats();
 //     res.json({ success: true, data: stats });
 // });
- 
+
 // app.get('/admin/queue/health', async (req, res) => {
 //     const health = await bullMQService.getHealth();
 //     res.json({ success: true, data: health });
 // });
- 
+
 // app.post('/admin/queue/trigger', async (req, res) => {
 //     await bullMQService.triggerManual();
 //     res.json({ success: true, message: 'Queue processing triggered' });
 // });
- 
+
 // app.get('/admin/queue/jobs', async (req, res) => {
 //     const jobs = await bullMQService.getRecentJobs(20);
 //     res.json({ success: true, data: jobs });
 // });
- 
+
 // app.post('/admin/queue/cleanup', async (req, res) => {
 //     await bullMQService.cleanup();
 //     res.json({ success: true, message: 'Cleanup completed' });
