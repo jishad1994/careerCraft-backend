@@ -16,8 +16,7 @@ export class ChatController implements IChatController {
         try {
             const userId = req.user?.id;
 
-            console.log("user role:", req.user?.role);
-            console.log("user id:", req.user?.id);
+           
             if (!userId) {
                 throw new AuthError(HTTP_MESSAGES.UNAUTHORIZED, 401);
             }
