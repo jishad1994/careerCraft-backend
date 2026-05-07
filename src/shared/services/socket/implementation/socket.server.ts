@@ -1,6 +1,6 @@
 import { Server, Socket } from "socket.io";
 import { ISocketService } from "../interface/socket.service.interface";
-import cookie from "cookie";
+import { parse } from "cookie";
 import { Server as HttpServer } from "http";
 import { ISocketEventHandler } from "../interface/socket-eventHandler.service.interface";
 import { IUserSocketMapService } from "../interface/socket-map.service.interface";
@@ -53,7 +53,7 @@ export class SocketServer implements ISocketService {
                 }
 
                 // Parse cookies
-                const cookies = cookie.parse(cookieHeader);
+                const cookies = parse(cookieHeader);
                 const accessToken = cookies.accessToken;
 
                 if (!accessToken) {

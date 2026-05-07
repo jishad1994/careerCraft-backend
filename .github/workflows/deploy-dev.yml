@@ -39,6 +39,18 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd ~/careerCraft-backend
+
+            docker compose down
+
+            docker image rm ${{ secrets.DOCKERHUB_USERNAME }}/careercraft-backend:dev || true
+
+            docker system prune -a -f
+            docker builder prune -f
+
             docker compose pull backend
-            docker compose up -d backend
+            docker compose up -d
+
             docker image prune -f
+
+            docker ps
+            df -h
