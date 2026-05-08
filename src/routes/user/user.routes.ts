@@ -5,13 +5,14 @@ import userJobApplicationRoutes from "./user.job-application.routes";
 import { userAuthMiddleware } from "../../middlewares/user.auth.middleware";
 import resumeBuilderRouter from "./resume.builder.routes";
 import candidateOfferLetterRoutes from "./candiate.offerLetter.routes";
+import { isUserBlocked } from "../../middlewares/checkUserBlocked.middleware";
 
 const userRoutes = express.Router();
 
-userRoutes.use("/me", userAuthMiddleware, userProfileRoutes);
-userRoutes.use("/jobs", userAuthMiddleware, userJobRoutes);
-userRoutes.use("/applications", userAuthMiddleware, userJobApplicationRoutes);
-userRoutes.use("/resume", resumeBuilderRouter);
-userRoutes.use("/offers", candidateOfferLetterRoutes);
+userRoutes.use("/me", userAuthMiddleware, isUserBlocked, userProfileRoutes);
+userRoutes.use("/jobs", userAuthMiddleware, isUserBlocked, userJobRoutes);
+userRoutes.use("/applications", userAuthMiddleware, isUserBlocked, userJobApplicationRoutes);
+userRoutes.use("/resume", userAuthMiddleware, isUserBlocked, resumeBuilderRouter);
+userRoutes.use("/offers", userAuthMiddleware, isUserBlocked, candidateOfferLetterRoutes);
 
 export default userRoutes;

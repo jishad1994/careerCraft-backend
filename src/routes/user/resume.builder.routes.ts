@@ -2,11 +2,9 @@
 
 import { Router } from "express";
 import { resumeBuilderController } from "../../dependencies/container.dependency";
-import { userAuthMiddleware } from "../../middlewares/user.auth.middleware";
 
 const resumeBuilderRouter = Router();
 
-resumeBuilderRouter.use(userAuthMiddleware);
 
 resumeBuilderRouter.get("/templates", resumeBuilderController.getTemplates.bind(resumeBuilderController));
 

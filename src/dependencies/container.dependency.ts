@@ -108,7 +108,7 @@ const emailService = new EmailService(
 const otpService = new OTPService(cacheService, emailService);
 
 //user Repo
-export const userRepo = new UserRepository(User);
+const userRepo = new UserRepository(User);
 
 //company repo
 const companyRepo = new CompanyRepository(Company);
@@ -323,4 +323,6 @@ export {
     resumeBuilderController,
     candidateOfferLetterController,
     companyOfferLetterController,
+    companyRepo,
+    userRepo,
 };

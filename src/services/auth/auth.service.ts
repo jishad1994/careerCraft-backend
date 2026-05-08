@@ -41,7 +41,7 @@ export class AuthService implements IAuthService {
 
         const record = await this._refreshTokenRepository.find(payload.jti);
 
-        console.log("record: ", record);
+     
 
         if (!record || record.role !== payload.role || record.userId !== payload.sub) {
             throw new AuthError("invalid refresh token");

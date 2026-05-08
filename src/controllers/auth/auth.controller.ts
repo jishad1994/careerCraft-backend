@@ -1,4 +1,4 @@
-import { Request, Response,  } from "express";
+import { Request, Response } from "express";
 import { IAuthService } from "../../services/auth/auth.service.interface";
 import { ICacheService } from "../../services/cache/cache.service.interface";
 import {
@@ -100,7 +100,7 @@ export class AuthController implements IAuthController {
             return ApiResponse.validationError(
                 res,
                 HTTP_MESSAGES.TAMPERED_SESSION_DATA,
-                validatedCache.error.flatten().fieldErrors
+                validatedCache.error.flatten().fieldErrors,
             );
         }
 

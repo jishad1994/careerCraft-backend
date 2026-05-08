@@ -20,7 +20,6 @@ import publicJobRoutes from "./routes/jobs/jobs.public.routes.js";
 import userRoutes from "./routes/user/user.routes.js";
 import requestLogger from "./middlewares/requestLogger.middleware.js";
 import { notificationRoutes } from "./routes/notification.routes.js";
-import { notificationAuthMiddleware } from "./middlewares/notification-auth.middlware.js";
 import webhookRoutes from "./routes/webhook.routes.js";
 import chatRoutes from "./routes/chat.routes.js";
 
@@ -69,7 +68,7 @@ app.use(API_ROUTES.AUTH_USER, userAuthRoutes);
 app.use(API_ROUTES.AUTH_COMPANY, companyAuthRoutes);
 app.use(API_ROUTES.COMMON_ROUTES, commonRoutes);
 app.use(API_ROUTES.WEBHOOK_ROUTE, webhookRoutes);
-app.use(API_ROUTES.NOTIFICATIONS, notificationAuthMiddleware, notificationRoutes);
+app.use(API_ROUTES.NOTIFICATIONS, notificationRoutes);
 app.use(API_ROUTES.USER, userRoutes);
 app.use(API_ROUTES.COMPANY, companyRoutes);
 app.use(API_ROUTES.ADMIN, adminRoutes);
