@@ -29,7 +29,6 @@ export class PublicJobController implements IPublicJobController {
             const { jobs, paginationMeta } = await this._publicJobService.searchJobs(filters, page, limit);
 
 
-            console.log('jobs:',jobs)
             return ApiResponse.success(res, "Jobs fetched successfully", jobs, 200, paginationMeta);
         } catch (error) {
             next(error);

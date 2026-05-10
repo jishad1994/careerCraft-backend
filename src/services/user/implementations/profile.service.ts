@@ -115,7 +115,6 @@ export class UserProfileService implements IUserProfileService {
             try {
                 await this._fileService.deleteFile(oldProfilePictureKey);
 
-                console.log("old one deleted");
             } catch (err) {
                 console.error("Failed to delete old profile picture:", err);
             }
@@ -147,7 +146,6 @@ export class UserProfileService implements IUserProfileService {
                 await user.save();
                 await this._fileService.deleteFile(oldProfilePictureKey);
 
-                console.log("old one deleted");
             } catch (err) {
                 console.error("Failed to delete old profile picture:", err);
             }
@@ -435,7 +433,6 @@ export class UserProfileService implements IUserProfileService {
             try {
                 await this._fileService.deleteFile(oldBannerImageKey);
 
-                console.log("old one deleted");
             } catch (err) {
                 console.error("Failed to delete old banner image:", err);
             }
@@ -467,7 +464,6 @@ export class UserProfileService implements IUserProfileService {
                 await user.save();
                 await this._fileService.deleteFile(oldBannerImageKey);
 
-                console.log("old banner image deleted");
             } catch (err) {
                 console.error("Failed to delete old banner image   :", err);
             }

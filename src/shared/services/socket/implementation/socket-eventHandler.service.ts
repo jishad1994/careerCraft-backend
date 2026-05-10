@@ -26,8 +26,6 @@ export class SocketEventHandlerService implements ISocketEventHandler {
         // Join user to their personal room
         socket.join(`user:${userData.userId}`);
 
-        
-
         // Send initial unread count
         this.sendUnreadCount(socket, userData.userId);
     }
@@ -37,8 +35,6 @@ export class SocketEventHandlerService implements ISocketEventHandler {
      */
     handleDisconnection(socket: Socket): void {
         const userData = socket.data as SocketData;
-
-        console.log(`User disconnected: ${userData.userId} (${socket.id})`);
 
         // Remove socket from user's socket set
         this.userSocketMapService.removeSocket(userData.userId, socket.id);
@@ -98,7 +94,7 @@ export class SocketEventHandlerService implements ISocketEventHandler {
         }
     }
 
-     async getCountByUserId(userId: string, isUnread: boolean = true): Promise<number> {
+    async getCountByUserId(userId: string, isUnread: boolean = true): Promise<number> {
         try {
             return await this.notificationRepository.countByUserId(userId, isUnread);
         } catch (error) {

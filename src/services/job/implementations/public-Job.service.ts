@@ -67,7 +67,6 @@ export class PublicJobService implements IPublicJobService {
 
         const [jobs, total] = await this._jobRepository.search(searchFilters, page, limit);
 
-        console.log("jobs in serv:", jobs);
         const totalPages = Math.ceil(total / limit);
         const paginationMeta: PaginationMeta = {
             page,

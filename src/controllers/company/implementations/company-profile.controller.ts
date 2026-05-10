@@ -82,7 +82,6 @@ export class CompanyProfileController implements ICompanyProfileController {
 
             const profilePicture = req.file;
             if (!profilePicture) throw new AppError("File not found");
-            console.log("reached here");
             const updatedProfile = await this._companyProfileService.updateProfilePicture(company.id, profilePicture);
 
             return ApiResponse.success(res, COMPANY_PROFILE_MESSAGES.PRFILE_PICTURE_UPDATED, updatedProfile);

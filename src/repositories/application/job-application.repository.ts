@@ -221,7 +221,6 @@ export class JobApplicationRepository extends BaseRepository<IJobApplication> im
         search: string,
         filters: CandidatesFilters,
     ): Promise<[IJobApplicationDetails[], number]> {
-        console.log("filters in repository:", filters);
         const query: FilterQuery<IJobApplication> = {
             company: new Types.ObjectId(companyId),
         };
@@ -346,7 +345,6 @@ export class JobApplicationRepository extends BaseRepository<IJobApplication> im
             },
         });
 
-        console.log("Pipeline after skills filter:", JSON.stringify(pipeline, null, 2));
         // Count total
         const countPipeline = [...pipeline, { $count: "total" }];
         const countResult = await this.model.aggregate(countPipeline);

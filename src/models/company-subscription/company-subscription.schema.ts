@@ -1,6 +1,7 @@
 // company-subscription.schema.ts
 import mongoose, { Model, Schema } from "mongoose";
 import { IAddon, ICompanySubscription, SubscriptionStatus } from "./company-subscription.interface";
+import logger from "../../utils/logger";
 
 const usageSchema = new Schema(
     {
@@ -384,7 +385,7 @@ companySubscriptionSchema.pre("save", function (next) {
 companySubscriptionSchema.post("save", function (doc) {
     if (doc.status === SubscriptionStatus.EXPIRED) {
         // Trigger notification or event
-        console.log(`Subscription ${doc._id} has expired for company ${doc.companyId}`);
+        logger.info(`Subscription ${doc._id} has expired for company ${doc.companyId}`);
     }
 });
 

@@ -25,7 +25,6 @@ export class ChatEventHandler implements IChatEventHandler {
         // Send message
         socket.on("chat:sendMessage", async (data: IMessage) => {
 
-            console.log('chat message',data)
             await this.handleSendMessage(socket, io, data);
         });
 
@@ -149,7 +148,6 @@ export class ChatEventHandler implements IChatEventHandler {
                 (participant) => participant.userId.toString() != userId,
             );
 
-            console.log('other participant',otherParticipant)
             // const otherParticipant = this._conversationRepository.getOtherParticipant(userId);
             if (!otherParticipant) {
                 socket.emit("error", { message: "Receiver not found" });

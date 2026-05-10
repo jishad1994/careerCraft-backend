@@ -2,6 +2,7 @@ import { Redis } from "ioredis";
 import { Queue, Worker, QueueEvents } from "bullmq";
 import { ISubscriptionPaymentService } from "../../services/subscription-payment-service/subscription-payment.service.interface";
 import { ICompanySubscriptionService } from "../../services/subscription/interfaces/company-subscription.service.interface";
+import logger from "../../utils/logger";
 export interface QueueJob {
     type: "process-queue" | "manual-activate" | "cleanup-expired";
     companyId?: string;
@@ -53,7 +54,6 @@ export class BullMQService {
             "subscription-queue",
             async (job) => {
                 const startTime = Date.now();
-                console.log(`[BullMQ] Processing job ${job.id} - Type: ${job.data.type}`);
 
                 try {
                     let result;
@@ -78,8 +78,7 @@ export class BullMQService {
                             throw new Error(`Unknown job type: ${job.data.type}`);
                     }
 
-                    const duration = Date.now() - startTime;
-                    console.log(`[BullMQ] Job ${job.id} completed in ${duration}ms`);
+                    const _duration = Date.now() - startTime;
 
                     return result;
                 } catch (error) {
@@ -109,33 +108,32 @@ export class BullMQService {
      */
     private setupEventListeners(): void {
         // Worker events
-        this.worker.on("completed", (job, result) => {
-            console.log(`[BullMQ]  Job ${job.id} completed:`, result);
+        this.worker.on("completed", (_job, _result) => {
         });
 
         this.worker.on("failed", (job, error) => {
-            console.error(`[BullMQ]  Job ${job?.id} failed:`, error.message);
+            logger.error(`[BullMQ]  Job ${job?.id} failed:`, error.message);
         });
 
         this.worker.on("error", (error) => {
-            console.error("[BullMQ]  Worker error:", error);
+            logger.error("[BullMQ]  Worker error:", error);
         });
 
         // Queue events
         this.queueEvents.on("waiting", ({ jobId }) => {
-            console.log(`[BullMQ]  Job ${jobId} is waiting`);
+            logger.info(`[BullMQ]  Job ${jobId} is waiting`);
         });
 
         this.queueEvents.on("active", ({ jobId }) => {
-            console.log(`[BullMQ]  Job ${jobId} is active`);
+            logger.info(`[BullMQ]  Job ${jobId} is active`);
         });
 
         this.queueEvents.on("progress", ({ jobId, data }) => {
-            console.log(`[BullMQ]  Job ${jobId} progress:`, data);
+            logger.info(`[BullMQ]  Job ${jobId} progress:`, data);
         });
 
         this.queueEvents.on("stalled", ({ jobId }) => {
-            console.warn(`[BullMQ]  Job ${jobId} stalled`);
+            logger.warn(`[BullMQ]  Job ${jobId} stalled`);
         });
     }
 
@@ -147,11 +145,9 @@ export class BullMQService {
         expired: number;
         activated: number;
     }> {
-        console.log("[BullMQ]  Starting subscription queue processing...");
 
         const result = await this._subscriptionPaymentService.processSubscriptionQueue();
 
-        console.log(`[BullMQ]  Queue processed: ${result.expired} expired, ${result.activated} activated`);
 
         return result;
     }
@@ -165,7 +161,6 @@ export class BullMQService {
         success: boolean;
         message: string;
     }> {
-        console.log(`[BullMQ]  Manually activating next subscription for company ${companyId}`);
 
         try {
             const queue = await this._subscriptionService.getSubscriptionQueue(companyId);
@@ -195,7 +190,6 @@ export class BullMQService {
     private async cleanupExpired(): Promise<{
         cleaned: number;
     }> {
-        console.log("[BullMQ]  Cleaning up expired subscriptions...");
 
         // Implementation would go here
         // For now, just return 0
@@ -209,7 +203,6 @@ export class BullMQService {
      * Runs every hour by default
      */
     async scheduleRecurring(cronPattern: string = "0 * * * *"): Promise<void> {
-        console.log("[BullMQ] Scheduling recurring queue processing...");
 
         // Remove any existing repeatable jobs
         const repeatableJobs = await this.queue.getRepeatableJobs();
@@ -229,14 +222,12 @@ export class BullMQService {
             },
         );
 
-        console.log(`[BullMQ]  Recurring job scheduled with pattern: ${cronPattern}`);
     }
 
     /**
      * Manually trigger queue processing
      */
     async triggerManual(): Promise<void> {
-        console.log("[BullMQ]  Manually triggering queue processing...");
 
         await this.queue.add(
             "process-queue-manual",
@@ -247,14 +238,12 @@ export class BullMQService {
             },
         );
 
-        console.log("[BullMQ]  Manual processing triggered");
     }
 
     /**
      * Activate next subscription for specific company
      */
     async activateNextForCompany(companyId: string): Promise<void> {
-        console.log(`[BullMQ]  Triggering activation for company ${companyId}`);
 
         await this.queue.add(
             "manual-activate",
@@ -268,7 +257,6 @@ export class BullMQService {
             },
         );
 
-        console.log(`[BullMQ]  Activation triggered for company ${companyId}`);
     }
 
     /**
@@ -343,7 +331,6 @@ export class BullMQService {
      * Clean old jobs
      */
     async cleanup(olderThan: number = 24 * 60 * 60 * 1000): Promise<void> {
-        console.log("[BullMQ]  Starting cleanup...");
 
         // Remove completed jobs older than specified time
         await this.queue.clean(olderThan, 1000, "completed");
@@ -351,7 +338,6 @@ export class BullMQService {
         // Remove failed jobs older than 7 days
         await this.queue.clean(7 * 24 * 60 * 60 * 1000, 1000, "failed");
 
-        console.log("[BullMQ]  Cleanup completed");
     }
 
     /**
@@ -359,7 +345,6 @@ export class BullMQService {
      */
     async pause(): Promise<void> {
         await this.queue.pause();
-        console.log("[BullMQ] ⏸ Queue paused");
     }
 
     /**
@@ -367,7 +352,6 @@ export class BullMQService {
      */
     async resume(): Promise<void> {
         await this.queue.resume();
-        console.log("[BullMQ] ▶ Queue resumed");
     }
 
     /**
@@ -428,25 +412,19 @@ export class BullMQService {
      * Graceful shutdown
      */
     async shutdown(): Promise<void> {
-        console.log("[BullMQ]  Shutting down gracefully...");
 
         // Close worker first
         await this.worker.close();
-        console.log("[BullMQ] Worker closed");
 
         // Close queue
         await this.queue.close();
-        console.log("[BullMQ] Queue closed");
 
         // Close events
         await this.queueEvents.close();
-        console.log("[BullMQ] Events closed");
 
         // Close Redis connection
         await this.connection.quit();
-        console.log("[BullMQ] Redis connection closed");
 
-        console.log("[BullMQ] ✅ Shutdown complete");
     }
 }
 

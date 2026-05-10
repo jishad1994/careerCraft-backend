@@ -16,7 +16,6 @@ export class AdminController implements IAdminController {
             const search = (req.query.search as string) || "";
             const verificationStatus = String(req.query.verificationStatus) || "";
 
-            console.log("verificationStatus", verificationStatus);
 
             const { data, paginationMeta } = await this._adminService.getCompanies(page, limit, search, verificationStatus);
 

@@ -1,6 +1,7 @@
 import { ICacheService } from "../services/cache/cache.service.interface";
 import { RedisClientType, createClient } from "redis";
 import { AppError } from "../errors-classes/app.error.";
+import logger from "../utils/logger";
 
 export class RedisCacheRepo implements ICacheService {
     private client: RedisClientType;
@@ -13,9 +14,9 @@ export class RedisCacheRepo implements ICacheService {
     async connect(): Promise<void> {
         try {
             await this.client.connect();
-            console.log("redis cache service connected");
+            logger.info("redis cache service connected");
         } catch (error) {
-            console.log("redis connection failed", error);
+            logger.info("redis connection failed", error);
             throw new AppError("redis connection failed", undefined, false);
         }
     }

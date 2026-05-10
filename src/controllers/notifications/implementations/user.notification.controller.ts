@@ -23,7 +23,6 @@ export class UserNotificationController implements IUserNotificationController {
                 throw new AppError("Unauthorized", 401);
             }
 
-            console.log('user notification reached')
 
             const query = req.query as NotificationQueryParams;
             const page = Number(query.page) || 1;

@@ -492,7 +492,6 @@ export class InvoiceService implements IInvoiceService {
      * Get invoice by subscription ID
      */
     async getInvoiceBySubscription(subscriptionId: string): Promise<IInvoice | null> {
-        console.log("subid:", subscriptionId);
         const invoice = await this._invoiceRepository.findBySubscriptionId(subscriptionId);
 
         if (!invoice) {
@@ -502,7 +501,6 @@ export class InvoiceService implements IInvoiceService {
         return invoice;
     }
     async getInvoiceById(invoiceId: string): Promise<IInvoice | null> {
-        console.log("invoice id:", invoiceId);
         const invoice = await this._invoiceRepository.findById(invoiceId);
 
         if (!invoice) {

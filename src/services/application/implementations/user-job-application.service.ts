@@ -19,7 +19,6 @@ export class UserJobApplicationService implements IUserJobApplicationService {
         jobId: string,
     ): Promise<{ appliedStatus: boolean; applicationStatus: string | null }> {
         const existingApplication = await this._jobApplicationRepository.findByUserAndJob(userId, jobId);
-        console.log(existingApplication);
 
         return { appliedStatus: !!existingApplication, applicationStatus: existingApplication?.status ?? null };
     }
@@ -33,7 +32,6 @@ export class UserJobApplicationService implements IUserJobApplicationService {
         if (!application) {
             throw new AppError("Application not found", 404);
         }
-        console.log("company Name", application.companyName);
         const resumeSignedURL = await this._fileService.generateSignedUrl(application.resume.fileKey);
 
         application.resume.signedURL = resumeSignedURL;

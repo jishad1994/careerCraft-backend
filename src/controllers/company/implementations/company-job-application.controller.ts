@@ -470,7 +470,6 @@ export class CompanyJobApplicationController implements ICompanyJobApplicationCo
                 search: search as string,
             };
 
-            console.log("comapny id:", companyId);
 
             const { interviews, paginationMeta } = await this._interviewService.getInterviews(
                 filter,

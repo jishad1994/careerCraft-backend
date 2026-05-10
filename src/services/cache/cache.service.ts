@@ -1,4 +1,5 @@
 import { AppError } from "../../errors-classes/app.error.";
+import logger from "../../utils/logger";
 import { ICacheService } from "./cache.service.interface";
 
 export class CacheService implements ICacheService {
@@ -10,7 +11,7 @@ export class CacheService implements ICacheService {
         try {
             await this.cacheRepo.connect();
         } catch (err) {
-            console.log("failed to connect to cache service", err);
+            logger.error("failed to connect to cache service", err);
             throw new AppError("cache connection failed", undefined, false);
         }
     }

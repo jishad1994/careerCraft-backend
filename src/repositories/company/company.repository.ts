@@ -59,7 +59,6 @@ export class CompanyRepository extends BaseRepository<ICompany> implements IComp
         }
 
         if (verificationStatus) {
-            console.log("verificationStatus in the repo", verificationStatus);
             filter.verificationStatus = verificationStatus;
         }
 

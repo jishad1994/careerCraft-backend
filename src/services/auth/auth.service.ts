@@ -40,8 +40,6 @@ export class AuthService implements IAuthService {
 
         const record = await this._refreshTokenRepository.find(payload.jti);
 
-     
-
         if (!record || record.role !== payload.role || record.userId !== payload.sub) {
             throw new AuthError("invalid refresh token");
         }
@@ -146,7 +144,7 @@ export class AuthService implements IAuthService {
             role == "user"
                 ? await this._userRepository.findByGoogleId(googleId)
                 : await this._companyRepository.findByGoogleId(googleId);
-        if (entity) console.log("user already exists");
+        if (entity) logger.warn("user already exists");
 
         if (!entity) {
             entity =
@@ -158,16 +156,16 @@ export class AuthService implements IAuthService {
                           lastName: googleData.familyName,
                           provider: "google",
                           googleId: googleData.sub,
-                        //   profilePicture: {key:location:googleData.picture},
-                      } )
+                          //   profilePicture: {key:location:googleData.picture},
+                      })
                     : await this._companyRepository.createCompany({
                           email: googleData.email,
                           name: googleData.givenName || googleData.email.split("@")[0],
                           role,
                           provider: "google",
                           googleId: googleData.sub,
-                        //   bannerImage: googleData.picture,
-                      } );
+                          //   bannerImage: googleData.picture,
+                      });
         }
         const accessToken = createAccessToken(String(entity!._id), role);
         const { token: refreshToken, jti } = createRefreshToken(String(entity._id), role);
@@ -186,7 +184,6 @@ export class AuthService implements IAuthService {
         try {
             const { jti } = verifyRefreshToken(refreshToken);
 
-            console.log("jti", jti);
             await this._refreshTokenRepository.delete(jti);
         } catch (error) {
             logger.error(error);
@@ -236,7 +233,6 @@ export class AuthService implements IAuthService {
 
         user.otpHashed = newOtpHashed;
 
-        console.log("cached userdata while resend otp", user);
 
         await this._cacheService.set(email, JSON.stringify({ ...user }), 500);
 
@@ -277,13 +273,11 @@ export class AuthService implements IAuthService {
     async sendResetPasswordLink(email: string, role: string): Promise<void> {
         if (!email || !role) throw new Error("email or user role is not provided");
 
-        console.log(email, role);
 
         const user =
             role == "user"
                 ? await this._userRepository.findByEmail(email)
                 : await this._companyRepository.findByEmail(email);
-        console.log(user);
         if (!user) throw new Error("user not existing");
         const resetPasswordToken: string = createAccessToken(email, role as Role);
 
@@ -294,7 +288,6 @@ export class AuthService implements IAuthService {
             "password reset link",
             "click this link to reset your password " + resetPasswordLink(role, resetPasswordToken),
         );
-        console.log("reset password link", resetPasswordLink(role, resetPasswordToken));
     }
 
     async resetPassword(resetPasswordToken: string, newPassword: string) {

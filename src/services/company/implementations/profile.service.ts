@@ -133,7 +133,6 @@ export class CompanyProfileService implements ICompanyProfileService {
             try {
                 await this._fileService.deleteFile(oldProfilePictureKey);
 
-                console.log("old one deleted");
             } catch (err) {
                 console.error("Failed to delete old profile picture:", err);
             }
@@ -160,7 +159,6 @@ export class CompanyProfileService implements ICompanyProfileService {
                 await company.save();
                 await this._fileService.deleteFile(oldProfilePictureKey);
 
-                console.log("old one deleted");
             } catch (err) {
                 console.error("Failed to delete old profile picture:", err);
             }
@@ -191,7 +189,6 @@ export class CompanyProfileService implements ICompanyProfileService {
             try {
                 await this._fileService.deleteFile(oldBannerImageKey);
 
-                console.log("old one deleted");
             } catch (err) {
                 console.error("Failed to delete old banner image:", err);
             }
@@ -218,7 +215,6 @@ export class CompanyProfileService implements ICompanyProfileService {
                 await company.save();
                 await this._fileService.deleteFile(oldBannerImageKey);
 
-                console.log("old one deleted");
             } catch (err) {
                 console.error("Failed to delete old banner picture:", err);
             }

@@ -58,7 +58,6 @@ export class AdminService implements IAdminService {
 
         const [companies, total] = await this._companyRepository.findPaginated(page, limit, search, verificationStatus);
 
-        console.log("companies", companies);
         const totalPages = Math.ceil(total / limit);
 
         const paginationMeta: PaginationMeta = {

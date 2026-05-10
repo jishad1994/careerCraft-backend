@@ -41,7 +41,6 @@ export class UserProfileController implements IUserProfileController {
 
             ApiResponse.success<UserProfileDTO>(res, "User profile updated successfully", updatedUserData);
         } catch (error) {
-            console.log(error);
             next(error);
         }
     }

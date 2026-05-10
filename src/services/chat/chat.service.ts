@@ -94,7 +94,6 @@ export class ChatService implements IChatService {
 
     async sendMessage(data: SendMessageDTO): Promise<IMessage> {
 
-        console.log('message recieved in the backend',data)
         const conversation = await this._conversationRepository.findById(data.conversationId);
         if (!conversation) {
             throw new ValidationError("Conversation not found", 404);
@@ -102,7 +101,6 @@ export class ChatService implements IChatService {
 
         const isParticipant = conversation.participants.some((p) => p.userId._id.toString() === data.senderId);
         
-        console.log("isParticipant", isParticipant);
 
 
         if (!isParticipant) {

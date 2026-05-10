@@ -187,11 +187,7 @@ export class SubscriptionPaymentService implements ISubscriptionPaymentService {
 
         await this._companySubscriptionRepository.updateStatus(subscriptionId, newStatus);
 
-        console.log(
-            subscription.isQueued
-                ? `Subscription ${subscriptionId} queued at position ${subscription.queuePosition}`
-                : `Subscription ${subscriptionId} activated immediately`,
-        );
+        
 
         return {
             paymentId: payment._id.toString(),
@@ -247,14 +243,12 @@ export class SubscriptionPaymentService implements ISubscriptionPaymentService {
     
     async purchaseAddon(companyId: string, addonId: string): Promise<PaymentIntentResponse> {
 
-        console.log('inside purchae addon')
         const activeSubscription = await this._companySubscriptionRepository.findActiveByCompany(companyId);
 
         if (!activeSubscription) {
             throw new ValidationError("No active subscription found. Please subscribe to a plan first.", 404);
         }
 
-        console.log('Active subscription found:', activeSubscription);
 
         const addon = await this._addonRepository.findById(addonId);
 
@@ -273,7 +267,6 @@ export class SubscriptionPaymentService implements ISubscriptionPaymentService {
             type: PaymentType.ADDON,
         });
 
-        console.log('payment intert:',paymentIntent);
 
         const payment = await this._paymentRepository.create({
             companyId: new Types.ObjectId(companyId),
@@ -289,7 +282,6 @@ export class SubscriptionPaymentService implements ISubscriptionPaymentService {
             subscriptionId: activeSubscription._id,
         });
 
-        console.log('payment record created:',payment); 
 
         return {
             clientSecret: paymentIntent.clientSecret!,
@@ -364,7 +356,6 @@ export class SubscriptionPaymentService implements ISubscriptionPaymentService {
             },
         });
 
-        console.log(`Addon ${addon.name} added to subscription ${subscription._id}: +${addon.quantity} ${addon.type}`);
 
         return {
             paymentId: payment._id.toString(),
@@ -393,7 +384,6 @@ export class SubscriptionPaymentService implements ISubscriptionPaymentService {
             await this._companySubscriptionRepository.updateStatus(subscription._id.toString(), SubscriptionStatus.EXPIRED);
             expiredCount++;
 
-            console.log(`Expired subscription ${subscription._id} for company ${subscription.companyId}`);
 
             // 2. Check if there's a queued subscription to activate
             const queuedSubs = await this._companySubscriptionRepository.findQueuedByCompany(
@@ -424,7 +414,6 @@ export class SubscriptionPaymentService implements ISubscriptionPaymentService {
                 }
 
                 activatedCount++;
-                console.log(`Activated queued subscription ${nextToActivate._id} for company ${subscription.companyId}`);
             }
         }
 
@@ -446,7 +435,6 @@ export class SubscriptionPaymentService implements ISubscriptionPaymentService {
                 );
 
                 activatedCount++;
-                console.log(`Activated scheduled subscription ${subscription._id} for company ${subscription.companyId}`);
             }
         }
 
@@ -485,10 +473,8 @@ export class SubscriptionPaymentService implements ISubscriptionPaymentService {
     }
 
     async getPaymentById(paymentId: string, companyId: string): Promise<IPayment | null> {
-        console.log("paymentid:", paymentId);
         const payment = await this._paymentRepository.findById<IPayment>(paymentId);
 
-        console.log("payment:", payment);
         if (!payment) {
             throw new ValidationError("Payment not found", 404);
         }

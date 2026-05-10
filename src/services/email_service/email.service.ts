@@ -1,5 +1,6 @@
 import nodemailer, { Transporter } from "nodemailer";
 import { IEmailService } from "./email.service.interface";
+import logger from "../../utils/logger";
 
 export class EmailService implements IEmailService {
     private _transporter: Transporter;
@@ -21,9 +22,9 @@ export class EmailService implements IEmailService {
                 subject,
                 text: body,
             });
-            console.log("email OTP send", info.response);
+            logger.info("email OTP send", info.response);
         } catch (error) {
-            console.error("Error sending email:", error);
+            logger.error("Error sending email:", error);
             throw error;
         }
     }

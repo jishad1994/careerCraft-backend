@@ -4,6 +4,7 @@ import { AppError } from "../../../errors-classes/app.error.";
 import { ValidationError } from "../../../errors-classes/validation.error";
 import { SubscriptionStatus } from "../../../models/company-subscription/company-subscription.interface";
 import { ICompanySubscriptionRepository } from "../../../repositories/company-subscription/company-subscription.repository.interface";
+import logger from "../../../utils/logger";
 import { CancellationOptions, CancellationResult } from "../interfaces/subscritpion-cancellation.interface";
 
 export class SubscriptionCancellationQueueService {
@@ -25,7 +26,6 @@ export class SubscriptionCancellationQueueService {
             activateNextImmediately = true, // Default: activate next immediately
         } = options;
 
-        console.log("activateNextImmediately", activateNextImmediately);
         // 1. Find active subscription
         const activeSubscription = await this._companySubscriptionRepository.findActiveByCompany(companyId);
 
@@ -43,7 +43,7 @@ export class SubscriptionCancellationQueueService {
             throw new AppError("Failed to cancel subscription", 500);
         }
 
-        console.log(`[Cancellation] Cancelled subscription ${activeSubscription._id} for company ${companyId}`);
+        logger.info(`[Cancellation] Cancelled subscription ${activeSubscription._id} for company ${companyId}`);
 
         // 3. Get queued subscriptions
         const queuedSubscriptions = await this._companySubscriptionRepository.findQueuedByCompany(companyId);
@@ -73,7 +73,7 @@ export class SubscriptionCancellationQueueService {
                
 
                 activatedSubscriptionId = nextSubscription._id.toString();
-                console.log(`[Cancellation] ✅ Activated queued subscription ${nextSubscription._id} immediately`);
+                logger.info(`[Cancellation]  Activated queued subscription ${nextSubscription._id} immediately`);
 
                 // Reorder remaining queued subscriptions
                 for (let i = 1; i < queuedSubscriptions.length; i++) {
@@ -96,17 +96,13 @@ export class SubscriptionCancellationQueueService {
                         },
                     );
 
-                    console.log(
-                        `[Cancellation] Reordered subscription ${queuedSubscriptions[i]._id} to position ${newPosition}`,
-                    );
+                   
                 }
 
                 queueReordered = true;
             } else {
                 // OPTION B: Keep queue as-is, let it activate on scheduled date
-                console.log(
-                    `[Cancellation] Queue maintained. Next subscription will activate on scheduled date: ${queuedSubscriptions[0].scheduledStartDate}`,
-                );
+               
             }
         }
 
@@ -145,7 +141,7 @@ export class SubscriptionCancellationQueueService {
         if (activeSubscription) {
             await this._companySubscriptionRepository.cancel(activeSubscription._id.toString(), reason);
             cancelledIds.push(activeSubscription._id.toString());
-            console.log(`[Cancellation] Cancelled active subscription ${activeSubscription._id}`);
+           
         }
 
         // 2. Cancel all queued subscriptions
@@ -154,7 +150,7 @@ export class SubscriptionCancellationQueueService {
         for (const queued of queuedSubscriptions) {
             await this._companySubscriptionRepository.cancel(queued._id.toString(), reason);
             cancelledIds.push(queued._id.toString());
-            console.log(`[Cancellation] Cancelled queued subscription ${queued._id}`);
+            
         }
 
         return {
@@ -198,7 +194,7 @@ export class SubscriptionCancellationQueueService {
         // 2. Cancel the queued subscription
         await this._companySubscriptionRepository.cancel(subscriptionId, "Removed from queue by user");
 
-        console.log(`[Queue Management] Removed subscription ${subscriptionId} from position ${removedPosition}`);
+        
 
         // 3. Get remaining queued subscriptions
         const remainingQueue = await this._companySubscriptionRepository.findQueuedByCompany(companyId);
@@ -229,9 +225,7 @@ export class SubscriptionCancellationQueueService {
                     },
                 );
 
-                console.log(
-                    `[Queue Management] Reordered subscription ${remainingQueue[i]._id} to position ${newPosition}`,
-                );
+                
 
                 previousSub = remainingQueue[i];
             }

@@ -173,7 +173,6 @@ export class UserJobController implements IUserJobController {
 
             return ApiResponse.success(res, "Application submitted successfully", application, 201);
         } catch (error) {
-            console.log(error instanceof Error ? error.message : "");
 
             next(error);
         }

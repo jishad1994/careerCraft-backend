@@ -37,7 +37,6 @@ export class FileService implements IFileService {
     }
 
     async uploadProfilePicture(file: Express.Multer.File, userId: string): Promise<{ key: string; location: string }> {
-        console.log("uploading profile picture");
 
         const key: string = await this.provider.uplodaFile(file, "profilePictures", userId, true);
 

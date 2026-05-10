@@ -1,16 +1,16 @@
 import mongoose from "mongoose";
 import { IDatabase } from "./database.interface.js";
+import logger from "../utils/logger.js";
 
 export class MongooseDatabase implements IDatabase {
     async connect(): Promise<void> {
         try {
             await mongoose.connect(process.env.MONGO_URI || "");
-            console.log('database connected secure')
         } catch (error) {
             if (error instanceof Error) {
-                console.log("DB connection Error: ", error.message);
+                logger.error("DB connection Error: ", error.message);
             } else {
-                console.log("unknown error: ", error);
+                logger.error("unknown error: ", error);
             }
         }
     }
@@ -18,6 +18,6 @@ export class MongooseDatabase implements IDatabase {
     async disconnect(): Promise<void> {
         await mongoose.disconnect();
 
-        console.log("mongoDB disconnected");
+        logger.info("mongoDB disconnected");
     }
 }

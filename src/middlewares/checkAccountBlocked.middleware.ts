@@ -13,7 +13,6 @@ export async function checkAccountBlockedMiddleware(req: Request, res: Response,
 
         if (authUser.role === "user") {
 
-            console.log('auth user role',authUser.role)
             const user = await userRepo.findById(authUser.id);
 
             if (!user) {

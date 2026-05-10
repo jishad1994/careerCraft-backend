@@ -10,7 +10,6 @@ export function errorHandler(err: unknown, req: Request, res: Response, _next: N
         logger.error("Error stack", err.stack);
         logger.error(err.message);
 
-        console.log("validation error form zod looks like: ", err);
         return ApiResponse.validationError(res, HTTP_MESSAGES.VALIDATION_ERROR, err);
     }
 
