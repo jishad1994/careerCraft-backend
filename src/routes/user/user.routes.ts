@@ -10,7 +10,7 @@ import { isUserBlocked } from "../../middlewares/checkUserBlocked.middleware";
 const userRoutes = express.Router();
 
 userRoutes.use("/me", userAuthMiddleware, isUserBlocked, userProfileRoutes);
-userRoutes.use("/jobs", userAuthMiddleware, isUserBlocked, userJobRoutes);
+userRoutes.use("/jobs", userJobRoutes);
 userRoutes.use("/applications", userAuthMiddleware, isUserBlocked, userJobApplicationRoutes);
 userRoutes.use("/resume", userAuthMiddleware, isUserBlocked, resumeBuilderRouter);
 userRoutes.use("/offers", userAuthMiddleware, isUserBlocked, candidateOfferLetterRoutes);

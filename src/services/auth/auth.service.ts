@@ -36,7 +36,6 @@ export class AuthService implements IAuthService {
     async refresh(
         oldRefreshToken: string,
     ): Promise<{ accessToken: string; refreshToken: string; user: AuthUserResponseDTO }> {
-        console.log("old refresh token:", oldRefreshToken);
         const payload = verifyRefreshToken(oldRefreshToken);
 
         const record = await this._refreshTokenRepository.find(payload.jti);

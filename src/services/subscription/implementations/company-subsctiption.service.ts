@@ -18,7 +18,6 @@ export class CompanySubscriptionService implements ICompanySubscriptionService {
 
     async getActiveSubscription(companyId: string): Promise<ICompanySubscription | null> {
         const activeSubscription = await this._companySubscriptionRepository.findActiveByCompany(companyId);
-        console.log("active subscription:", activeSubscription);
         
         return activeSubscription;
     }
