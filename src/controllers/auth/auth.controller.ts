@@ -27,7 +27,6 @@ import {
 } from "../../validators-schemas/auth.schemas";
 import { HTTP_MESSAGES } from "../../constants/messages/http.messages.constants";
 import { asyncHandler } from "../../utils/asyncHandler";
-import logger from "../../utils/logger";
 
 export class AuthController implements IAuthController {
     constructor(private _authService: IAuthService, private _cacheService: ICacheService) {}
@@ -37,9 +36,9 @@ export class AuthController implements IAuthController {
 
         const { refreshToken, accessToken, user } = await this._authService.refresh(oldRefreshToken);
 
-        logger.info('form refresh handler')
 
         res.cookie(refreshTokenCookieName, refreshToken, refreshTokenCookieOptions);
+
         res.cookie(accessTokenCookieName, accessToken, accessTokenCookieOptions);
 
         return ApiResponse.success<AuthUserResponseDTO>(res, HTTP_MESSAGES.TOKEN_REFRESH_SUCCESSFULL, user);

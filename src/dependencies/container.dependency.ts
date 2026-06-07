@@ -92,6 +92,9 @@ import { OfferLetterModel } from "../models/offer-letter/offerLetter.model.js";
 import { OfferLetterService } from "../shared/services/offerLetter-service/offerLetter.service.js";
 import { CandidateOfferLetterController } from "../controllers/offerLetter/implementations/candidate-offerLetter.controller.js";
 import { CompanyOfferLetterController } from "../controllers/offerLetter/implementations/company-offerLetter.controller.js";
+import { AdminStatsService } from "../services/admin/admin-stats/admin-stats.service.js";
+import { AdminStatsRepository } from "../repositories/admin-stats/admin-stats.repository.js";
+import { AdminStatsController } from "../controllers/admin/implementations/admin-stats.controller.js";
 
 //redis cache service instance
 const redisRepo = new RedisCacheRepo(process.env.REDIS_URL || "redis://6379");
@@ -158,9 +161,14 @@ const socketServer = new SocketServer(
 );
 
 //admin controller
+
+const adminStatsRepository = new AdminStatsRepository(User, Company, Job, JobApplication, Payment, CompanySubscription);
 const adminService = new AdminService(userRepo, companyRepo, emailService, fileService, cacheService);
 
 const adminController = new AdminController(adminService);
+
+const adminStatsService = new AdminStatsService(adminStatsRepository);
+const adminStatsController = new AdminStatsController(adminStatsService);
 
 // user profile controller
 const userProfileService = new UserProfileService(userRepo, fileService);
@@ -197,11 +205,23 @@ const interviewServie = new InterviewService(jobApplicationRepository, notificat
 const companyJobApplicationController = new CompanyJobApplicationController(companyJobApplicationService, interviewServie);
 
 // user application services
-const userJobApplicationService = new UserJobApplicationService(jobApplicationRepository, fileService);
+const userJobApplicationService = new UserJobApplicationService(
+    jobApplicationRepository,
+    fileService,
+    notificationService,
+    socketServer,
+);
 const userJobApplicationController = new UserJobApplicationController(userJobApplicationService, interviewServie);
 
 //jobs services
-const userJobService = new UserJobService(jobRepository, jobApplicationRepository, fileService);
+const userJobService = new UserJobService(
+    jobRepository,
+    jobApplicationRepository,
+    fileService,
+    notificationService,
+    socketServer,
+    userRepo,
+);
 const companyJobService = new CompanyJobService(jobRepository);
 const adminJobService = new AdminJobService(jobRepository, jobApplicationRepository);
 const publicJobService = new PublicJobService(jobRepository);
@@ -260,6 +280,7 @@ const companySubscriptionPaymentService = new SubscriptionPaymentService(
     companySubscriptionRepository,
     paymentRepository,
     invoiceService,
+    
     addonRepository,
 );
 
@@ -325,4 +346,5 @@ export {
     companyOfferLetterController,
     companyRepo,
     userRepo,
+    adminStatsController,
 };

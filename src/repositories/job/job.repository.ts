@@ -7,6 +7,13 @@ export class JobRepository extends BaseRepository<IJob> implements IJobRepositor
         super(model);
     }
 
+
+
+
+
+
+
+
     async findBySlug(slug: string): Promise<IJob | null> {
         return await this.model
             .findOne({ slug })
@@ -14,6 +21,8 @@ export class JobRepository extends BaseRepository<IJob> implements IJobRepositor
             .populate("skills", "name")
           
     }
+
+
 
     async findByCompany(
         companyId: string,

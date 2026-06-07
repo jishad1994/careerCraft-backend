@@ -1,11 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { AccessPayload, verifyAccessToken } from "../utils/jwt.utils";
-import logger from "../utils/logger";
 import { ApiResponse } from "../utils/apiResponse.utils";
 
 export function userAuthMiddleware(req: Request, res: Response, next: NextFunction) {
     const token = req.cookies.accessToken;
-    logger.info("auth token", token);
 
     if (!token) return ApiResponse.unauthorized(res, "Unauthorized user");
 

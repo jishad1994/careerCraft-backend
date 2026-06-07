@@ -36,6 +36,7 @@ app.use(
     }),
 ); //cors
 app.use(cookieParser());
+app.use(requestLogger);
 
 if (process.env.NODE_ENV !== "production") {
     app.use(morgan("dev")); //morgan
@@ -55,13 +56,12 @@ async function startApp() {
     await bullMQService.scheduleRecurring("0 * * * *");
 }
 
+
 startApp();
 
-// logger.info(" BullMQ subscription queue initialized");
 
 //cache service connection
 
-app.use(requestLogger);
 
 //routes
 app.use(API_ROUTES.AUTH_USER, userAuthRoutes);

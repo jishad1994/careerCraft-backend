@@ -10,9 +10,17 @@ import { IUserJobApplicationService } from "../interfaces/user-job-application.s
 import { AppError } from "../../../errors-classes/app.error.";
 import { PaginationMeta } from "../../../utils/apiResponse.utils";
 import { IFileService } from "../../file-service/interfaces/file.service.interface";
+import { ISocketService } from "../../../shared/services/socket/interface/socket.service.interface";
+import { INotificationService } from "../../notification/interface/notification.service.interface";
+import { NOTIFICATION_PRIORITIES, NOTIFICATION_TYPES } from "../../../models/notifications/notification.interface";
 
 export class UserJobApplicationService implements IUserJobApplicationService {
-    constructor(private _jobApplicationRepository: IJobApplicationRepository, private _fileService: IFileService) {}
+    constructor(
+        private _jobApplicationRepository: IJobApplicationRepository,
+        private _fileService: IFileService,
+        private _notificationService: INotificationService,
+        private _socketServer: ISocketService,
+    ) {}
 
     async getApplicationStatus(
         userId: string,
@@ -137,7 +145,25 @@ export class UserJobApplicationService implements IUserJobApplicationService {
             throw new AppError("Cannot withdraw application at this stage", 400);
         }
 
-        return this.updateApplicationStatus(applicationId, "withdrawn", userId, "Withdrawn by applicant");
+        const updatedApplication = await this.updateApplicationStatus(
+            applicationId,
+            "withdrawn",
+            userId,
+            "Withdrawn by applicant",
+        );
+        const notification = await this._notificationService.createNotification({
+            userId: application.company.toString(),
+            userModel: "Company",
+            type: NOTIFICATION_TYPES.APPLICATION_STATUS,
+            title: "Application Withdrawn",
+            message: `A candidate has withdrawn their application`,
+            priority: NOTIFICATION_PRIORITIES.MEDIUM,
+            metadata: { applicationId: new mongoose.Types.ObjectId(applicationId) },
+        });
+
+        await this._socketServer.sendNotificationToUser(application.company.toString(), notification);
+
+        return updatedApplication;
     }
 
     async checkApplicationStatus(

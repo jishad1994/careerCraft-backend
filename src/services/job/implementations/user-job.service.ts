@@ -8,12 +8,18 @@ import { IUserJobService } from "../interfaces/user-job.service.interface";
 import { IFileService } from "../../file-service/interfaces/file.service.interface";
 import { ValidationError } from "../../../errors-classes/validation.error";
 import mongoose from "mongoose";
+import { ISocketService } from "../../../shared/services/socket/interface/socket.service.interface";
+import { INotificationService } from "../../notification/interface/notification.service.interface";
+import { IUserRepository } from "../../../repositories/user/user.repository.interface";
 
 export class UserJobService implements IUserJobService {
     constructor(
         private _jobRepository: IJobRepository,
         private _applicationRepository: IJobApplicationRepository,
         private _fileService: IFileService,
+        private _notificationService: INotificationService,
+        private _socketServer: ISocketService,
+        private _userRepository: IUserRepository,
     ) {}
 
     async searchJobs(
@@ -86,7 +92,6 @@ export class UserJobService implements IUserJobService {
     }
 
     async applyForJob(userId: string, applicationData: IJobApplication): Promise<IJobApplication> {
-       
         const existingApplication = await this._applicationRepository.findByUserAndJob(
             userId,
             applicationData.job.toString(),
@@ -96,9 +101,28 @@ export class UserJobService implements IUserJobService {
             throw new AppError("You have already applied for this job", 400);
         }
 
+        const user = await this._userRepository.findById(userId);
+
+        if (!user) {
+            throw new AppError("User not found");
+        }
+
+        const job = await this._jobRepository.findById(applicationData.job.toString());
+        if (!job) {
+            throw new AppError("Job not found");
+        }
         const application = await this._applicationRepository.create(applicationData);
 
         await this._jobRepository.incrementApplications(application.job.toString());
+
+        const notification = await this._notificationService.notifyNewApplication(
+            applicationData.company.toString(),
+            `${user.firstName} ${user.lastName ?? ""}`,
+            job.title,
+            application._id.toString(),
+        );
+
+        await this._socketServer.sendNotificationToUser(job.company.toString(), notification);
 
         return application;
     }

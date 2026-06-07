@@ -35,3 +35,4 @@ EXPOSE 4000
 
 # Start app from compiled JS
 CMD ["node", "dist/server.js"]
+

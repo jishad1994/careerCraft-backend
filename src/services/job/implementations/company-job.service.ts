@@ -15,6 +15,7 @@ export class CompanyJobService implements ICompanyJobService {
         const idSuffix = companyId.toString().slice(-6);
         const slug = `${slugify(jobData.title!, { lower: true })}-${idSuffix}`;
         const company = new mongoose.Types.ObjectId(companyId);
+
         const job = await this._jobRepository.create({
             ...jobData,
             company,
@@ -86,13 +87,12 @@ export class CompanyJobService implements ICompanyJobService {
             throw new ValidationError(COMPANY_JOB_MESSAGES.JOB_NOT_FOUND, 401);
         }
 
-        
         const validStatuses = ["draft", "active", "paused", "closed"];
-        
+
         if (!validStatuses.includes(status)) {
             throw new AppError("Invalid status", 400);
         }
-        
+
         const updatedJob = await this._jobRepository.updateById(jobId, { status: status as JobStatus });
 
         if (!updatedJob) {

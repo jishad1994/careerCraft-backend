@@ -36,6 +36,7 @@ export class AuthService implements IAuthService {
     async refresh(
         oldRefreshToken: string,
     ): Promise<{ accessToken: string; refreshToken: string; user: AuthUserResponseDTO }> {
+
         const payload = verifyRefreshToken(oldRefreshToken);
 
         const record = await this._refreshTokenRepository.find(payload.jti);
@@ -64,6 +65,7 @@ export class AuthService implements IAuthService {
         await this._refreshTokenRepository.save(jti, record.userId, record.role, record.email, exp);
 
         return { accessToken, refreshToken: newRefreshToken, user };
+        
     }
 
     //signup user

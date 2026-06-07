@@ -6,6 +6,7 @@ export class MongooseDatabase implements IDatabase {
     async connect(): Promise<void> {
         try {
             await mongoose.connect(process.env.MONGO_URI || "");
+            logger.info("Mongodb database connected");
         } catch (error) {
             if (error instanceof Error) {
                 logger.error("DB connection Error: ", error.message);

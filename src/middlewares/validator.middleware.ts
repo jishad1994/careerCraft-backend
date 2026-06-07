@@ -1,8 +1,7 @@
 import { ZodSchema } from "zod";
-
 import { Request, Response, NextFunction } from "express";
-import { ValidationError } from "../errors-classes/validation.error";
 import logger from "../utils/logger";
+import { AppError } from "../errors-classes/app.error.";
 
 export type IRequestObjects = "body" | "params" | "query" | "user" | "cookies";
 
@@ -29,7 +28,7 @@ export const validate = (schema: ZodSchema, sources: IRequestObjects[]) => (
                 const fieldErrors = result.error.flatten().fieldErrors;
                 const message = formatZodErrorMessage(fieldErrors);
 
-                return next(new ValidationError(message || "Validation failed"));
+                return next(new AppError(message || "Validation failed"));
             }
 
             req[source] = result.data;

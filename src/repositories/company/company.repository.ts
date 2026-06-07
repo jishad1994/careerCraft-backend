@@ -5,6 +5,7 @@ import { MongoServerError } from "mongodb";
 import { ICompanyRepository } from "./company.repository.interface";
 import { DataBaseError } from "../../errors-classes/database.error";
 import { ConflictError } from "../../errors-classes/conflict.error";
+import { HTTP_MESSAGES } from "../../constants/messages/http.messages.constants";
 
 export class CompanyRepository extends BaseRepository<ICompany> implements ICompanyRepository {
     constructor(model: Model<ICompany>) {
@@ -15,7 +16,7 @@ export class CompanyRepository extends BaseRepository<ICompany> implements IComp
         try {
             const doc = await super.create(company);
             return doc.toObject();
-        } catch (error: unknown) {
+        } catch (error) {
             if (error instanceof MongoServerError) {
                 if (error.code == 11000) {
                     throw new ConflictError("Duplicate entry: resource already exists", 409);
@@ -31,7 +32,7 @@ export class CompanyRepository extends BaseRepository<ICompany> implements IComp
                 $or: [{ email: emailOrPhone }, { phone: emailOrPhone }],
             });
         } catch {
-            throw new DataBaseError("database error occured while finding user email or phone");
+            throw new DataBaseError(HTTP_MESSAGES.SERVER_ERROR);
         }
     }
 
