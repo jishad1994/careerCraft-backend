@@ -1,0 +1,26 @@
+services:
+  backend:
+    # build: 
+    #   context: .
+    #   dockerfile: Dockerfile
+    # image: jishadkolapurath/careercraft-backend:local
+    image: jishadkolapurath/careercraft-backend:dev
+    ports:
+      - "4000:4000"
+      # - "127.0.0.1:4000:4000" 
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  redis:
+    image: redis:7
+    # ports:
+    #   - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
+volumes:
+  redis-data:
